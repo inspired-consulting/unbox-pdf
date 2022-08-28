@@ -7,15 +7,15 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
 import java.io.IOException;
 
+import static inspired.pdf.unbox.Unbox.*;
 import static inspired.pdf.unbox.decorators.BorderDecorator.border;
-import static inspired.pdf.unbox.elements.Paragraph.paragraph;
 import static inspired.pdf.unbox.internal.SimpleFont.helvetica_bold;
 import static inspired.pdf.unbox.themes.UnboxTheme.GRAY_200;
 
 public class MultiPagePdf {
 
     public static void main(String[] args) throws IOException {
-        LinearPDFWriter writer = new LinearPDFWriter();
+        LinearPDFWriter writer = new LinearPDFWriter(Orientation.LANDSCAPE, Margin.of(40), Padding.of(30,0));
 
         writer.add(new DocumentHeader(
                 paragraph("This header is rendered on each page", helvetica_bold(12))
@@ -39,7 +39,7 @@ public class MultiPagePdf {
         });
 
         // add a paragraph
-        writer.render(paragraph("Hello, World!", helvetica_bold(12)));
+        writer.render(paragraph("Hello, World!", helvetica_bold(12)).with(Margin.of(10,0)));
         writer.addPage();
 
         PDDocument document = writer.finish();

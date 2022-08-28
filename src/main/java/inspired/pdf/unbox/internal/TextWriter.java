@@ -10,7 +10,7 @@ import java.io.IOException;
  */
 public class TextWriter {
 
-    public static final float CORRECTION = 2f;
+    public static final float CORRECTION_FACTOR = 0.25f;
 
     private final Font font;
 
@@ -74,10 +74,11 @@ public class TextWriter {
     }
 
     private float offsetY(Bounds bounds, VAlign vAlign) {
+        float correction = font.lineHeight() * CORRECTION_FACTOR;
         return switch (vAlign) {
-            case MIDDLE -> bounds.middle() - font.lineHeight() / 2f + CORRECTION;
-            case TOP -> bounds.top() - font.lineHeight();
-            case BOTTOM -> bounds.bottom();
+            case TOP -> bounds.top() - font.lineHeight() + correction;
+            case MIDDLE -> bounds.middle() - font.lineHeight() / 2f + correction / 2f;
+            case BOTTOM -> bounds.bottom() + correction;
         };
     }
 

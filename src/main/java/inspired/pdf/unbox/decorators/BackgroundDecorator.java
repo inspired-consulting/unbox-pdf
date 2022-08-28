@@ -12,10 +12,6 @@ public class BackgroundDecorator extends Decorator {
 
     private final Color color;
 
-    public static final BackgroundDecorator background(Color color) {
-        return new BackgroundDecorator(color);
-    }
-
     public BackgroundDecorator(Color color) {
         this.color = color;
     }

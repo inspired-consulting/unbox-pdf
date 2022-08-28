@@ -3,15 +3,15 @@ package samples;
 import inspired.pdf.unbox.*;
 import inspired.pdf.unbox.base.TableModel;
 import inspired.pdf.unbox.elements.*;
+import inspired.pdf.unbox.elements.Canvas;
 import inspired.pdf.unbox.themes.UnboxTheme;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
 import java.io.IOException;
 
-import static inspired.pdf.unbox.decorators.BackgroundDecorator.background;
 import static inspired.pdf.unbox.decorators.BorderDecorator.border;
-import static inspired.pdf.unbox.elements.Paragraph.paragraph;
+import static inspired.pdf.unbox.Unbox.*;
 import static inspired.pdf.unbox.internal.SimpleFont.helvetica_bold;
 import static inspired.pdf.unbox.themes.UnboxTheme.*;
 
@@ -21,19 +21,24 @@ public class SimplePdf {
         LinearPDFWriter writer = new LinearPDFWriter();
 
         // add a paragraph
-        writer.render(paragraph("Hello, World!", helvetica_bold(12), Align.LEFT));
+        writer.render(paragraph("Hello, World!", helvetica_bold(12)));
 
         // add a row with several paragraphs
-        writer.render(new Row().with(Margin.of(10,0))
+        writer.render(row()
+                .with(Margin.of(10,0))
+                .with(Padding.of(10))
                 .add(paragraph("Col 1").with(background(NEON_GREEN)))
-                .add(paragraph("Col 2", Align.CENTER).with(background(GRAY_100)))
-                .add(paragraph("Col 3", Align.RIGHT).with(background(RED_ORANGE.brighter())))
+                .add(paragraph("Col 2").align(Align.CENTER).with(background(GRAY_200)))
+                .add(paragraph("Col 3").align(Align.RIGHT).with(background(RED_ORANGE.brighter())))
+                .with(background(GRAY_100))
         );
 
         // Add paragraph with background
-        writer.render(paragraph("Hello, Again!", Align.RIGHT)
+        writer.render(paragraph("Hello, Again!")
+                .withHeight(100)
+                .align(Align.RIGHT, VAlign.BOTTOM)
                 .with(Margin.left(100))
-                .with(Padding.of(10, 30))
+                .with(Padding.of(15))
                 .with(border(2, UnboxTheme.GREEN))
                 .with(background(NEON_GREEN)));
 

@@ -3,20 +3,21 @@ package inspired.pdf.unbox.elements;
 import inspired.pdf.unbox.Bounds;
 import inspired.pdf.unbox.LinearPDFWriter;
 import inspired.pdf.unbox.Margin;
+import inspired.pdf.unbox.Padding;
 import inspired.pdf.unbox.base.Column;
 import inspired.pdf.unbox.base.SimpleColumnModel;
+import inspired.pdf.unbox.decorators.Decorator;
+import inspired.pdf.unbox.elements.internal.AbstractPdfElement;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.max;
 
-public class Row implements PdfElement {
+public class Row extends AbstractPdfElement {
 
     private final List<PdfElement> elements = new ArrayList<>();
     private final SimpleColumnModel columnModel = new SimpleColumnModel();
-
-    private Margin margin = Margin.none();
 
     public Row add(PdfElement element) {
         elements.add(element);
@@ -25,18 +26,18 @@ public class Row implements PdfElement {
     }
 
     public Row with(Margin margin) {
-        this.margin = margin;
+        super.with(margin);
+        return this;
+    }
+
+    public Row with(Padding padding) {
+        super.with(padding);
         return this;
     }
 
     @Override
-    public Margin margin() {
-        return margin;
-    }
-
-    @Override
     public float render(LinearPDFWriter writer, Bounds viewPort) {
-        Bounds bounds = viewPort.apply(margin);
+        Bounds bounds = viewPort.apply(margin()).apply(padding());
         float forward = 0f;
         SimpleColumnModel columns = columnModel.scaleToSize(bounds.width());
         float offsetX = bounds.left();
@@ -47,11 +48,12 @@ public class Row implements PdfElement {
             forward = max(element.render(writer, adjusted), forward);
             offsetX += column.width();
         }
-        return forward + margin.vertical();
+        return forward + margin().vertical() + padding().vertical();
     }
 
     @Override
     public float innerHeight(Bounds viewPort) {
-        return elements.stream().map(e -> e.innerHeight(viewPort)).max(Float::compareTo).orElse(0f);
+        return elements.stream().map(e -> e.innerHeight(viewPort)).max(Float::compareTo).orElse(0f) + padding().vertical();
     }
+
 }

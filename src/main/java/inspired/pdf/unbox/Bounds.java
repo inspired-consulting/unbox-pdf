@@ -10,13 +10,13 @@ public record Bounds(float left, float top, float width, float height) {
     }
 
     public float center() {
-        return left + width / 2;
+        return left + width / 2f;
     }
 
     public float right() { return left + width; }
 
     public float middle() {
-        return top - height / 2;
+        return top - height / 2f;
     }
 
     public Position topLeft() {

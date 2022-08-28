@@ -8,30 +8,17 @@ import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 
 public class Paragraph implements PdfElement {
 
+    private final static float HEIGHT_UNDEFINED = -1f;
+
     private final TextWriter textWriter;
     private final String text;
 
     private Align align = Align.LEFT;
     private VAlign vAlign = VAlign.TOP;
+    private float height = HEIGHT_UNDEFINED;
 
     private Padding padding = Padding.of(4);
     private Margin margin = Margin.none();
-
-    public static Paragraph paragraph(String text) {
-        return new Paragraph(text);
-    }
-
-    public static Paragraph paragraph(String text, Font font) {
-        return new Paragraph(text, font);
-    }
-
-    public static Paragraph paragraph(String text, Align align) {
-        return new Paragraph(text).align(align);
-    }
-
-    public static Paragraph paragraph(String text, Font font, Align align) {
-        return new Paragraph(text, font).align(align);
-    }
 
     public Paragraph(String text) {
         this(text, new SimpleFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 8));
@@ -68,11 +55,23 @@ public class Paragraph implements PdfElement {
         return this;
     }
 
+    public Paragraph withHeight(float height) {
+        this.height = height;
+        return this;
+    }
+
     @Override
     public float render(LinearPDFWriter writer, Bounds viewPort)  {
-        Bounds bounds = viewPort.apply(margin).apply(padding);
-        float height = textWriter.write(writer.getContentStream(), bounds, text, align, vAlign);
-        return height + margin.vertical() + padding.vertical();
+        Bounds bounds = effectiveBounds(viewPort);
+        float actualHeight = textWriter.write(writer.getContentStream(), bounds, text, align, vAlign);
+
+        if (height > HEIGHT_UNDEFINED) {
+            return height;
+        } else if (VAlign.TOP == vAlign) {
+            return actualHeight + padding.vertical();
+        } else {
+            return viewPort.height();
+        }
     }
 
     @Override
@@ -82,7 +81,21 @@ public class Paragraph implements PdfElement {
 
     @Override
     public float innerHeight(Bounds viewPort) {
-        return textWriter.calculateHeight(text, viewPort) + padding.vertical();
+        if (height > HEIGHT_UNDEFINED) {
+            return height;
+        } else if (VAlign.TOP == vAlign) {
+            return textWriter.calculateHeight(text, viewPort) + padding.vertical();
+        } else {
+            return viewPort.height();
+        }
+    }
+
+    private Bounds effectiveBounds(Bounds viewPort) {
+        if (height > HEIGHT_UNDEFINED) {
+            return viewPort.apply(margin).height(height).apply(padding);
+        } else {
+            return viewPort.apply(margin).apply(padding);
+        }
     }
 
 }
