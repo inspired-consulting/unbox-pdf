@@ -9,6 +9,7 @@ A lot of concepts are borrowed from HTML, like Margins, Paddings and Borders.
 
 The following code shows by example how to use this toolkit.
 
+
 ```Java
 LinearPDFWriter writer = new LinearPDFWriter();
 
@@ -44,6 +45,14 @@ table.addRow()
         .addCell("200.12 EUR");
 table.addRow().withCells("SmartPhone", "5,5", "320.00 EUR");
 writer.render(table);
+
+// render some graphics on a canvas
+writer.render(new Canvas(100) {
+    @Override
+    public void paint(PDPageContentStream contentStream, Bounds viewPort) throws IOException {
+        drawCircle(contentStream, viewPort.left() + 100, viewPort.top() -50, 50, NEON_GREEN);
+    }
+}.with(Margin.bottom(10)));
 
 writer.render(paragraph("Done!", Align.CENTER, helvetica_bold(12))
         .with(Padding.of(20))

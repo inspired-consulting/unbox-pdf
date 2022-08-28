@@ -1,13 +1,11 @@
 package samples;
 
-import inspired.pdf.unbox.Align;
-import inspired.pdf.unbox.LinearPDFWriter;
-import inspired.pdf.unbox.Margin;
-import inspired.pdf.unbox.Padding;
+import inspired.pdf.unbox.*;
 import inspired.pdf.unbox.base.TableModel;
 import inspired.pdf.unbox.elements.*;
 import inspired.pdf.unbox.themes.UnboxTheme;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
 import java.io.IOException;
 
@@ -54,6 +52,14 @@ public class SimplePdf {
                 .addCell("200.12 EUR");
         table.addRow().withCells("SmartPhone", "5,5", "320.00 EUR");
         writer.render(table);
+
+        // render some graphics on a canvas
+        writer.render(new Canvas(100) {
+            @Override
+            public void paint(PDPageContentStream contentStream, Bounds viewPort) throws IOException {
+                drawCircle(contentStream, viewPort.left() + 100, viewPort.top() -50, 50, NEON_GREEN);
+            }
+        }.with(Margin.bottom(10)));
 
         writer.render(paragraph("Done!", Align.CENTER, helvetica_bold(12))
                 .with(Padding.of(20))
