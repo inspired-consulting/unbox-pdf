@@ -1,11 +1,11 @@
 package inspired.pdf.unbox;
 
 /**
- * The margin describes the space inside the element.
- * @param top
- * @param right
- * @param bottom
- * @param left
+ * The padding describes the space inside the element.
+ * @param top Padding top
+ * @param right Padding right
+ * @param bottom Padding bottom
+ * @param left Padding left
  */
 public record Padding(float top, float right, float bottom, float left) {
 
@@ -21,8 +21,28 @@ public record Padding(float top, float right, float bottom, float left) {
         return new Padding(top, right, bottom, left);
     }
 
-    public static Padding of(float top, float vertical, float bottom) {
-        return new Padding(top, vertical, bottom, vertical);
+    public static Padding of(float top, float horizontal, float bottom) {
+        return new Padding(top, horizontal, bottom, horizontal);
+    }
+
+    public static Padding top(float top) {
+        return new Padding(top, 0,0,0);
+    }
+
+    public static Padding right(float right) {
+        return new Padding(0, right,0,0);
+    }
+
+    public static Padding bottom(float bottom) {
+        return new Padding(0, 0,bottom,0);
+    }
+
+    public static Padding left(float left) {
+        return new Padding(0, 0,0, left);
+    }
+
+    public static Padding none() {
+        return Padding.of(0);
     }
 
     public float horizontal() {

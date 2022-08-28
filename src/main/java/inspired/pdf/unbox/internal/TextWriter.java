@@ -28,16 +28,23 @@ public class TextWriter {
     }
 
     public float write(PDPageContentStream stream, Bounds bounds, String text, Align align) {
-        String[] chunks = chunk(text, bounds.width());
-        float height = chunks.length * font.lineHeight();
         float y = bounds.top() - font.lineHeight();
+        return write(text, bounds, align, stream, y);
+    }
+
+    public float write(PDPageContentStream stream, Bounds bounds, String text, Align align, VAlign vAlign) {
+        float y = offsetY(bounds, vAlign);
+        return write(text, bounds, align, stream, y);
+    }
+
+    private float write(String text, Bounds bounds, Align align, PDPageContentStream stream, float y) {
+        String[] chunks = chunk(text, bounds.width());
         for (String chunk : chunks) {
             float x = offsetX(bounds, chunk, align);
             writeLine(stream, chunk, x, y);
             y -= font.lineHeight();
         }
-
-        return height;
+        return chunks.length * font.lineHeight();
     }
 
     private String[] chunk(String text, float maxWidth)  {
@@ -66,5 +73,12 @@ public class TextWriter {
         };
     }
 
+    private float offsetY(Bounds bounds, VAlign vAlign) {
+        return switch (vAlign) {
+            case MIDDLE -> bounds.middle() - font.lineHeight() / 2f + CORRECTION;
+            case TOP -> bounds.top() - font.lineHeight();
+            case BOTTOM -> bounds.bottom();
+        };
+    }
 
 }

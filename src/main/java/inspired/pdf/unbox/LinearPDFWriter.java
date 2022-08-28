@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Utility to write linear PDFs from top to bottom. Supports to break page.
  */
-public class LinearPDFWriter {
+public class LinearPDFWriter implements DocumentContext {
 
     private final Orientation orientation;
 
@@ -36,7 +36,7 @@ public class LinearPDFWriter {
     }
 
     public LinearPDFWriter(Orientation orientation) {
-        this(orientation, Margin.of(20), Padding.of(32, 0, 14));
+        this(orientation, Margin.of(20), Padding.of(30, 0, 20));
     }
 
     public LinearPDFWriter(Orientation orientation, Margin margin, Padding padding) {
@@ -64,23 +64,25 @@ public class LinearPDFWriter {
         this.position = position;
     }
 
+    @Override
     public Margin getMargin() {
         return margin;
     }
 
+    @Override
     public Padding getPadding() {
         return padding;
     }
 
+    // bounds
+
+    @Override
     public Bounds getPageBounds() {
         PDRectangle mediaBox = getPage().getMediaBox();
         return new Bounds(0, mediaBox.getHeight(), mediaBox.getWidth(), mediaBox.getHeight());
     }
 
-    public Bounds getContentBounds() {
-        return getPageBounds().apply(margin);
-    }
-
+    @Override
     public Bounds getViewPort() {
         return getContentBounds().apply(padding);
     }
@@ -88,6 +90,22 @@ public class LinearPDFWriter {
     public Bounds getCurrentViewPort() {
         return getViewPort().top(position.y()).height(getSpaceLeftOnPage());
     }
+
+    @Override
+    public Bounds getHeaderBounds() {
+        float headerHeight = padding.top();
+        return getContentBounds().height(headerHeight);
+    }
+
+    @Override
+    public Bounds getFooterBounds() {
+        float footerHeight = padding.bottom();
+        Bounds contentBounds = getContentBounds();
+        return new Bounds(contentBounds.left(), contentBounds.bottom() + footerHeight,
+                contentBounds.width(), footerHeight);
+    }
+
+    // util
 
     public float getSpaceLeftOnPage() {
         return position.y() - margin.bottom() - padding.bottom();

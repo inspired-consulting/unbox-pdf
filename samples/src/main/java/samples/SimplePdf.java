@@ -21,7 +21,7 @@ public class SimplePdf {
         LinearPDFWriter writer = new LinearPDFWriter();
 
         // add a paragraph
-        writer.render(paragraph("Hello, World!", Align.LEFT, helvetica_bold(12)));
+        writer.render(paragraph("Hello, World!", helvetica_bold(12), Align.LEFT));
 
         // add a row with several paragraphs
         writer.render(new Row().with(Margin.of(10,0))
@@ -61,7 +61,7 @@ public class SimplePdf {
             }
         }.with(Margin.bottom(10)));
 
-        writer.render(paragraph("Done!", Align.CENTER, helvetica_bold(12))
+        writer.render(paragraph("Done!", helvetica_bold(12), Align.CENTER)
                 .with(Padding.of(20))
                 .with(border(2, RED_ORANGE))
                 .with(background(GRAY_100)));
