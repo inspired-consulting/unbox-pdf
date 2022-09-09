@@ -8,7 +8,7 @@ public interface Table extends PdfElement {
 
     TableRow addRow(TableRow row);
 
-    TableRow addRow(Iterable<Object> values);
+    TableRow addRow(Object... values);
 
     TableRow addHeader(TableRow row);
 

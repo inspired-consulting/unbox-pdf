@@ -19,4 +19,9 @@ public class EmptyCell extends AbstractTableCell {
     public float innerHeight(Bounds viewPort) {
         return 0.0f;
     }
+
+    @Override
+    public void setValue(Object value) {
+
+    }
 }

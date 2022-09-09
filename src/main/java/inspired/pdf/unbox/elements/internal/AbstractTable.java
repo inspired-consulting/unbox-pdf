@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import inspired.pdf.unbox.Align;
 import inspired.pdf.unbox.Bounds;
 import inspired.pdf.unbox.LinearPDFWriter;
 import inspired.pdf.unbox.Margin;
@@ -13,11 +12,8 @@ import inspired.pdf.unbox.Position;
 import inspired.pdf.unbox.base.Column;
 import inspired.pdf.unbox.base.ColumnModel;
 import inspired.pdf.unbox.decorators.Decorator;
-import inspired.pdf.unbox.elements.EmptyCell;
 import inspired.pdf.unbox.elements.Table;
-import inspired.pdf.unbox.elements.TableCell;
 import inspired.pdf.unbox.elements.TableRow;
-import inspired.pdf.unbox.elements.TextCell;
 import inspired.pdf.unbox.internal.PdfUnboxException;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
@@ -53,19 +49,9 @@ public abstract class AbstractTable implements Table {
     }
 
     @Override
-    public TableRow addRow(Iterable<Object> values) {
+    public TableRow addRow(Object... values) {
         var row = this.addRow();
-        for(Object value : values) {
-            TableCell renderer = null;
-            if(value == null) {
-                renderer = new EmptyCell();
-            } else if(value instanceof Number) {
-                renderer = new TextCell(value.toString(), Align.RIGHT, null);
-            } else {
-                renderer = new TextCell(value.toString());
-            }
-            row.addCell(renderer);
-        }
+        row.withValues(values);
         return row;
     }
 

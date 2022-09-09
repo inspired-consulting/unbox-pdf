@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 import inspired.pdf.unbox.base.TableModel;
 import inspired.pdf.unbox.elements.FixedColumnsTable;
@@ -64,6 +63,11 @@ class CustomTableCell extends AbstractTableCell {
     @Override
     public float innerHeight(Bounds viewPort) {
         return 100;
+    }
+
+    @Override
+    public void setValue(Object value) {
+
     }
 }
 
@@ -134,12 +138,31 @@ class LinearPDFWriterTest {
                 .with(Margin.of(10))
                 .with(border(1, GRAY_500));
         table.addHeader(TableRow.header(tableModel, helvetica_bold(8)).with(background(GRAY_100)));
-        table.addRow(Arrays.asList("String field", 123456, 14.7f));
-        table.addRow(Arrays.asList("Other field", null, 9999.99f));
+        table.addRow("String field", 123456, 14.7f);
+        table.addRow("Other field", null, 9999.99f);
         writer.render(table);
 
         var document = writer.finish();
         assertDocumentMatchesReference(document, "tableAutomaticCells.pdf");
+    }
+
+    @Test
+    void tableWithTableCellsDefinedInModel() {
+        var writer = new LinearPDFWriter();
+        var tableModel = new TableModel()
+                .add("Article", 2f, new TextCell("", Align.CENTER, null))
+                .add("Custom")
+                .add("Price", new TextCell("", Align.LEFT, null));
+        Table table = new FixedColumnsTable(tableModel)
+                .with(Margin.of(10))
+                .with(border(1, GRAY_500));
+        table.addHeader(TableRow.header(tableModel, helvetica_bold(8)).with(background(GRAY_100)));
+        table.addRow("String field", 123456, 14.7f);
+        table.addRow("Other field", null, 9999.99f);
+        writer.render(table);
+
+        var document = writer.finish();
+        assertDocumentMatchesReference(document, "tableTableModelCells.pdf");
     }
 
     void assertDocumentMatchesReference(PDDocument document, String fileName) {
@@ -153,7 +176,7 @@ class LinearPDFWriterTest {
             document.save(documentFilePath.toString());
             document.close();
 
-            Files.copy(documentFilePath, referenceFilePath, REPLACE_EXISTING);
+//            Files.copy(documentFilePath, referenceFilePath, REPLACE_EXISTING);
             long mismatchPosition = Files.mismatch(documentFilePath, referenceFilePath);
             assertEquals(-1L, mismatchPosition, "PDF document doesn't match reference.");
         } catch (IOException e) {

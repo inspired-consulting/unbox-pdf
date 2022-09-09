@@ -1,14 +1,18 @@
 package inspired.pdf.unbox.base;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import inspired.pdf.unbox.Align;
 import inspired.pdf.unbox.Bounds;
 import inspired.pdf.unbox.Font;
-import inspired.pdf.unbox.internal.SimpleFont;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
+import inspired.pdf.unbox.elements.EmptyCell;
+import inspired.pdf.unbox.elements.TableCell;
+import inspired.pdf.unbox.elements.TextCell;
 
 /**
  * Represents the columns of a layout.
@@ -16,14 +20,19 @@ import java.util.stream.Collectors;
 public class TableModel implements ColumnModel<TableModel.TableColumn> {
 
     public static final float DEFAULT_WIDTH = 1f;
-    public static TableColumn DEFAULT_COLUMN = new TableColumn("", DEFAULT_WIDTH, Align.LEFT, null);
+    public static TableColumn DEFAULT_COLUMN = new TableColumn("", DEFAULT_WIDTH, Align.LEFT, null, null);
 
     private final List<TableColumn> columns = new ArrayList<>();
+    private final Map<Class, TableCell> defaultCells = new LinkedHashMap<>();
+    private final TableCell emptyCell = new EmptyCell();
 
     public TableModel() {
+        this.defaultCells.put(Number.class, new TextCell("", Align.RIGHT, null));
+        this.defaultCells.put(Object.class, new TextCell(""));
     }
 
-    public TableModel(List<TableColumn> columns) {
+    private TableModel(List<TableColumn> columns) {
+        this();
         this.columns.addAll(columns);
     }
 
@@ -46,15 +55,23 @@ public class TableModel implements ColumnModel<TableModel.TableColumn> {
     }
 
     public TableModel add(String title, float width) {
-        return add(new TableColumn(title, width, Align.LEFT, null));
+        return add(new TableColumn(title, width, Align.LEFT, null, null));
     }
 
     public TableModel add(String title, Align align) {
-        return add(new TableColumn(title, DEFAULT_WIDTH, align, null));
+        return add(new TableColumn(title, DEFAULT_WIDTH, align, null, null));
     }
 
     public TableModel add(String title, float width, Align align) {
-        return add(new TableColumn(title, width, align, null));
+        return add(new TableColumn(title, width, align, null, null));
+    }
+
+    public TableModel add(String title, TableCell cell) {
+        return add(new TableColumn(title, DEFAULT_WIDTH, Align.LEFT, null, cell));
+    }
+
+    public TableModel add(String title, float width, TableCell cell) {
+        return add(new TableColumn(title, width, Align.LEFT, null, cell));
     }
 
     public TableModel append(TableModel other) {
@@ -106,6 +123,18 @@ public class TableModel implements ColumnModel<TableModel.TableColumn> {
         return columns.iterator();
     }
 
+    public TableCell getDefaultCellFor(Object value) {
+        if(value == null) {
+            return this.emptyCell;
+        }
+        for (var entry : defaultCells.entrySet()){
+            if(entry.getKey().isInstance(value)) {
+                return entry.getValue();
+            }
+        }
+        throw new IllegalArgumentException("No cell found for value "+value.toString());
+    }
+
     public static class TableColumn extends Column {
 
         private final float width;
@@ -116,16 +145,19 @@ public class TableModel implements ColumnModel<TableModel.TableColumn> {
 
         private final Font font;
 
+        private final TableCell cell;
+
         public TableColumn(String title) {
-            this(title, DEFAULT_WIDTH, Align.LEFT, null);
+            this(title, DEFAULT_WIDTH, Align.LEFT, null, null);
         }
 
-        public TableColumn(String title, float width, Align align, Font font) {
+        public TableColumn(String title, float width, Align align, Font font, TableCell cell) {
             super(width);
             this.width = width;
             this.align = align;
             this.title = title;
             this.font = font;
+            this.cell = cell;
         }
 
         public float width() {
@@ -144,8 +176,12 @@ public class TableModel implements ColumnModel<TableModel.TableColumn> {
             return title;
         }
 
+        public TableCell cell() {
+            return cell;
+        }
+
         public TableColumn scale(float scale) {
-            return new TableColumn(title, width * scale, align, font);
+            return new TableColumn(title, width * scale, align, font, cell);
         }
 
     }
