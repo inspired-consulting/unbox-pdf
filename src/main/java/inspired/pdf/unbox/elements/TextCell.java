@@ -78,7 +78,7 @@ public class TextCell extends AbstractTableCell {
     }
 
     private String[] chunk(float maxWidth) {
-        return new TextTokenizer(font).chunk(text, maxWidth);
+        return new TextTokenizer(font).chunkMultiLine(text, maxWidth);
     }
 
     private float startX(Bounds bounds, Align align, String text)  {

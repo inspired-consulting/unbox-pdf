@@ -165,6 +165,25 @@ class LinearPDFWriterTest {
         assertDocumentMatchesReference(document, "tableTableModelCells.pdf");
     }
 
+    @Test
+    void tableWithMultiLineCells() {
+        var writer = new LinearPDFWriter();
+        var tableModel = new TableModel()
+                .add("Article", 2f, new TextCell("", Align.LEFT, null))
+                .add("Custom", new TextCell("", Align.CENTER, null))
+                .add("Price", new TextCell("", Align.RIGHT, null));
+        Table table = new FixedColumnsTable(tableModel)
+                .with(Margin.of(10))
+                .with(border(1, GRAY_500));
+        table.addHeader(TableRow.header(tableModel, helvetica_bold(8)).with(background(GRAY_100)));
+        table.addRow("These\nare\nfour\nlines.", "With\n\n\n\nmany\nmore", 14.7f);
+        table.addRow("And\nhere\nthree.", null, 9999.99f);
+        writer.render(table);
+
+        var document = writer.finish();
+        assertDocumentMatchesReference(document, "tableMultiLineCells.pdf");
+    }
+
     void assertDocumentMatchesReference(PDDocument document, String fileName) {
         try {
             var documentFilePath = folder.resolve(fileName);

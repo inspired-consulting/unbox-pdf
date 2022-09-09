@@ -3,6 +3,7 @@ package inspired.pdf.unbox.internal;
 import inspired.pdf.unbox.Font;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -14,6 +15,15 @@ public class TextTokenizer {
 
     public TextTokenizer(Font font) {
         this.font = font;
+    }
+
+    public String[] chunkMultiLine(String text, float maxWidth) {
+        var chunkedLines = new ArrayList<>();
+        var lines = text.split("\\n");
+        for (var line : lines) {
+            chunkedLines.addAll(Arrays.asList(chunk(line, maxWidth)));
+        }
+        return chunkedLines.toArray(new String[chunkedLines.size()]);
     }
 
     public String[] chunk(String text, float maxWidth) {
