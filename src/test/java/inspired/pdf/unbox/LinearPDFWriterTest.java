@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 import inspired.pdf.unbox.base.TableModel;
 import inspired.pdf.unbox.elements.FixedColumnsTable;
@@ -12,16 +13,16 @@ import inspired.pdf.unbox.elements.TableRow;
 import inspired.pdf.unbox.elements.TextCell;
 import inspired.pdf.unbox.elements.internal.AbstractTableCell;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.io.TempDir;
 
 import static inspired.pdf.unbox.Unbox.background;
 import static inspired.pdf.unbox.decorators.BorderDecorator.border;
 import static inspired.pdf.unbox.internal.SimpleFont.helvetica_bold;
 import static inspired.pdf.unbox.themes.UnboxTheme.*;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
 class CustomTableCell extends AbstractTableCell {
@@ -119,6 +120,26 @@ class LinearPDFWriterTest {
 
         var document = writer.finish();
         assertDocumentMatchesReference(document, "customTable.pdf");
+    }
+
+
+    @Test
+    void tableWithAutomaticTableCells() {
+        var writer = new LinearPDFWriter();
+        var tableModel = new TableModel()
+                .add("Article", 2f)
+                .add("Custom")
+                .add("Price", Align.RIGHT);
+        Table table = new FixedColumnsTable(tableModel)
+                .with(Margin.of(10))
+                .with(border(1, GRAY_500));
+        table.addHeader(TableRow.header(tableModel, helvetica_bold(8)).with(background(GRAY_100)));
+        table.addRow(Arrays.asList("String field", 123456, 14.7f));
+        table.addRow(Arrays.asList("Other field", null, 9999.99f));
+        writer.render(table);
+
+        var document = writer.finish();
+        assertDocumentMatchesReference(document, "tableAutomaticCells.pdf");
     }
 
     void assertDocumentMatchesReference(PDDocument document, String fileName) {

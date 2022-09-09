@@ -20,6 +20,7 @@ import java.util.stream.Stream;
  */
 public class TableRow implements PdfElement {
 
+    private final List<Object> content = new ArrayList<>();
     private final List<TableCell> cells = new ArrayList<>();
     private final List<Decorator> decorators = new ArrayList<>();
     private final TableModel model;
