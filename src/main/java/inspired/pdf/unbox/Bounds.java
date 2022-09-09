@@ -69,5 +69,19 @@ public record Bounds(float left, float top, float width, float height) {
         return new Bounds(left, top, width, height);
     }
 
+    public float top() {
+        return top;
+    }
 
+    public float left() {
+        return left;
+    }
+
+    public float height() {
+        return height;
+    }
+
+    public float width() {
+        return width;
+    }
 }
