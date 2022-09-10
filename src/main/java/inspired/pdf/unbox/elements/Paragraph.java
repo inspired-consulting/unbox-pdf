@@ -3,8 +3,6 @@ package inspired.pdf.unbox.elements;
 import inspired.pdf.unbox.*;
 import inspired.pdf.unbox.internal.SimpleFont;
 import inspired.pdf.unbox.internal.TextWriter;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 
 public class Paragraph implements PdfElement {
 
@@ -21,7 +19,7 @@ public class Paragraph implements PdfElement {
     private Margin margin = Margin.none();
 
     public Paragraph(String text) {
-        this(text, new SimpleFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 8));
+        this(text, SimpleFont.helvetica(8));
     }
 
     public Paragraph(String text, Font font) {
