@@ -3,7 +3,6 @@ package inspired.pdf.unbox.internal;
 import inspired.pdf.unbox.Font;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 
 import java.awt.*;
 
@@ -17,15 +16,16 @@ public class SimpleFont implements Font {
     private final Color color;
 
     public static SimpleFont helvetica(float size) {
-        return new SimpleFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), size);
+
+        return new SimpleFont(PDType1Font.HELVETICA, size);
     }
 
     public static Font helvetica_bold(float size) {
-        return new SimpleFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), size);
+        return new SimpleFont(PDType1Font.HELVETICA_BOLD, size);
     }
 
     public static Font helvetica_bold(float size, Color color) {
-        return new SimpleFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), size, color);
+        return new SimpleFont(PDType1Font.HELVETICA_BOLD, size, color);
     }
 
     public SimpleFont(PDFont font, float size) {
@@ -37,8 +37,6 @@ public class SimpleFont implements Font {
         this.size = size;
         this.color = color;
     }
-
-
 
     @Override
     public PDFont getFont() {

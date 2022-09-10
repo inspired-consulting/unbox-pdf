@@ -11,7 +11,7 @@
     <properties>
         <maven.compiler.source>18</maven.compiler.source>
         <maven.compiler.target>18</maven.compiler.target>
-        <pdfbox.version>3.0.0-alpha3</pdfbox.version>
+        <pdfbox.version>2.0.26</pdfbox.version>
     </properties>
 
     <dependencies>
