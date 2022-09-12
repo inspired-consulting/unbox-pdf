@@ -1,5 +1,7 @@
 package inspired.pdf.unbox.elements;
 
+import java.io.IOException;
+
 import inspired.pdf.unbox.Align;
 import inspired.pdf.unbox.Bounds;
 import inspired.pdf.unbox.Font;
@@ -10,8 +12,6 @@ import inspired.pdf.unbox.internal.SimpleFont;
 import inspired.pdf.unbox.internal.TextTokenizer;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
-import java.io.IOException;
-
 /**
  * Cell containing text.
  */
@@ -21,7 +21,7 @@ public class TextCell extends AbstractTableCell {
 
     private final Font font;
 
-    private final String text;
+    private String text;
 
     public TextCell(String text) {
         this(text, null);
@@ -69,8 +69,16 @@ public class TextCell extends AbstractTableCell {
         return lines.length * lineHeight + LINE_PADDING;
     }
 
+    @Override
+    public void setValue(Object value) {
+        if(value == null) {
+            value = "";
+        }
+        this.text = value.toString();
+    }
+
     private String[] chunk(float maxWidth) {
-        return new TextTokenizer(font).chunk(text, maxWidth);
+        return new TextTokenizer(font).chunkMultiLine(text, maxWidth);
     }
 
     private float startX(Bounds bounds, Align align, String text)  {

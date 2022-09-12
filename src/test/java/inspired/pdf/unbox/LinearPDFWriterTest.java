@@ -12,16 +12,16 @@ import inspired.pdf.unbox.elements.TableRow;
 import inspired.pdf.unbox.elements.TextCell;
 import inspired.pdf.unbox.elements.internal.AbstractTableCell;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.io.TempDir;
 
 import static inspired.pdf.unbox.Unbox.background;
 import static inspired.pdf.unbox.decorators.BorderDecorator.border;
 import static inspired.pdf.unbox.internal.SimpleFont.helvetica_bold;
 import static inspired.pdf.unbox.themes.UnboxTheme.*;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
 class CustomTableCell extends AbstractTableCell {
@@ -63,6 +63,11 @@ class CustomTableCell extends AbstractTableCell {
     @Override
     public float innerHeight(Bounds viewPort) {
         return 100;
+    }
+
+    @Override
+    public void setValue(Object value) {
+
     }
 }
 
@@ -121,6 +126,64 @@ class LinearPDFWriterTest {
         assertDocumentMatchesReference(document, "customTable.pdf");
     }
 
+
+    @Test
+    void tableWithAutomaticTableCells() {
+        var writer = new LinearPDFWriter();
+        var tableModel = new TableModel()
+                .add("Article", 2f)
+                .add("Custom")
+                .add("Price", Align.RIGHT);
+        Table table = new FixedColumnsTable(tableModel)
+                .with(Margin.of(10))
+                .with(border(1, GRAY_500));
+        table.addHeader(TableRow.header(tableModel, helvetica_bold(8)).with(background(GRAY_100)));
+        table.addRow("String field", 123456, 14.7f);
+        table.addRow("Other field", null, 9999.99f);
+        writer.render(table);
+
+        var document = writer.finish();
+        assertDocumentMatchesReference(document, "tableAutomaticCells.pdf");
+    }
+
+    @Test
+    void tableWithTableCellsDefinedInModel() {
+        var writer = new LinearPDFWriter();
+        var tableModel = new TableModel()
+                .add("Article", 2f, new TextCell("", Align.CENTER, null))
+                .add("Custom")
+                .add("Price", new TextCell("", Align.LEFT, null));
+        Table table = new FixedColumnsTable(tableModel)
+                .with(Margin.of(10))
+                .with(border(1, GRAY_500));
+        table.addHeader(TableRow.header(tableModel, helvetica_bold(8)).with(background(GRAY_100)));
+        table.addRow("String field", 123456, 14.7f);
+        table.addRow("Other field", null, 9999.99f);
+        writer.render(table);
+
+        var document = writer.finish();
+        assertDocumentMatchesReference(document, "tableTableModelCells.pdf");
+    }
+
+    @Test
+    void tableWithMultiLineCells() {
+        var writer = new LinearPDFWriter();
+        var tableModel = new TableModel()
+                .add("Article", 2f, new TextCell("", Align.LEFT, null))
+                .add("Custom", new TextCell("", Align.CENTER, null))
+                .add("Price", new TextCell("", Align.RIGHT, null));
+        Table table = new FixedColumnsTable(tableModel)
+                .with(Margin.of(10))
+                .with(border(1, GRAY_500));
+        table.addHeader(TableRow.header(tableModel, helvetica_bold(8)).with(background(GRAY_100)));
+        table.addRow("These\nare\nfour\nlines.", "With\n\n\n\nmany\nmore", 14.7f);
+        table.addRow("And\nhere\nthree.", null, 9999.99f);
+        writer.render(table);
+
+        var document = writer.finish();
+        assertDocumentMatchesReference(document, "tableMultiLineCells.pdf");
+    }
+
     void assertDocumentMatchesReference(PDDocument document, String fileName) {
         try {
             var documentFilePath = folder.resolve(fileName);
@@ -132,7 +195,7 @@ class LinearPDFWriterTest {
             document.save(documentFilePath.toString());
             document.close();
 
-            Files.copy(documentFilePath, referenceFilePath, REPLACE_EXISTING);
+//            Files.copy(documentFilePath, referenceFilePath, REPLACE_EXISTING);
             long mismatchPosition = Files.mismatch(documentFilePath, referenceFilePath);
             assertEquals(-1L, mismatchPosition, "PDF document doesn't match reference.");
         } catch (IOException e) {

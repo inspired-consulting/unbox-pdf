@@ -8,6 +8,8 @@ public interface Table extends PdfElement {
 
     TableRow addRow(TableRow row);
 
+    TableRow addRow(Object... values);
+
     TableRow addHeader(TableRow row);
 
     @Override

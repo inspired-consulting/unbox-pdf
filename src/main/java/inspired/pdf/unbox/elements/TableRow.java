@@ -1,5 +1,11 @@
 package inspired.pdf.unbox.elements;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
+
 import inspired.pdf.unbox.Align;
 import inspired.pdf.unbox.Bounds;
 import inspired.pdf.unbox.Font;
@@ -10,16 +16,12 @@ import inspired.pdf.unbox.base.TableModel.TableColumn;
 import inspired.pdf.unbox.decorators.Decorator;
 import inspired.pdf.unbox.internal.SimpleFont;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
-
 /**
  * Represents a row in a table consisting of cells.
  */
 public class TableRow implements PdfElement {
 
+    private final List<Object> values = new ArrayList<>();
     private final List<TableCell> cells = new ArrayList<>();
     private final List<Decorator> decorators = new ArrayList<>();
     private final TableModel model;
@@ -55,15 +57,11 @@ public class TableRow implements PdfElement {
     }
 
     public int size() {
-        return cells.size();
+        return Math.max(cells.size(), values.size());
     }
 
     public ColumnModel<?> columnModel() {
         return model;
-    }
-
-    public TableCell getCell(int i) {
-        return cells.get(i);
     }
 
     public TableRow addCell(String text) {
@@ -102,6 +100,12 @@ public class TableRow implements PdfElement {
         return this;
     }
 
+    public TableRow withValues(Object... values) {
+        this.values.clear();
+        this.values.addAll(Arrays.asList(values));
+        return this;
+    }
+
     @Override
     public TableRow with(Decorator decorator) {
         this.decorators.add(decorator);
@@ -117,7 +121,7 @@ public class TableRow implements PdfElement {
         ColumnModel<?> columns = this.model.scaleToSize(bounds.width());
         float maxHeight = 0f;
         for (int i = 0; i < size(); i++) {
-            TableCell cell = getCell(i);
+            TableCell cell = prepareCell(i);
             float width = columns.width(i);
             Bounds cellBounds = bounds.left(x).width(width);
             float height = cell.render(writer, cellBounds);
@@ -127,12 +131,39 @@ public class TableRow implements PdfElement {
         return maxHeight;
     }
 
+    private TableCell prepareCell(int i) {
+        if(i >= 0 && i < cells.size() && cells.get(i) != null) {
+            // The row contains a cell for this index, use it directly
+            return cells.get(i);
+        }
+
+        // If the row doesn't contain a cell, get it from the model
+        // by its column
+        TableCell cell = this.model.get(i).cell();
+
+        Object value = getValue(i);
+        // otherwise fall back to a default cell
+        if(cell == null) {
+            cell = this.model.getDefaultCellFor(value);
+        }
+
+        cell.setValue(value);
+        return cell;
+    }
+
+    private Object getValue(int index) {
+        if(index >= 0 && index < this.values.size()) {
+            return this.values.get(index);
+        }
+        return null;
+    }
+
     @Override
     public float innerHeight(Bounds viewPort) {
         ColumnModel<?> columns = this.model.scaleToSize(viewPort.width());
         float max = 0f;
-        for (int i = 0; i < cells.size(); i++) {
-            TableCell cell = cells.get(i);
+        for (int i = 0; i < size(); i++) {
+            TableCell cell = prepareCell(i);
             float width = columns.width(i);
             max = Math.max(max, cell.innerHeight(viewPort.width(width)));
         }
