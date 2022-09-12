@@ -1,4 +1,4 @@
-package inspired.pdf.unbox.elements;
+package inspired.pdf.unbox.base;
 
 import inspired.pdf.unbox.Bounds;
 import inspired.pdf.unbox.LinearPDFWriter;
@@ -8,7 +8,7 @@ import inspired.pdf.unbox.elements.internal.AbstractTableCell;
 /**
  * Empty Cell
  */
-public class EmptyCell extends AbstractTableCell {
+class EmptyCell extends AbstractTableCell {
 
     @Override
     public float render(LinearPDFWriter writer, Bounds bounds) {

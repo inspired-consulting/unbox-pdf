@@ -132,7 +132,6 @@ public class TableRow implements PdfElement {
     }
 
     private TableCell prepareCell(int i) {
-        TableCell cell = null;
         if(i >= 0 && i < cells.size() && cells.get(i) != null) {
             // The row contains a cell for this index, use it directly
             return cells.get(i);
@@ -140,9 +139,7 @@ public class TableRow implements PdfElement {
 
         // If the row doesn't contain a cell, get it from the model
         // by its column
-        if(cell == null) {
-            cell = this.model.get(i).cell();
-        }
+        TableCell cell = this.model.get(i).cell();
 
         Object value = getValue(i);
         // otherwise fall back to a default cell

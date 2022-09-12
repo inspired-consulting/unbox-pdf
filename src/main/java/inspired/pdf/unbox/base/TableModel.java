@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import inspired.pdf.unbox.Align;
 import inspired.pdf.unbox.Bounds;
 import inspired.pdf.unbox.Font;
-import inspired.pdf.unbox.elements.EmptyCell;
 import inspired.pdf.unbox.elements.TableCell;
 import inspired.pdf.unbox.elements.TextCell;
 
@@ -24,7 +23,8 @@ public class TableModel implements ColumnModel<TableModel.TableColumn> {
 
     private final List<TableColumn> columns = new ArrayList<>();
     private final Map<Class, TableCell> defaultCells = new LinkedHashMap<>();
-    private final TableCell emptyCell = new EmptyCell();
+
+    private static final TableCell emptyCell = new EmptyCell();
 
     public TableModel() {
         this.defaultCells.put(Number.class, new TextCell("", Align.RIGHT, null));
