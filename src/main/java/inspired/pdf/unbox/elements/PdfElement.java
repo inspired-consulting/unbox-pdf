@@ -5,6 +5,9 @@ import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.Margin;
 import inspired.pdf.unbox.decorators.Decorator;
 
+/**
+ * Basic element for Unbox PDF documents.
+ */
 public interface PdfElement {
 
     float DONT_FORWARD = 0f;
@@ -18,12 +21,25 @@ public interface PdfElement {
     float render(Document document, Bounds viewPort);
 
     /**
-     * Calculate the inner height of the element regarding the given view port, i.e. without margin.
+     * Calculate the inner height of the element regarding the given view port, i.e. height without margin.
      * @param viewPort The view port.
      * @return The height.
      */
     float innerHeight(Bounds viewPort);
 
+    /**
+     * Calculate the outer height of the element regarding the given view port, i.e. height with margin.
+     * @param viewPort The view port.
+     * @return The height.
+     */
+    default float outerHeight(Bounds viewPort) {
+        return innerHeight(viewPort) + margin().vertical();
+    }
+
+    /**
+     * Get the element's margin.
+     * @return The margin.
+     */
     default Margin margin() {
         return Margin.none();
     }

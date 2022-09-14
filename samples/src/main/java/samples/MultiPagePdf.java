@@ -15,7 +15,7 @@ import static inspired.pdf.unbox.themes.UnboxTheme.GRAY_200;
 public class MultiPagePdf {
 
     public static void main(String[] args) throws IOException {
-        LinearPDFWriter document = new LinearPDFWriter(Orientation.LANDSCAPE, Margin.of(40), Padding.of(30,0));
+        Document document = new Document(Orientation.LANDSCAPE, Margin.of(40), Padding.of(30,0));
 
         document.add(new DocumentHeader(
                 paragraph("This header is rendered on each page", helvetica_bold(12))

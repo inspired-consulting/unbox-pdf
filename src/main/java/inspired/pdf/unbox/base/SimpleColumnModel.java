@@ -23,6 +23,14 @@ public class SimpleColumnModel implements ColumnModel<Column> {
         this.columns.addAll(columns);
     }
 
+    public static SimpleColumnModel uniform(int numColumns) {
+        SimpleColumnModel model = new SimpleColumnModel();
+        for (int i = 0; i < numColumns; i++) {
+            model.add(1f);
+        }
+        return model;
+    }
+
     public static SimpleColumnModel of(Integer[] sizes) {
         return new SimpleColumnModel(Stream.of(sizes)
                 .map(Column::new)

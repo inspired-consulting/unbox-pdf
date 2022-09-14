@@ -1,9 +1,8 @@
 package inspired.pdf.unbox;
 
 import inspired.pdf.unbox.decorators.BackgroundDecorator;
-import inspired.pdf.unbox.elements.Column;
+import inspired.pdf.unbox.elements.Container;
 import inspired.pdf.unbox.elements.Paragraph;
-import inspired.pdf.unbox.elements.Row;
 
 import java.awt.*;
 
@@ -32,12 +31,12 @@ public class Unbox {
         return new BackgroundDecorator(color);
     }
 
-    public static Row row() {
-        return new Row();
+    public static Container row() {
+        return Container.withColumnLayout();
     }
 
-    public static Column column() {
-        return new Column();
+    public static Container column() {
+        return Container.withRowLayout();
     }
 
 }

@@ -13,7 +13,7 @@ public class Paragraph implements PdfElement {
 
     private Align align = Align.LEFT;
     private VAlign vAlign = VAlign.TOP;
-    private float height = HEIGHT_UNDEFINED;
+    private float innerHeight = HEIGHT_UNDEFINED;
 
     private Padding padding = Padding.of(4);
     private Margin margin = Margin.none();
@@ -53,8 +53,8 @@ public class Paragraph implements PdfElement {
         return this;
     }
 
-    public Paragraph withHeight(float height) {
-        this.height = height;
+    public Paragraph withInnerHeight(float height) {
+        this.innerHeight = height;
         return this;
     }
 
@@ -63,12 +63,12 @@ public class Paragraph implements PdfElement {
         Bounds bounds = effectiveBounds(viewPort);
         float actualHeight = textWriter.write(document.getContentStream(), bounds, text, align, vAlign);
 
-        if (height > HEIGHT_UNDEFINED) {
-            return height;
+        if (innerHeight > HEIGHT_UNDEFINED) {
+            return innerHeight + margin.vertical();
         } else if (VAlign.TOP == vAlign) {
-            return actualHeight + padding.vertical();
+            return actualHeight + padding.vertical() + margin.vertical();
         } else {
-            return viewPort.height();
+            return viewPort.height() + margin.vertical();
         }
     }
 
@@ -79,8 +79,8 @@ public class Paragraph implements PdfElement {
 
     @Override
     public float innerHeight(Bounds viewPort) {
-        if (height > HEIGHT_UNDEFINED) {
-            return height;
+        if (innerHeight > HEIGHT_UNDEFINED) {
+            return innerHeight;
         } else if (VAlign.TOP == vAlign) {
             return textWriter.calculateHeight(text, viewPort) + padding.vertical();
         } else {
@@ -89,8 +89,8 @@ public class Paragraph implements PdfElement {
     }
 
     private Bounds effectiveBounds(Bounds viewPort) {
-        if (height > HEIGHT_UNDEFINED) {
-            return viewPort.apply(margin).height(height).apply(padding);
+        if (innerHeight > HEIGHT_UNDEFINED) {
+            return viewPort.apply(margin).height(innerHeight).apply(padding);
         } else {
             return viewPort.apply(margin).apply(padding);
         }

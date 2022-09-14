@@ -3,22 +3,21 @@ package samples;
 import inspired.pdf.unbox.*;
 import inspired.pdf.unbox.base.TableModel;
 import inspired.pdf.unbox.elements.*;
-import inspired.pdf.unbox.elements.Canvas;
 import inspired.pdf.unbox.themes.UnboxTheme;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
 import java.io.IOException;
 
-import static inspired.pdf.unbox.decorators.BorderDecorator.border;
 import static inspired.pdf.unbox.Unbox.*;
+import static inspired.pdf.unbox.decorators.BorderDecorator.border;
 import static inspired.pdf.unbox.internal.SimpleFont.helvetica_bold;
 import static inspired.pdf.unbox.themes.UnboxTheme.*;
 
 public class SimplePdf {
 
     public static void main(String[] args) throws IOException {
-        LinearPDFWriter document = new LinearPDFWriter();
+        Document document = new Document();
 
         // add a paragraph
         document.render(paragraph("Hello, World!", helvetica_bold(12)));
@@ -33,9 +32,20 @@ public class SimplePdf {
                 .with(background(GRAY_100))
         );
 
+        // add a column with several paragraphs
+
+        document.render(column()
+                        .with(Margin.of(10,0))
+                        .with(Padding.of(10))
+                        .add(paragraph("Row 1").with(background(NEON_GREEN)))
+                        .add(paragraph("Row 2").with(background(GRAY_200)))
+                        .add(paragraph("Row 3").with(background(RED_ORANGE.brighter())))
+                        .with(background(GRAY_100))
+        );
+
         // Add paragraph with background
         document.render(paragraph("Hello, Again!")
-                .withHeight(100)
+                .withInnerHeight(100)
                 .align(Align.RIGHT, VAlign.BOTTOM)
                 .with(Margin.left(100))
                 .with(Padding.of(15))
