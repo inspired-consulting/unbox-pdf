@@ -6,7 +6,7 @@
 
     <groupId>consulting.inspired</groupId>
     <artifactId>unbox-pdf-samples</artifactId>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>0.3.2-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -17,7 +17,7 @@
         <dependency>
             <groupId>consulting.inspired</groupId>
             <artifactId>unbox-pdf</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>${version}</version>
         </dependency>
     </dependencies>
 

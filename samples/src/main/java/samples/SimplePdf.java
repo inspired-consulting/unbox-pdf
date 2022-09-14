@@ -64,7 +64,8 @@ public class SimplePdf {
         table.addRow()
                 .addCell("SmartTV 200+")
                 .addCell("55", Align.LEFT, helvetica_bold(8, RED_ORANGE))
-                .addCell("200.12 EUR");
+                .addCell("200.12 EUR")
+                .addCell(new ContainerCell(Container.Layout.ROWS).add(paragraph("Hello")).add(paragraph("World")));
         table.addRow().withCells("SmartPhone", "5,5", "320.00 EUR");
         document.render(table);
 

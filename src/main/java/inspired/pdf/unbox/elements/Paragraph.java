@@ -15,7 +15,7 @@ public class Paragraph implements PdfElement {
     private VAlign vAlign = VAlign.TOP;
     private float innerHeight = HEIGHT_UNDEFINED;
 
-    private Padding padding = Padding.of(4);
+    private Padding padding = Padding.of(2);
     private Margin margin = Margin.none();
 
     public Paragraph(String text) {

@@ -14,16 +14,16 @@ import inspired.pdf.unbox.base.ColumnModel;
 import inspired.pdf.unbox.base.TableModel;
 import inspired.pdf.unbox.base.TableModel.TableColumn;
 import inspired.pdf.unbox.decorators.Decorator;
+import inspired.pdf.unbox.elements.internal.AbstractDecoratable;
 import inspired.pdf.unbox.internal.SimpleFont;
 
 /**
  * Represents a row in a table consisting of cells.
  */
-public class TableRow implements PdfElement {
+public class TableRow extends AbstractDecoratable implements PdfElement {
 
     private final List<Object> values = new ArrayList<>();
     private final List<TableCell> cells = new ArrayList<>();
-    private final List<Decorator> decorators = new ArrayList<>();
     private final TableModel model;
     private final Font font;
 
@@ -108,15 +108,13 @@ public class TableRow implements PdfElement {
 
     @Override
     public TableRow with(Decorator decorator) {
-        this.decorators.add(decorator);
+        super.with(decorator);
         return this;
     }
 
     @Override
     public float render(Document document, Bounds bounds) {
-        for (Decorator decorator : decorators) {
-            decorator.render(document, bounds);
-        }
+        applyDecorators(document, bounds);
         float x = bounds.left();
         ColumnModel<?> columns = this.model.scaleToSize(bounds.width());
         float maxHeight = 0f;

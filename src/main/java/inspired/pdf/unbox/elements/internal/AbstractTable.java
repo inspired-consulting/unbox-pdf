@@ -20,13 +20,12 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 /**
  * Abstract base for tables.
  */
-public abstract class AbstractTable implements Table {
+public abstract class AbstractTable extends AbstractDecoratable implements Table {
 
     private final static float GRID_STROKE = 0.4f;
 
     private final List<TableRow> headers = new ArrayList<>();
     private final List<TableRow> rows = new ArrayList<>();
-    private final List<Decorator> decorators = new ArrayList<>();
     private Margin margin = Margin.of(0);
     private boolean repeatHeader = true;
     private float tableStartOnPage;
@@ -57,7 +56,7 @@ public abstract class AbstractTable implements Table {
 
     @Override
     public Table with(Decorator decorator) {
-        this.decorators.add(decorator);
+        super.with(decorator);
         return this;
     }
 
@@ -201,9 +200,7 @@ public abstract class AbstractTable implements Table {
     private void applyDecorators(Document document) throws IOException {
         float height = tableStartOnPage - document.getPosition();
         Bounds bounds = document.getViewPort().top(tableStartOnPage).height(height);
-        for (Decorator decorator : decorators) {
-            decorator.render(document, bounds);
-        }
+        super.applyDecorators(document, bounds);
     }
 
 }

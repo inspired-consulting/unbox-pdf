@@ -3,12 +3,13 @@ package inspired.pdf.unbox.elements;
 import inspired.pdf.unbox.Bounds;
 import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.Margin;
+import inspired.pdf.unbox.decorators.Decoratable;
 import inspired.pdf.unbox.decorators.Decorator;
 
 /**
  * Basic element for Unbox PDF documents.
  */
-public interface PdfElement {
+public interface PdfElement extends Decoratable {
 
     float DONT_FORWARD = 0f;
 
@@ -49,6 +50,7 @@ public interface PdfElement {
      * @param decorator The decorator.
      * @return The element to continue with, either the wrapped element or the decorator.
      */
+    @Override
     default PdfElement with(Decorator decorator) {
         return decorator.wrap(this);
     }
