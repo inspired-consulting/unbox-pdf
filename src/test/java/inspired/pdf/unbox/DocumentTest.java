@@ -1,10 +1,5 @@
 package inspired.pdf.unbox;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import inspired.pdf.unbox.base.TableModel;
 import inspired.pdf.unbox.elements.FixedColumnsTable;
 import inspired.pdf.unbox.elements.Table;
@@ -14,6 +9,11 @@ import inspired.pdf.unbox.elements.internal.AbstractTableCell;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static inspired.pdf.unbox.Unbox.background;
 import static inspired.pdf.unbox.decorators.BorderDecorator.border;

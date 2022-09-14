@@ -1,11 +1,15 @@
 package inspired.pdf.unbox;
 
 import inspired.pdf.unbox.decorators.BackgroundDecorator;
+import inspired.pdf.unbox.elements.Column;
 import inspired.pdf.unbox.elements.Paragraph;
 import inspired.pdf.unbox.elements.Row;
 
 import java.awt.*;
 
+/**
+ * Entry point for Unbox toolbox providing helpers to create PDF elements.
+ */
 public class Unbox {
 
     public static Paragraph paragraph(String text) {
@@ -30,6 +34,10 @@ public class Unbox {
 
     public static Row row() {
         return new Row();
+    }
+
+    public static Column column() {
+        return new Column();
     }
 
 }

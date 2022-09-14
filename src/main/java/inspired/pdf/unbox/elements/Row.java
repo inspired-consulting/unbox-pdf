@@ -13,13 +13,15 @@ import java.util.List;
 
 import static java.lang.Math.max;
 
-public class Row extends AbstractPdfElement {
+/**
+ * Container for elements with a horizontal layout, i.e. the elements are rendered one besides the other.
+ */
+public class Row extends Container {
 
-    private final List<PdfElement> elements = new ArrayList<>();
     private final SimpleColumnModel columnModel = new SimpleColumnModel();
 
     public Row add(PdfElement element) {
-        elements.add(element);
+        super.add(element);
         columnModel.add(1f);
         return this;
     }
