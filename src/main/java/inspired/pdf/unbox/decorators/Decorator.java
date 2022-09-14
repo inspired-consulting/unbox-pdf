@@ -1,7 +1,7 @@
 package inspired.pdf.unbox.decorators;
 
 import inspired.pdf.unbox.Bounds;
-import inspired.pdf.unbox.LinearPDFWriter;
+import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.Margin;
 import inspired.pdf.unbox.elements.PdfElement;
 
@@ -18,16 +18,16 @@ public abstract class Decorator implements PdfElement {
         return this;
     }
 
-    public abstract float decorate(LinearPDFWriter writer, Bounds viewPort);
+    public abstract float decorate(Document document, Bounds viewPort);
 
     @Override
-    public final float render(LinearPDFWriter writer, Bounds viewPort) {
+    public final float render(Document document, Bounds viewPort) {
         if (wrappedElement != null) {
             float height = wrappedElement.innerHeight(viewPort);
-            decorate(writer, viewPort.apply(wrappedElement.margin()).height(height));
-            return wrappedElement.render(writer, viewPort);
+            decorate(document, viewPort.apply(wrappedElement.margin()).height(height));
+            return wrappedElement.render(document, viewPort);
         } else {
-            return decorate(writer, viewPort);
+            return decorate(document, viewPort);
         }
     }
 

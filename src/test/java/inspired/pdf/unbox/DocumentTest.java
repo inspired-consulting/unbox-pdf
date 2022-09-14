@@ -19,7 +19,6 @@ import static inspired.pdf.unbox.Unbox.background;
 import static inspired.pdf.unbox.decorators.BorderDecorator.border;
 import static inspired.pdf.unbox.internal.SimpleFont.helvetica_bold;
 import static inspired.pdf.unbox.themes.UnboxTheme.*;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -27,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 class CustomTableCell extends AbstractTableCell {
 
     @Override
-    public float render(LinearPDFWriter writer, Bounds viewPort) {
+    public float render(Document document, Bounds viewPort) {
         var topLeftCell = new TextCell("top-left", Align.LEFT, null);
         var topCenterCell = new TextCell("top-center", Align.CENTER, null);
         var topRightCell = new TextCell("top-right", Align.RIGHT, null);
@@ -40,22 +39,22 @@ class CustomTableCell extends AbstractTableCell {
 
         var topHeight = topLeftCell.innerHeight(viewPort);
         var topViewPort = viewPort.height(topHeight);
-        topLeftCell.render(writer, topViewPort);
-        topCenterCell.render(writer, topViewPort);
-        topRightCell.render(writer, topViewPort);
+        topLeftCell.render(document, topViewPort);
+        topCenterCell.render(document, topViewPort);
+        topRightCell.render(document, topViewPort);
 
 
         var middleHeight = middleLeftCell.innerHeight(viewPort);
         var middleViewPort = viewPort.height(middleHeight).moveDown((viewPort.height() - middleHeight) / 2);
-        middleLeftCell.render(writer, middleViewPort);
-        middleCenterCell.render(writer, middleViewPort);
-        middleRightCell.render(writer, middleViewPort);
+        middleLeftCell.render(document, middleViewPort);
+        middleCenterCell.render(document, middleViewPort);
+        middleRightCell.render(document, middleViewPort);
 
         var bottomHeight = bottomLeftCell.innerHeight(viewPort);
         var bottomViewPort = viewPort.height(bottomHeight).moveDown(viewPort.height() - bottomHeight);
-        bottomLeftCell.render(writer, bottomViewPort);
-        bottomCenterCell.render(writer, bottomViewPort);
-        bottomRightCell.render(writer, bottomViewPort);
+        bottomLeftCell.render(document, bottomViewPort);
+        bottomCenterCell.render(document, bottomViewPort);
+        bottomRightCell.render(document, bottomViewPort);
 
         return viewPort.height();
     }
@@ -72,20 +71,20 @@ class CustomTableCell extends AbstractTableCell {
 }
 
 
-class LinearPDFWriterTest {
+class DocumentTest {
     @TempDir
     Path folder;
 
     @Test
     void createEmptyPdf() {
-        var writer = new LinearPDFWriter();
-        var document = writer.finish();
-        assertDocumentMatchesReference(document, "empty.pdf");
+        var document = new Document();
+        var pdf = document.finish();
+        assertDocumentMatchesReference(pdf, "empty.pdf");
     }
 
     @Test
     void createTable() {
-        var writer = new LinearPDFWriter();
+        var document = new Document();
         var tableModel = new TableModel()
                 .add("Article", 2f)
                 .add("Size")
@@ -99,15 +98,15 @@ class LinearPDFWriterTest {
                 .addCell("55", Align.LEFT, helvetica_bold(8, RED_ORANGE))
                 .addCell("200.12 EUR");
         table.addRow().withCells("SmartPhone", "5,5", "320.00 EUR");
-        writer.render(table);
+        document.render(table);
 
-        var document = writer.finish();
-        assertDocumentMatchesReference(document, "table.pdf");
+        var pdf = document.finish();
+        assertDocumentMatchesReference(pdf, "table.pdf");
     }
 
     @Test
     void useCustomTableCell() {
-        var writer = new LinearPDFWriter();
+        var document = new Document();
         var tableModel = new TableModel()
                 .add("Article", 2f)
                 .add("Custom")
@@ -120,16 +119,16 @@ class LinearPDFWriterTest {
                 .addCell("SmartTV 200+")
                 .addCell(new CustomTableCell())
                 .addCell("200.12 EUR");
-        writer.render(table);
+        document.render(table);
 
-        var document = writer.finish();
-        assertDocumentMatchesReference(document, "customTable.pdf");
+        var pdf = document.finish();
+        assertDocumentMatchesReference(pdf, "customTable.pdf");
     }
 
 
     @Test
     void tableWithAutomaticTableCells() {
-        var writer = new LinearPDFWriter();
+        var document = new Document();
         var tableModel = new TableModel()
                 .add("Article", 2f)
                 .add("Custom")
@@ -140,15 +139,15 @@ class LinearPDFWriterTest {
         table.addHeader(TableRow.header(tableModel, helvetica_bold(8)).with(background(GRAY_100)));
         table.addRow("String field", 123456, 14.7f);
         table.addRow("Other field", null, 9999.99f);
-        writer.render(table);
+        document.render(table);
 
-        var document = writer.finish();
-        assertDocumentMatchesReference(document, "tableAutomaticCells.pdf");
+        var pdf = document.finish();
+        assertDocumentMatchesReference(pdf, "tableAutomaticCells.pdf");
     }
 
     @Test
     void tableWithTableCellsDefinedInModel() {
-        var writer = new LinearPDFWriter();
+        var document = new Document();
         var tableModel = new TableModel()
                 .add("Article", 2f, new TextCell("", Align.CENTER, null))
                 .add("Custom")
@@ -159,15 +158,15 @@ class LinearPDFWriterTest {
         table.addHeader(TableRow.header(tableModel, helvetica_bold(8)).with(background(GRAY_100)));
         table.addRow("String field", 123456, 14.7f);
         table.addRow("Other field", null, 9999.99f);
-        writer.render(table);
+        document.render(table);
 
-        var document = writer.finish();
-        assertDocumentMatchesReference(document, "tableTableModelCells.pdf");
+        var pdf = document.finish();
+        assertDocumentMatchesReference(pdf, "tableTableModelCells.pdf");
     }
 
     @Test
     void tableWithMultiLineCells() {
-        var writer = new LinearPDFWriter();
+        var document = new Document();
         var tableModel = new TableModel()
                 .add("Article", 2f, new TextCell("", Align.LEFT, null))
                 .add("Custom", new TextCell("", Align.CENTER, null))
@@ -178,22 +177,22 @@ class LinearPDFWriterTest {
         table.addHeader(TableRow.header(tableModel, helvetica_bold(8)).with(background(GRAY_100)));
         table.addRow("These\nare\nfour\nlines.", "With\n\n\n\nmany\nmore", 14.7f);
         table.addRow("And\nhere\nthree.", null, 9999.99f);
-        writer.render(table);
+        document.render(table);
 
-        var document = writer.finish();
-        assertDocumentMatchesReference(document, "tableMultiLineCells.pdf");
+        var pdf = document.finish();
+        assertDocumentMatchesReference(pdf, "tableMultiLineCells.pdf");
     }
 
-    void assertDocumentMatchesReference(PDDocument document, String fileName) {
+    void assertDocumentMatchesReference(PDDocument pdf, String fileName) {
         try {
             var documentFilePath = folder.resolve(fileName);
 
             var resourceDirectory = Paths.get("src", "test", "resources");
             var referenceFilePath = resourceDirectory.resolve(fileName);
 
-            document.setDocumentId(1L);
-            document.save(documentFilePath.toString());
-            document.close();
+            pdf.setDocumentId(1L);
+            pdf.save(documentFilePath.toString());
+            pdf.close();
 
 //            Files.copy(documentFilePath, referenceFilePath, REPLACE_EXISTING);
             long mismatchPosition = Files.mismatch(documentFilePath, referenceFilePath);

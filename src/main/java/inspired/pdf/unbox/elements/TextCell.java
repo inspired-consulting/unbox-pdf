@@ -5,7 +5,7 @@ import java.io.IOException;
 import inspired.pdf.unbox.Align;
 import inspired.pdf.unbox.Bounds;
 import inspired.pdf.unbox.Font;
-import inspired.pdf.unbox.LinearPDFWriter;
+import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.elements.internal.AbstractTableCell;
 import inspired.pdf.unbox.internal.PdfUnboxException;
 import inspired.pdf.unbox.internal.SimpleFont;
@@ -38,10 +38,10 @@ public class TextCell extends AbstractTableCell {
     }
 
     @Override
-    public float render(LinearPDFWriter writer, Bounds bounds) {
+    public float render(Document document, Bounds bounds) {
         try {
             float lineHeight = font.lineHeight();
-            PDPageContentStream contentStream = writer.getContentStream();
+            PDPageContentStream contentStream = document.getContentStream();
             String[] lines = new String[0];
             lines = chunk( bounds.width() - padding.horizontal());
             float y =  bounds.top() - lineHeight - padding.top();

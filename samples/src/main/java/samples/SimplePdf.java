@@ -18,13 +18,13 @@ import static inspired.pdf.unbox.themes.UnboxTheme.*;
 public class SimplePdf {
 
     public static void main(String[] args) throws IOException {
-        LinearPDFWriter writer = new LinearPDFWriter();
+        LinearPDFWriter document = new LinearPDFWriter();
 
         // add a paragraph
-        writer.render(paragraph("Hello, World!", helvetica_bold(12)));
+        document.render(paragraph("Hello, World!", helvetica_bold(12)));
 
         // add a row with several paragraphs
-        writer.render(row()
+        document.render(row()
                 .with(Margin.of(10,0))
                 .with(Padding.of(10))
                 .add(paragraph("Col 1").with(background(NEON_GREEN)))
@@ -34,7 +34,7 @@ public class SimplePdf {
         );
 
         // Add paragraph with background
-        writer.render(paragraph("Hello, Again!")
+        document.render(paragraph("Hello, Again!")
                 .withHeight(100)
                 .align(Align.RIGHT, VAlign.BOTTOM)
                 .with(Margin.left(100))
@@ -56,24 +56,24 @@ public class SimplePdf {
                 .addCell("55", Align.LEFT, helvetica_bold(8, RED_ORANGE))
                 .addCell("200.12 EUR");
         table.addRow().withCells("SmartPhone", "5,5", "320.00 EUR");
-        writer.render(table);
+        document.render(table);
 
         // render some graphics on a canvas
-        writer.render(new Canvas(100) {
+        document.render(new Canvas(100) {
             @Override
             public void paint(PDPageContentStream contentStream, Bounds viewPort) throws IOException {
                 drawCircle(contentStream, viewPort.left() + 100, viewPort.top() -50, 50, NEON_GREEN);
             }
         }.with(Margin.bottom(10)));
 
-        writer.render(paragraph("Done!", helvetica_bold(12), Align.CENTER)
+        document.render(paragraph("Done!", helvetica_bold(12), Align.CENTER)
                 .with(Padding.of(20))
                 .with(border(2, RED_ORANGE))
                 .with(background(GRAY_100)));
 
-        PDDocument document = writer.finish();
-        document.save("./samples/out/SimplePdf.pdf");
-        document.close();
+        PDDocument pdf = document.finish();
+        pdf.save("./samples/out/SimplePdf.pdf");
+        pdf.close();
     }
 
 }

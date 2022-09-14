@@ -15,9 +15,9 @@ public class DocumentFooter implements PdfEventListener {
     }
 
     @Override
-    public void onNewPage(LinearPDFWriter writer) {
+    public void onNewPage(Document document) {
         if (content != null) {
-            content.render(writer, writer.getFooterBounds());
+            content.render(document, document.getFooterBounds());
         }
     }
 

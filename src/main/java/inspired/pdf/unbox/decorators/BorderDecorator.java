@@ -2,7 +2,7 @@ package inspired.pdf.unbox.decorators;
 
 import inspired.pdf.unbox.Border;
 import inspired.pdf.unbox.Bounds;
-import inspired.pdf.unbox.LinearPDFWriter;
+import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.Position;
 import inspired.pdf.unbox.internal.PdfUnboxException;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -33,9 +33,9 @@ public class BorderDecorator extends Decorator {
     }
 
     @Override
-    public float decorate(LinearPDFWriter writer, Bounds viewPort) {
+    public float decorate(Document document, Bounds viewPort) {
         try {
-            PDPageContentStream contentStream = writer.getContentStream();
+            PDPageContentStream contentStream = document.getContentStream();
             contentStream.setStrokingColor(color);
             if (border.isUniform()) {
                 contentStream.setLineWidth(border.top());

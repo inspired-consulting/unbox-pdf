@@ -15,21 +15,21 @@ import static inspired.pdf.unbox.themes.UnboxTheme.GRAY_200;
 public class MultiPagePdf {
 
     public static void main(String[] args) throws IOException {
-        LinearPDFWriter writer = new LinearPDFWriter(Orientation.LANDSCAPE, Margin.of(40), Padding.of(30,0));
+        LinearPDFWriter document = new LinearPDFWriter(Orientation.LANDSCAPE, Margin.of(40), Padding.of(30,0));
 
-        writer.add(new DocumentHeader(
+        document.add(new DocumentHeader(
                 paragraph("This header is rendered on each page", helvetica_bold(12))
                         .align(Align.CENTER, VAlign.MIDDLE)
                         .with(border(1, GRAY_200)))
                 );
 
-        writer.add(new DocumentFooter(
+        document.add(new DocumentFooter(
                 paragraph("This footer is rendered on each page", helvetica_bold(12))
                         .align(Align.CENTER, VAlign.MIDDLE)
                         .with(border(1, GRAY_200)))
         );
 
-        writer.add(new DocumentFinisher() {
+        document.add(new DocumentFinisher() {
             @Override
             public void finish(DocumentContext context, PDPageContentStream contentStream, int pageNumber, int pageCount) {
                 String pageInfo = "Page " + pageNumber + " of " + pageCount;
@@ -39,12 +39,12 @@ public class MultiPagePdf {
         });
 
         // add a paragraph
-        writer.render(paragraph("Hello, World!", helvetica_bold(12)).with(Margin.of(10,0)));
-        writer.addPage();
+        document.render(paragraph("Hello, World!", helvetica_bold(12)).with(Margin.of(10,0)));
+        document.addPage();
 
-        PDDocument document = writer.finish();
-        document.save("./samples/out/MultiPagePdf.pdf");
-        document.close();
+        PDDocument pdf = document.finish();
+        pdf.save("./samples/out/MultiPagePdf.pdf");
+        pdf.close();
 
     }
 

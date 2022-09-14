@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Utility to write linear PDFs from top to bottom. Supports to break page.
  */
-public class LinearPDFWriter implements DocumentContext {
+public class Document implements DocumentContext {
 
     private final Orientation orientation;
 
@@ -31,28 +31,28 @@ public class LinearPDFWriter implements DocumentContext {
 
     private Position position = new Position(0,0);
 
-    public LinearPDFWriter() {
+    public Document() {
         this(Orientation.PORTRAIT);
     }
 
-    public LinearPDFWriter(Orientation orientation) {
+    public Document(Orientation orientation) {
         this(orientation, Margin.of(20), Padding.of(30, 0, 20));
     }
 
-    public LinearPDFWriter(Orientation orientation, Margin margin, Padding padding) {
+    public Document(Orientation orientation, Margin margin, Padding padding) {
         this.document = new PDDocument();
         this.orientation = orientation;
         this.margin = margin;
         this.padding = padding;
     }
 
-    public LinearPDFWriter add(PdfEventListener listener) {
+    public Document add(PdfEventListener listener) {
         this.eventListeners.add(listener);
         return this;
     }
 
     /**
-     * Get current position of writer.
+     * Get current position in document.
      * @return The current position.
      */
     public float getPosition() {

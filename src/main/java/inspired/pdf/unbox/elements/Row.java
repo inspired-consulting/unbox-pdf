@@ -1,12 +1,11 @@
 package inspired.pdf.unbox.elements;
 
 import inspired.pdf.unbox.Bounds;
-import inspired.pdf.unbox.LinearPDFWriter;
+import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.Margin;
 import inspired.pdf.unbox.Padding;
 import inspired.pdf.unbox.base.Column;
 import inspired.pdf.unbox.base.SimpleColumnModel;
-import inspired.pdf.unbox.decorators.Decorator;
 import inspired.pdf.unbox.elements.internal.AbstractPdfElement;
 
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ public class Row extends AbstractPdfElement {
     }
 
     @Override
-    public float render(LinearPDFWriter writer, Bounds viewPort) {
+    public float render(Document document, Bounds viewPort) {
         Bounds bounds = viewPort.apply(margin()).apply(padding());
         float forward = 0f;
         SimpleColumnModel columns = columnModel.scaleToSize(bounds.width());
@@ -45,7 +44,7 @@ public class Row extends AbstractPdfElement {
             PdfElement element = elements.get(i);
             Column column = columns.get(i);
             Bounds adjusted = bounds.width(column.width()).left(offsetX);
-            forward = max(element.render(writer, adjusted), forward);
+            forward = max(element.render(document, adjusted), forward);
             offsetX += column.width();
         }
         return forward + margin().vertical() + padding().vertical();

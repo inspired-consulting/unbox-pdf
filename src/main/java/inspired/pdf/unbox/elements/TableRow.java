@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import inspired.pdf.unbox.Align;
 import inspired.pdf.unbox.Bounds;
 import inspired.pdf.unbox.Font;
-import inspired.pdf.unbox.LinearPDFWriter;
+import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.base.ColumnModel;
 import inspired.pdf.unbox.base.TableModel;
 import inspired.pdf.unbox.base.TableModel.TableColumn;
@@ -113,9 +113,9 @@ public class TableRow implements PdfElement {
     }
 
     @Override
-    public float render(LinearPDFWriter writer, Bounds bounds) {
+    public float render(Document document, Bounds bounds) {
         for (Decorator decorator : decorators) {
-            decorator.render(writer, bounds);
+            decorator.render(document, bounds);
         }
         float x = bounds.left();
         ColumnModel<?> columns = this.model.scaleToSize(bounds.width());
@@ -124,7 +124,7 @@ public class TableRow implements PdfElement {
             TableCell cell = prepareCell(i);
             float width = columns.width(i);
             Bounds cellBounds = bounds.left(x).width(width);
-            float height = cell.render(writer, cellBounds);
+            float height = cell.render(document, cellBounds);
             maxHeight = Math.max(maxHeight, height);
             x+= width;
         }

@@ -15,8 +15,8 @@ public class DocumentHeader implements PdfEventListener {
     }
 
     @Override
-    public void onNewPage(LinearPDFWriter writer) {
-        content.render(writer, writer.getHeaderBounds());
+    public void onNewPage(Document document) {
+        content.render(document, document.getHeaderBounds());
     }
 
 }

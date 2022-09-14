@@ -1,7 +1,7 @@
 package inspired.pdf.unbox.decorators;
 
 import inspired.pdf.unbox.Bounds;
-import inspired.pdf.unbox.LinearPDFWriter;
+import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.internal.PdfUnboxException;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
@@ -17,9 +17,9 @@ public class BackgroundDecorator extends Decorator {
     }
 
     @Override
-    public float decorate(LinearPDFWriter writer, Bounds viewPort) {
+    public float decorate(Document document, Bounds viewPort) {
         try {
-            PDPageContentStream contentStream = writer.getContentStream();
+            PDPageContentStream contentStream = document.getContentStream();
             contentStream.setNonStrokingColor(color);
             contentStream.addRect(
                     viewPort.left(),

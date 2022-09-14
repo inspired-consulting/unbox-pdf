@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import inspired.pdf.unbox.Bounds;
-import inspired.pdf.unbox.LinearPDFWriter;
+import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.Margin;
 import inspired.pdf.unbox.Position;
 import inspired.pdf.unbox.base.Column;
@@ -82,36 +82,36 @@ public abstract class AbstractTable implements Table {
     // base for implementations
 
     @Override
-    public float render(LinearPDFWriter writer, Bounds viewPort) {
+    public float render(Document document, Bounds viewPort) {
         try {
-            writer.forward(margin.top());
-            tableStartOnPage = writer.getPosition();
-            renderRows(writer, headers);
-            renderRows(writer, rows);
-            applyDecorators(writer);
+            document.forward(margin.top());
+            tableStartOnPage = document.getPosition();
+            renderRows(document, headers);
+            renderRows(document, rows);
+            applyDecorators(document);
             return margin.bottom();
         } catch (IOException e) {
             throw new PdfUnboxException(e);
         }
     }
 
-    protected void onBeforeNewPage(LinearPDFWriter writer) {
+    protected void onBeforeNewPage(Document document) {
     }
 
-    protected void onAfterNewPage(LinearPDFWriter writer) {
+    protected void onAfterNewPage(Document document) {
     }
 
     protected Margin getMargin() {
         return margin;
     }
 
-    protected float renderRow(LinearPDFWriter writer, TableRow row) {
-        float rowHeight = row.innerHeight(writer.getViewPort());
-        checkPageBreak(writer, rowHeight);
+    protected float renderRow(Document document, TableRow row) {
+        float rowHeight = row.innerHeight(document.getViewPort());
+        checkPageBreak(document, rowHeight);
 
-        Bounds bounds = writer.getCurrentViewPort().height(rowHeight);
-        row.render(writer, bounds);
-        drawRowLines(writer, rowHeight);
+        Bounds bounds = document.getCurrentViewPort().height(rowHeight);
+        row.render(document, bounds);
+        drawRowLines(document, rowHeight);
         return rowHeight;
     }
 
@@ -121,23 +121,23 @@ public abstract class AbstractTable implements Table {
 
     // internal
 
-    private float renderRows(LinearPDFWriter writer, Iterable<TableRow> rows) throws IOException {
+    private float renderRows(Document document, Iterable<TableRow> rows) throws IOException {
         float height = DONT_FORWARD;
         for (TableRow row : rows) {
-            float rowHeight = renderRow(writer, row);
-            writer.forward(rowHeight);
+            float rowHeight = renderRow(document, row);
+            document.forward(rowHeight);
             height += rowHeight;
         }
         return height;
     }
 
-    private void drawRowLines(LinearPDFWriter writer, float rowHeight) {
+    private void drawRowLines(Document document, float rowHeight) {
         try {
-            PDPageContentStream contentStream = writer.getContentStream();
+            PDPageContentStream contentStream = document.getContentStream();
             contentStream.setLineWidth(GRID_STROKE);
             contentStream.setStrokingColor(Color.DARK_GRAY);
 
-            Bounds bounds = writer.getCurrentViewPort().height(rowHeight);
+            Bounds bounds = document.getCurrentViewPort().height(rowHeight);
 
             contentStream.moveTo(bounds.left(), bounds.top());
             contentStream.lineTo(bounds.right(), bounds.top());
@@ -151,9 +151,9 @@ public abstract class AbstractTable implements Table {
         }
     }
 
-    protected void drawColumnLines(LinearPDFWriter writer, ColumnModel<?> columns, Bounds bounds) {
+    protected void drawColumnLines(Document document, ColumnModel<?> columns, Bounds bounds) {
         try {
-            PDPageContentStream contentStream = writer.getContentStream();
+            PDPageContentStream contentStream = document.getContentStream();
             contentStream.setLineWidth(GRID_STROKE);
             contentStream.setStrokingColor(Color.DARK_GRAY);
             boolean first = true;
@@ -180,17 +180,17 @@ public abstract class AbstractTable implements Table {
         }
     }
 
-    private void checkPageBreak(LinearPDFWriter writer, float minSpace) {
+    private void checkPageBreak(Document document, float minSpace) {
         try {
-            if (writer.getSpaceLeftOnPage() < minSpace) {
-                applyDecorators(writer);
-                onBeforeNewPage(writer);
-                writer.addPage();
-                writer.forward(margin.top());
-                tableStartOnPage = writer.getPosition();
-                onAfterNewPage(writer);
+            if (document.getSpaceLeftOnPage() < minSpace) {
+                applyDecorators(document);
+                onBeforeNewPage(document);
+                document.addPage();
+                document.forward(margin.top());
+                tableStartOnPage = document.getPosition();
+                onAfterNewPage(document);
                 if (repeatHeader) {
-                    renderRows(writer, headers);
+                    renderRows(document, headers);
                 }
             }
         } catch (IOException e) {
@@ -198,11 +198,11 @@ public abstract class AbstractTable implements Table {
         }
     }
 
-    private void applyDecorators(LinearPDFWriter writer) throws IOException {
-        float height = tableStartOnPage - writer.getPosition();
-        Bounds bounds = writer.getViewPort().top(tableStartOnPage).height(height);
+    private void applyDecorators(Document document) throws IOException {
+        float height = tableStartOnPage - document.getPosition();
+        Bounds bounds = document.getViewPort().top(tableStartOnPage).height(height);
         for (Decorator decorator : decorators) {
-            decorator.render(writer, bounds);
+            decorator.render(document, bounds);
         }
     }
 

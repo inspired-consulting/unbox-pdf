@@ -59,9 +59,9 @@ public class Paragraph implements PdfElement {
     }
 
     @Override
-    public float render(LinearPDFWriter writer, Bounds viewPort)  {
+    public float render(Document document, Bounds viewPort)  {
         Bounds bounds = effectiveBounds(viewPort);
-        float actualHeight = textWriter.write(writer.getContentStream(), bounds, text, align, vAlign);
+        float actualHeight = textWriter.write(document.getContentStream(), bounds, text, align, vAlign);
 
         if (height > HEIGHT_UNDEFINED) {
             return height;

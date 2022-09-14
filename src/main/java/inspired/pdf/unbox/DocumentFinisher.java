@@ -13,22 +13,22 @@ public abstract class DocumentFinisher implements PdfEventListener {
 
     public abstract void finish(DocumentContext context, PDPageContentStream contentStream, int pageNumber, int pageCount);
 
-    protected void finish(LinearPDFWriter writer, PDDocument document, PDPageTree allPages) throws IOException {
+    protected void finish(Document document, PDDocument pdf, PDPageTree allPages) throws IOException {
         int pageNum = 1;
         for (PDPage page : allPages) {
-            PDPageContentStream contentStream = new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, true,true);
-            finish(writer, contentStream, pageNum, allPages.getCount());
+            PDPageContentStream contentStream = new PDPageContentStream(pdf, page, PDPageContentStream.AppendMode.APPEND, true,true);
+            finish(document, contentStream, pageNum, allPages.getCount());
             contentStream.close();
             pageNum++;
         }
     }
 
     @Override
-    public void onFinished(LinearPDFWriter writer) {
-        PDDocument document = writer.getDocument();
-        PDPageTree allPages = document.getDocumentCatalog().getPages();
+    public void onFinished(Document document) {
+        PDDocument pdf = document.getDocument();
+        PDPageTree allPages = pdf.getDocumentCatalog().getPages();
         try {
-            finish(writer, document, allPages);
+            finish(document, pdf, allPages);
         } catch (IOException e) {
             throw new PdfUnboxException(e);
         }

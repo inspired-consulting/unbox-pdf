@@ -1,7 +1,7 @@
 package inspired.pdf.unbox.elements;
 
 import inspired.pdf.unbox.Bounds;
-import inspired.pdf.unbox.LinearPDFWriter;
+import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.elements.internal.AbstractPdfElement;
 import inspired.pdf.unbox.internal.PdfUnboxException;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -34,9 +34,9 @@ public abstract class Canvas extends AbstractPdfElement {
     }
 
     @Override
-    public float render(LinearPDFWriter writer, Bounds viewPort) {
+    public float render(Document document, Bounds viewPort) {
         try {
-            paint(writer.getContentStream(), viewPort.height(innerHeight));
+            paint(document.getContentStream(), viewPort.height(innerHeight));
             return innerHeight + margin().vertical();
         } catch (IOException e) {
             throw new PdfUnboxException(e);

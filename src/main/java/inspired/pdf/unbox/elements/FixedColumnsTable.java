@@ -1,7 +1,7 @@
 package inspired.pdf.unbox.elements;
 
 import inspired.pdf.unbox.Bounds;
-import inspired.pdf.unbox.LinearPDFWriter;
+import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.base.ColumnModel;
 import inspired.pdf.unbox.base.TableModel;
 import inspired.pdf.unbox.elements.internal.AbstractTable;
@@ -22,17 +22,17 @@ public class FixedColumnsTable extends AbstractTable {
     }
 
     @Override
-    protected float renderRow(LinearPDFWriter writer, TableRow row) {
-        float rowHeight = super.renderRow(writer, row);
-        ColumnModel<?> columns = model.scaleToSize(writer.getViewPort().width());
-        drawColumnLines(writer, columns, rowHeight);
+    protected float renderRow(Document document, TableRow row) {
+        float rowHeight = super.renderRow(document, row);
+        ColumnModel<?> columns = model.scaleToSize(document.getViewPort().width());
+        drawColumnLines(document, columns, rowHeight);
         return rowHeight;
     }
 
-    private void drawColumnLines(LinearPDFWriter writer, ColumnModel<?> columns, float height) {
-        Bounds viewPort = writer.getViewPort();
-        Bounds bounds = new Bounds(viewPort.left(), writer.getPosition(), viewPort.width(), height);
-        drawColumnLines(writer, columns, bounds);
+    private void drawColumnLines(Document document, ColumnModel<?> columns, float height) {
+        Bounds viewPort = document.getViewPort();
+        Bounds bounds = new Bounds(viewPort.left(), document.getPosition(), viewPort.width(), height);
+        drawColumnLines(document, columns, bounds);
     }
 
 }

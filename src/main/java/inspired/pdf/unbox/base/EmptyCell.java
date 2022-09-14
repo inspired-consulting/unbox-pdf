@@ -1,7 +1,7 @@
 package inspired.pdf.unbox.base;
 
 import inspired.pdf.unbox.Bounds;
-import inspired.pdf.unbox.LinearPDFWriter;
+import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.elements.internal.AbstractTableCell;
 
 
@@ -11,7 +11,7 @@ import inspired.pdf.unbox.elements.internal.AbstractTableCell;
 class EmptyCell extends AbstractTableCell {
 
     @Override
-    public float render(LinearPDFWriter writer, Bounds bounds) {
+    public float render(Document document, Bounds bounds) {
         return 0.0f;
     }
 
