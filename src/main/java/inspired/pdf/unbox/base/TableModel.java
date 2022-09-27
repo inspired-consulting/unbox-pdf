@@ -14,7 +14,7 @@ import inspired.pdf.unbox.elements.TableCell;
 import inspired.pdf.unbox.elements.TextCell;
 
 /**
- * Represents the columns of a layout.
+ * Represents the model of a table, i.e. the columns.
  */
 public class TableModel implements ColumnModel<TableModel.TableColumn> {
 
@@ -22,7 +22,7 @@ public class TableModel implements ColumnModel<TableModel.TableColumn> {
     public static TableColumn DEFAULT_COLUMN = new TableColumn("", DEFAULT_WIDTH, Align.LEFT, null, null);
 
     private final List<TableColumn> columns = new ArrayList<>();
-    private final Map<Class, TableCell> defaultCells = new LinkedHashMap<>();
+    private final Map<Class<?>, TableCell> defaultCells = new LinkedHashMap<>();
 
     private static final TableCell emptyCell = new EmptyCell();
 
@@ -94,11 +94,13 @@ public class TableModel implements ColumnModel<TableModel.TableColumn> {
         return columns.stream().map(TableColumn::width).reduce(Float::sum).orElse(0f);
     }
 
+    @Override
     public TableModel scale(float scale) {
         List<TableColumn> adapted = columns.stream().map(c -> c.scale(scale)).collect(Collectors.toList());
         return new TableModel(adapted);
     }
 
+    @Override
     public TableModel scaleToSize(float tableWidth) {
         return scale(tableWidth / getOverallWidth());
     }
@@ -125,14 +127,14 @@ public class TableModel implements ColumnModel<TableModel.TableColumn> {
 
     public TableCell getDefaultCellFor(Object value) {
         if(value == null) {
-            return this.emptyCell;
+            return emptyCell;
         }
         for (var entry : defaultCells.entrySet()){
             if(entry.getKey().isInstance(value)) {
                 return entry.getValue();
             }
         }
-        throw new IllegalArgumentException("No cell found for value "+value.toString());
+        throw new IllegalArgumentException("No cell found for value "+ value);
     }
 
     public static class TableColumn extends Column {

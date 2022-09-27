@@ -8,6 +8,9 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import java.awt.*;
 import java.io.IOException;
 
+/**
+ * Add a colored background to an element.
+ */
 public class BackgroundDecorator extends Decorator {
 
     private final Color color;

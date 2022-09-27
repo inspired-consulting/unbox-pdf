@@ -1,9 +1,19 @@
 package inspired.pdf.unbox;
 
+import java.util.Arrays;
+
 /**
  * Represents a bounded region inside a document.
  */
 public record Bounds(float left, float top, float width, float height) {
+
+    public static Bounds join(Bounds... bounds) {
+        float left = Arrays.stream(bounds).map(Bounds::left).min(Float::compareTo).orElse(0f);
+        float top = Arrays.stream(bounds).map(Bounds::top).max(Float::compareTo).orElse(0f);
+        float right = Arrays.stream(bounds).map(Bounds::right).max(Float::compareTo).orElse(0f);
+        float bottom = Arrays.stream(bounds).map(Bounds::bottom).min(Float::compareTo).orElse(0f);
+        return new Bounds(left, top, right - left, top - bottom);
+    }
 
     public float bottom() {
         return top - height;
@@ -83,5 +93,13 @@ public record Bounds(float left, float top, float width, float height) {
 
     public float width() {
         return width;
+    }
+
+    public Bounds extend(Bounds bounds) {
+        float left = Math.min(this.left, bounds.left);
+        float top = Math.max(this.top, bounds.top);
+        float right = Math.max(this.right(), bounds.right());
+        float bottom = Math.min(this.bottom(), bounds.bottom());
+        return new Bounds(left, top, right - left, top - bottom);
     }
 }
