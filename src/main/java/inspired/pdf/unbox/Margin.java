@@ -17,6 +17,14 @@ public record Margin(float top, float right, float bottom, float left) {
         return new Margin(vertical, horizontal, vertical, horizontal);
     }
 
+    public static Margin of(float top, float right, float bottom, float left) {
+        return new Margin(top, right, bottom, left);
+    }
+
+    public static Margin of(float top, float horizontal, float bottom) {
+        return new Margin(top, horizontal, bottom, horizontal);
+    }
+
     public static Margin top(float top) {
         return new Margin(top, 0,0,0);
     }

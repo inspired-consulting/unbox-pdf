@@ -1,6 +1,5 @@
 package inspired.pdf.unbox.base;
 
-import inspired.pdf.unbox.Align;
 import inspired.pdf.unbox.Bounds;
 
 import java.util.ArrayList;

@@ -40,6 +40,14 @@ public class TableModel implements ColumnModel<TableModel.TableColumn> {
         return new TableModel(List.of(columns));
     }
 
+    public static TableModel of(float... widths) {
+        List<TableColumn> columns = new ArrayList<>();
+        for (float w : widths) {
+            columns.add(new TableColumn(w));
+        }
+        return new TableModel(columns);
+    }
+
     public TableModel add(TableColumn column) {
         this.columns.add(column);
         return this;
@@ -151,6 +159,10 @@ public class TableModel implements ColumnModel<TableModel.TableColumn> {
 
         public TableColumn(String title) {
             this(title, DEFAULT_WIDTH, Align.LEFT, null, null);
+        }
+
+        public TableColumn(float width) {
+            this("", width, Align.LEFT, null, null);
         }
 
         public TableColumn(String title, float width, Align align, Font font, TableCell cell) {

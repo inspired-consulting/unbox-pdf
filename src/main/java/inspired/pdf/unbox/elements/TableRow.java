@@ -51,8 +51,8 @@ public class TableRow extends AbstractDecoratable implements PdfElement {
         this(columns, null);
     }
 
-    public TableRow(TableModel columns, Font font) {
-        this.model = columns;
+    public TableRow(TableModel model, Font font) {
+        this.model = model;
         this.font = font;
     }
 

@@ -17,15 +17,16 @@ public class UnboxTheme {
 
     public static Color WHITE = new Color(255, 255, 255);
     public static Color BLACK = new Color(0, 0, 0);
-    public static Color GRAY_100 = new Color(240, 240, 240);
-    public static Color GRAY_200 = new Color(210, 210, 210);
-    public static Color GRAY_300 = new Color(190, 190, 190);
-    public static Color GRAY_400 = new Color(160, 160, 160);
-    public static Color GRAY_500 = new Color(130, 130, 130);
-    public static Color GRAY_600 = new Color(100, 100, 100);
-    public static Color GRAY_700 = new Color(70, 70, 70);
-    public static Color GRAY_800 = new Color(45, 45, 45);
-    public static Color GRAY_900 = new Color(20, 20, 20);
+
+    public static Color GRAY_100 = new Color(248, 248, 248);;
+    public static Color GRAY_200 = new Color(230, 230, 230);
+    public static Color GRAY_300 = new Color(210, 210, 210);
+    public static Color GRAY_400 = new Color(188, 188, 188);
+    public static Color GRAY_500 = new Color(164, 164, 164);
+    public static Color GRAY_600 = new Color(138, 138, 138);
+    public static Color GRAY_700 = new Color(110, 110, 110);
+    public static Color GRAY_800 = new Color(80, 80, 80);
+    public static Color GRAY_900 = new Color(48, 48, 48);
 
 
 }

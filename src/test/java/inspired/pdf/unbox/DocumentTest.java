@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import static inspired.pdf.unbox.Unbox.background;
 import static inspired.pdf.unbox.decorators.BorderDecorator.border;
@@ -194,7 +195,7 @@ class DocumentTest {
             pdf.save(documentFilePath.toString());
             pdf.close();
 
-//            Files.copy(documentFilePath, referenceFilePath, REPLACE_EXISTING);
+            //Files.copy(documentFilePath, referenceFilePath, StandardCopyOption.REPLACE_EXISTING);
             long mismatchPosition = Files.mismatch(documentFilePath, referenceFilePath);
             assertEquals(-1L, mismatchPosition, "PDF document doesn't match reference.");
         } catch (IOException e) {
