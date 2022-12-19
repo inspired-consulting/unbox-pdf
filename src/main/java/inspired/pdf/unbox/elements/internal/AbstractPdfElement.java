@@ -9,12 +9,12 @@ public abstract class AbstractPdfElement implements PdfElement {
     private Margin margin = Margin.none();
     private Padding padding = Padding.none();
 
-    public PdfElement with(Margin margin) {
+    public AbstractPdfElement with(Margin margin) {
         this.margin = margin;
         return this;
     }
 
-    public PdfElement with(Padding padding) {
+    public AbstractPdfElement with(Padding padding) {
         this.padding = padding;
         return this;
     }

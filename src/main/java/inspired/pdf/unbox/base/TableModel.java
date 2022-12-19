@@ -134,7 +134,7 @@ public class TableModel implements ColumnModel<TableModel.TableColumn> {
     }
 
     public TableCell getDefaultCellFor(Object value) {
-        if(value == null) {
+        if (value == null) {
             return emptyCell;
         }
         for (var entry : defaultCells.entrySet()){

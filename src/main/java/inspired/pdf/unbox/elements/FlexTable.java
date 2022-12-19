@@ -3,12 +3,18 @@ package inspired.pdf.unbox.elements;
 import inspired.pdf.unbox.Bounds;
 import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.base.ColumnModel;
+import inspired.pdf.unbox.base.TableModel;
 import inspired.pdf.unbox.elements.internal.AbstractTable;
 
 /**
  * Table with flexible rows and columns.
  */
 public class FlexTable extends AbstractTable {
+
+    public FlexTable withHeader(TableModel model) {
+        addHeader(TableRow.header(model));
+        return this;
+    }
 
     @Override
     protected float renderRow(Document document, TableRow row) {

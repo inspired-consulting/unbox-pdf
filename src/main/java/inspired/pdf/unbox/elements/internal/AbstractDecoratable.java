@@ -5,7 +5,6 @@ import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.decorators.Decoratable;
 import inspired.pdf.unbox.decorators.Decorator;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

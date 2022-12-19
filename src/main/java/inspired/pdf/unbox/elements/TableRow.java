@@ -27,17 +27,17 @@ public class TableRow extends AbstractDecoratable implements PdfElement {
     private final TableModel model;
     private final Font font;
 
-    public static TableRow header(TableModel columns) {
-        TableRow row = new TableRow(columns);
-        for (TableColumn column : columns) {
+    public static TableRow header(TableModel model) {
+        TableRow row = new TableRow(model);
+        for (TableColumn column : model) {
             row.addCell(column.title(), column.align());
         }
         return row;
     }
 
-    public static TableRow header(TableModel columns, Font font) {
-        TableRow row = new TableRow(columns, font);
-        for (TableColumn column : columns) {
+    public static TableRow header(TableModel model, Font font) {
+        TableRow row = new TableRow(model, font);
+        for (TableColumn column : model) {
             row.addCell(column.title(), column.align());
         }
         return row;
@@ -129,8 +129,22 @@ public class TableRow extends AbstractDecoratable implements PdfElement {
         return maxHeight;
     }
 
+    @Override
+    public float innerHeight(Bounds viewPort) {
+        ColumnModel<?> columns = this.model.scaleToSize(viewPort.width());
+        float max = 0f;
+        for (int i = 0; i < size(); i++) {
+            TableCell cell = prepareCell(i);
+            float width = columns.width(i);
+            max = Math.max(max, cell.innerHeight(viewPort.width(width)));
+        }
+        return max;
+    }
+
+    // -- internal
+
     private TableCell prepareCell(int i) {
-        if(i >= 0 && i < cells.size() && cells.get(i) != null) {
+        if (i >= 0 && i < cells.size() && cells.get(i) != null) {
             // The row contains a cell for this index, use it directly
             return cells.get(i);
         }
@@ -141,7 +155,7 @@ public class TableRow extends AbstractDecoratable implements PdfElement {
 
         Object value = getValue(i);
         // otherwise fall back to a default cell
-        if(cell == null) {
+        if (cell == null) {
             cell = this.model.getDefaultCellFor(value);
         }
 
@@ -154,18 +168,6 @@ public class TableRow extends AbstractDecoratable implements PdfElement {
             return this.values.get(index);
         }
         return null;
-    }
-
-    @Override
-    public float innerHeight(Bounds viewPort) {
-        ColumnModel<?> columns = this.model.scaleToSize(viewPort.width());
-        float max = 0f;
-        for (int i = 0; i < size(); i++) {
-            TableCell cell = prepareCell(i);
-            float width = columns.width(i);
-            max = Math.max(max, cell.innerHeight(viewPort.width(width)));
-        }
-        return max;
     }
 
     private Align coalesce(Align... options) {

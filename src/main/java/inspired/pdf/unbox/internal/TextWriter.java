@@ -20,7 +20,8 @@ public class TextWriter {
 
     public float calculateHeight(String text, Bounds viewPort) {
         String[] lines = chunk(text, viewPort.width());
-        return lines.length * font.lineHeight();
+        int count = Math.max(1, lines.length);
+        return count * font.lineHeight();
     }
 
     public float write(PDPageContentStream contentStream, Bounds bounds, String text) {
