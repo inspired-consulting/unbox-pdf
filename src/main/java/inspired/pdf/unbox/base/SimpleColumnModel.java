@@ -102,5 +102,8 @@ public class SimpleColumnModel implements ColumnModel<Column> {
         return columns.iterator();
     }
 
-
+    @Override
+    public String toString() {
+        return "SimpleColumnModel[" + columns + ']';
+    }
 }

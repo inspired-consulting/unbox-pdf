@@ -102,4 +102,9 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Paragraph['" + text + "']";
+    }
+
 }

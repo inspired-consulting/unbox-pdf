@@ -5,11 +5,26 @@ import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.Margin;
 import inspired.pdf.unbox.decorators.Decoratable;
 import inspired.pdf.unbox.decorators.Decorator;
+import inspired.pdf.unbox.elements.internal.AbstractPdfElement;
 
 /**
  * Basic element for Unbox PDF documents.
  */
 public interface PdfElement extends Decoratable {
+
+    static PdfElement empty() {
+        return new AbstractPdfElement() {
+            @Override
+            public float render(Document document, Bounds viewPort) {
+                return 0;
+            }
+
+            @Override
+            public float innerHeight(Bounds viewPort) {
+                return 0;
+            }
+        };
+    }
 
     float DONT_FORWARD = 0f;
 
@@ -54,4 +69,5 @@ public interface PdfElement extends Decoratable {
     default PdfElement with(Decorator decorator) {
         return decorator.wrap(this);
     }
+
 }

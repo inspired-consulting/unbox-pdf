@@ -16,4 +16,8 @@ public class Column {
         return new Column(width * scale);
     }
 
+    @Override
+    public String toString() {
+        return String.valueOf(width);
+    }
 }

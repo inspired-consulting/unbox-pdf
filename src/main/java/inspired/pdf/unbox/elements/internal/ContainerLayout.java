@@ -3,12 +3,13 @@ package inspired.pdf.unbox.elements.internal;
 import inspired.pdf.unbox.Bounds;
 import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.elements.Container;
+import inspired.pdf.unbox.elements.Container.Layout;
 import inspired.pdf.unbox.elements.PdfElement;
 
 import java.util.List;
 
 /**
- * Lyout for a Container.
+ * Layout for a Container.
  */
 public interface ContainerLayout {
 
@@ -23,5 +24,11 @@ public interface ContainerLayout {
     float render(Document document, Bounds viewPort, Container container, List<PdfElement> elements);
 
     float innerHeight(Bounds viewPort, Container container, List<PdfElement> elements);
+
+    /**
+     * Get the layout type.
+     * @return The layout type.
+     */
+    Layout layoutType();
 
 }

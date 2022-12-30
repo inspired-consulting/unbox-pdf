@@ -45,7 +45,8 @@ public class TextWriter {
             writeLine(stream, chunk, x, y);
             y -= font.lineHeight();
         }
-        return chunks.length * font.lineHeight();
+        int count = Math.max(1, chunks.length);
+        return count * font.lineHeight();
     }
 
     private String[] chunk(String text, float maxWidth)  {

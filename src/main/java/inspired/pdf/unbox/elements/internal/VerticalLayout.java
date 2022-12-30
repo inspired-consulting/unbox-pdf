@@ -29,4 +29,9 @@ public class VerticalLayout implements ContainerLayout {
         return elementsHeight + container.padding().vertical();
     }
 
+    @Override
+    public Container.Layout layoutType() {
+        return Container.Layout.ROWS;
+    }
+
 }

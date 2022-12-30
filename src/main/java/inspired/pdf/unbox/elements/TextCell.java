@@ -17,7 +17,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
  */
 public class TextCell extends AbstractTableCell {
 
-    public final static int LINE_PADDING = 10;
+    private final static int LINE_PADDING = 10;
 
     private final Font font;
 
@@ -41,12 +41,13 @@ public class TextCell extends AbstractTableCell {
     public float innerHeight(Bounds viewPort) {
         float lineHeight = font.lineHeight();
         String[] lines = chunk(viewPort.width() - padding.horizontal());
-        return lines.length * lineHeight + LINE_PADDING;
+        int count = Math.max(1, lines.length);
+        return count * lineHeight + LINE_PADDING;
     }
 
     @Override
     public void setValue(Object value) {
-        if(value == null) {
+        if (value == null) {
             value = "";
         }
         this.text = value.toString();
@@ -58,7 +59,7 @@ public class TextCell extends AbstractTableCell {
         try {
             float lineHeight = font.lineHeight();
             PDPageContentStream contentStream = document.getContentStream();
-            String[] lines = new String[0];
+            String[] lines;
             lines = chunk( bounds.width() - padding.horizontal());
             float y =  bounds.top() - lineHeight - padding.top();
             Align align = coalesce(this.align, Align.LEFT);
@@ -72,7 +73,8 @@ public class TextCell extends AbstractTableCell {
                 contentStream.endText();
                 y -= lineHeight;
             }
-            return lines.length * lineHeight + LINE_PADDING;
+            int count = Math.max(1, lines.length);
+            return count * lineHeight + LINE_PADDING;
         } catch (IOException e) {
             throw new PdfUnboxException(e);
         }

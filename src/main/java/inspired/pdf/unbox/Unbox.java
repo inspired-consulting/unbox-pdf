@@ -1,8 +1,12 @@
 package inspired.pdf.unbox;
 
+import inspired.pdf.unbox.base.ColumnModel;
+import inspired.pdf.unbox.base.SimpleColumnModel;
 import inspired.pdf.unbox.decorators.BackgroundDecorator;
 import inspired.pdf.unbox.elements.Container;
 import inspired.pdf.unbox.elements.Paragraph;
+import inspired.pdf.unbox.elements.PdfElement;
+import inspired.pdf.unbox.elements.internal.AbstractPdfElement;
 
 import java.awt.*;
 
@@ -35,8 +39,20 @@ public class Unbox {
         return Container.withColumnLayout();
     }
 
+    public static Container row(ColumnModel<?> model) {
+        return Container.withColumnLayout(model);
+    }
+
+    public static Container row(float... columnSizes) {
+        return Container.withColumnLayout(SimpleColumnModel.of(columnSizes));
+    }
+
     public static Container column() {
         return Container.withRowLayout();
+    }
+
+    public static PdfElement empty() {
+        return AbstractPdfElement.empty();
     }
 
 }
