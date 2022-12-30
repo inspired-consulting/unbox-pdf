@@ -10,6 +10,6 @@ public interface Decoratable {
      * @param decorator The decorator.
      * @return The element to continue with, either the wrapped element or the decorator.
      */
-    Decoratable with(Decorator decorator);
+    <T extends Decoratable> T with(Decorator decorator);
 
 }

@@ -35,4 +35,15 @@ public class DocumentHeader extends AbstractDecoratable implements PdfEventListe
         }
     }
 
+    @Override
+    public float render(Document document, Bounds viewPort) {
+        return 0;
+    }
+
+    @Override
+    public float innerHeight(Bounds viewPort) {
+        return 0;
+    }
+
+
 }

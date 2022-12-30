@@ -4,15 +4,16 @@ import inspired.pdf.unbox.Bounds;
 import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.decorators.Decoratable;
 import inspired.pdf.unbox.decorators.Decorator;
+import inspired.pdf.unbox.elements.PdfElement;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractDecoratable implements Decoratable {
+public abstract class AbstractDecoratable implements PdfElement, Decoratable {
 
     private final List<Decorator> decorators = new ArrayList<>();
 
-    public Decoratable with(Decorator decorator) {
+    public PdfElement with(Decorator decorator) {
         this.decorators.add(decorator);
         return this;
     }

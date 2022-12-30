@@ -18,17 +18,17 @@ public class ContainerCell extends AbstractTableCell {
     }
 
     @Override
-    public float render(Document document, Bounds viewPort) {
-        return container.render(document, viewPort);
-    }
-
-    @Override
     public float innerHeight(Bounds viewPort) {
         return container.innerHeight(viewPort);
     }
 
     @Override
     public void setValue(Object value) {
+    }
+
+    @Override
+    protected float renderCell(Document document, Bounds viewPort) {
+        return container.render(document, viewPort);
     }
 
 }

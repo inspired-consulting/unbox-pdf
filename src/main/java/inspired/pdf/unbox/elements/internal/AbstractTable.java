@@ -1,34 +1,33 @@
 package inspired.pdf.unbox.elements.internal;
 
-import java.awt.*;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import inspired.pdf.unbox.Bounds;
-import inspired.pdf.unbox.Document;
-import inspired.pdf.unbox.Margin;
-import inspired.pdf.unbox.Position;
+import inspired.pdf.unbox.*;
 import inspired.pdf.unbox.base.Column;
 import inspired.pdf.unbox.base.ColumnModel;
+import inspired.pdf.unbox.base.TableModel;
 import inspired.pdf.unbox.decorators.Decorator;
 import inspired.pdf.unbox.elements.Table;
 import inspired.pdf.unbox.elements.TableRow;
 import inspired.pdf.unbox.internal.PdfUnboxException;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static inspired.pdf.unbox.themes.UnboxTheme.GRAY_700;
+
 /**
  * Abstract base for tables.
  */
 public abstract class AbstractTable extends AbstractDecoratable implements Table {
-
-    private final static float GRID_STROKE = 0.4f;
 
     private final List<TableRow> headers = new ArrayList<>();
     private final List<TableRow> rows = new ArrayList<>();
     private Margin margin = Margin.of(0);
     private boolean repeatHeader = true;
     private float tableStartOnPage;
+
+    private Stroke stroke = new Stroke(GRAY_700,0.4f);
 
     @Override
     public TableRow addRow() {
@@ -60,8 +59,20 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
         return this;
     }
 
+    @Override
     public Table with(Margin margin) {
         this.margin = margin;
+        return this;
+    }
+
+    @Override
+    public Table with(Stroke stroke) {
+        this.stroke = stroke;
+        return this;
+    }
+
+    public Table withHeader(TableModel model) {
+        addHeader(TableRow.header(model));
         return this;
     }
 
@@ -131,10 +142,14 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
     }
 
     private void drawRowLines(Document document, float rowHeight) {
+        if (stroke.isEmpty()) {
+            return;
+        }
+
         try {
             PDPageContentStream contentStream = document.getContentStream();
-            contentStream.setLineWidth(GRID_STROKE);
-            contentStream.setStrokingColor(Color.DARK_GRAY);
+            contentStream.setLineWidth(stroke.width());
+            contentStream.setStrokingColor(stroke.color());
 
             Bounds bounds = document.getCurrentViewPort().height(rowHeight);
 
@@ -151,10 +166,14 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
     }
 
     protected void drawColumnLines(Document document, ColumnModel<?> columns, Bounds bounds) {
+        if (stroke.isEmpty()) {
+            return;
+        }
+
         try {
             PDPageContentStream contentStream = document.getContentStream();
-            contentStream.setLineWidth(GRID_STROKE);
-            contentStream.setStrokingColor(Color.DARK_GRAY);
+            contentStream.setLineWidth(stroke.width());
+            contentStream.setStrokingColor(stroke.color());
             boolean first = true;
             for (Column col : columns) {
                 if (first) {

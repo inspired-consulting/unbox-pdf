@@ -17,7 +17,11 @@ public class FixedColumnsTable extends AbstractTable {
         this.model = model;
     }
 
-    public FixedColumnsTable withHeaderFromModel() {
+    public TableModel getModel() {
+        return model;
+    }
+
+    public FixedColumnsTable withHeader() {
         addRow(TableRow.header(model));
         return this;
     }

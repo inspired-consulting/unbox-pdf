@@ -1,5 +1,7 @@
 package inspired.pdf.unbox.elements;
 
+import inspired.pdf.unbox.Margin;
+import inspired.pdf.unbox.Stroke;
 import inspired.pdf.unbox.decorators.Decorator;
 
 /**
@@ -39,6 +41,26 @@ public interface Table extends PdfElement {
      */
     TableRow addHeader(TableRow row);
 
+
+    /**
+     * Set the margin of the table.
+     * @param margin The margin.
+     * @return The table object for chaining.
+     */
+    Table with(Margin margin);
+
+    /**
+     * Set the stroke for the grid.
+     * @param stroke The stroke.
+     * @return The table object for chaining.
+     */
+    Table with(Stroke stroke);
+
+    /**
+     * Add a decorator to the table.
+     * @param decorator The decorator.
+     * @return The table object for chaining.
+     */
     @Override
     Table with(Decorator decorator);
 

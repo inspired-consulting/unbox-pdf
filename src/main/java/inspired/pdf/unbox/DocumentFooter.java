@@ -27,6 +27,16 @@ public class DocumentFooter extends AbstractDecoratable implements PdfEventListe
     }
 
     @Override
+    public float render(Document document, Bounds viewPort) {
+        return 0;
+    }
+
+    @Override
+    public float innerHeight(Bounds viewPort) {
+        return 0;
+    }
+
+    @Override
     public void onNewPage(Document document) {
         Bounds footerBounds = document.getFooterBounds();
         applyDecorators(document, footerBounds);

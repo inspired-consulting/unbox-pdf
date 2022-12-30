@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 class CustomTableCell extends AbstractTableCell {
 
     @Override
-    public float render(Document document, Bounds viewPort) {
+    public float renderCell(Document document, Bounds viewPort) {
         var topLeftCell = new TextCell("top-left", Align.LEFT, null);
         var topCenterCell = new TextCell("top-center", Align.CENTER, null);
         var topRightCell = new TextCell("top-right", Align.RIGHT, null);

@@ -74,6 +74,10 @@ public class TableModel implements ColumnModel<TableModel.TableColumn> {
         return add(new TableColumn(title, width, align, null, null));
     }
 
+    public TableModel add(float width, Align align) {
+        return add(new TableColumn("", width, align, null, null));
+    }
+
     public TableModel add(String title, TableCell cell) {
         return add(new TableColumn(title, DEFAULT_WIDTH, Align.LEFT, null, cell));
     }

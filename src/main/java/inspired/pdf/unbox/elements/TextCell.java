@@ -38,7 +38,23 @@ public class TextCell extends AbstractTableCell {
     }
 
     @Override
-    public float render(Document document, Bounds bounds) {
+    public float innerHeight(Bounds viewPort) {
+        float lineHeight = font.lineHeight();
+        String[] lines = chunk(viewPort.width() - padding.horizontal());
+        return lines.length * lineHeight + LINE_PADDING;
+    }
+
+    @Override
+    public void setValue(Object value) {
+        if(value == null) {
+            value = "";
+        }
+        this.text = value.toString();
+    }
+
+    @Override
+    protected float renderCell(Document document, Bounds bounds) {
+        applyDecorators(document, bounds);
         try {
             float lineHeight = font.lineHeight();
             PDPageContentStream contentStream = document.getContentStream();
@@ -60,21 +76,6 @@ public class TextCell extends AbstractTableCell {
         } catch (IOException e) {
             throw new PdfUnboxException(e);
         }
-    }
-
-    @Override
-    public float innerHeight(Bounds viewPort) {
-        float lineHeight = font.lineHeight();
-        String[] lines = chunk(viewPort.width() - padding.horizontal());
-        return lines.length * lineHeight + LINE_PADDING;
-    }
-
-    @Override
-    public void setValue(Object value) {
-        if(value == null) {
-            value = "";
-        }
-        this.text = value.toString();
     }
 
     private String[] chunk(float maxWidth) {

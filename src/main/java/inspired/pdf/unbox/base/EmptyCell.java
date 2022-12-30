@@ -6,14 +6,10 @@ import inspired.pdf.unbox.elements.internal.AbstractTableCell;
 
 
 /**
- * Empty Cell
+ * Empty table cell.
  */
 class EmptyCell extends AbstractTableCell {
 
-    @Override
-    public float render(Document document, Bounds bounds) {
-        return 0.0f;
-    }
 
     @Override
     public float innerHeight(Bounds viewPort) {
@@ -22,6 +18,11 @@ class EmptyCell extends AbstractTableCell {
 
     @Override
     public void setValue(Object value) {
-
     }
+
+    @Override
+    protected float renderCell(Document document, Bounds bounds) {
+        return 0.0f;
+    }
+
 }

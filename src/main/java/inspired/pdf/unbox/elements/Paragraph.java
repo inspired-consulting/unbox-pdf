@@ -1,10 +1,11 @@
 package inspired.pdf.unbox.elements;
 
 import inspired.pdf.unbox.*;
+import inspired.pdf.unbox.elements.internal.AbstractDecoratable;
 import inspired.pdf.unbox.internal.SimpleFont;
 import inspired.pdf.unbox.internal.TextWriter;
 
-public class Paragraph implements PdfElement {
+public class Paragraph extends AbstractDecoratable implements PdfElement {
 
     private final static float HEIGHT_UNDEFINED = -1f;
 
@@ -86,6 +87,11 @@ public class Paragraph implements PdfElement {
         } else {
             return viewPort.height();
         }
+    }
+
+    @Override
+    public float outerHeight(Bounds viewPort) {
+        return super.outerHeight(viewPort);
     }
 
     private Bounds effectiveBounds(Bounds viewPort) {

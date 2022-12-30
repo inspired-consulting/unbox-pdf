@@ -5,6 +5,9 @@ import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.Margin;
 import inspired.pdf.unbox.elements.PdfElement;
 
+/**
+ * A decorator can be applied to a PdfElement and extend its visualization, e.g. draw a background or border.
+ */
 public abstract class Decorator implements PdfElement {
 
     private PdfElement wrappedElement;
@@ -13,7 +16,11 @@ public abstract class Decorator implements PdfElement {
         this.wrappedElement = null;
     }
 
-    public Decorator wrap(PdfElement element) {
+    public static Decorator pass() {
+        return new VoidDecorator();
+    }
+
+    public PdfElement wrap(PdfElement element) {
         this.wrappedElement = element;
         return this;
     }
@@ -46,6 +53,14 @@ public abstract class Decorator implements PdfElement {
             return wrappedElement.innerHeight(viewPort);
         } else {
             return 0f;
+        }
+    }
+
+    private static class VoidDecorator extends Decorator {
+
+        @Override
+        public float decorate(Document document, Bounds viewPort) {
+            return 0;
         }
     }
 }

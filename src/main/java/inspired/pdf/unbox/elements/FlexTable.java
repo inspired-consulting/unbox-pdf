@@ -11,11 +11,6 @@ import inspired.pdf.unbox.elements.internal.AbstractTable;
  */
 public class FlexTable extends AbstractTable {
 
-    public FlexTable withHeader(TableModel model) {
-        addHeader(TableRow.header(model));
-        return this;
-    }
-
     @Override
     protected float renderRow(Document document, TableRow row) {
         float rowHeight = super.renderRow(document, row);
