@@ -61,7 +61,10 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
 
     @Override
     public float render(Document document, Bounds viewPort)  {
-        Bounds bounds = effectiveBounds(viewPort);
+        float calculatedHeight = innerHeight(viewPort);
+        applyDecorators(document, viewPort.apply(margin).height(calculatedHeight));
+
+        var bounds = effectiveBounds(viewPort);
         float actualHeight = textWriter.write(document.getContentStream(), bounds, text, align, vAlign);
 
         if (innerHeight > HEIGHT_UNDEFINED) {
