@@ -81,6 +81,11 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
         return 0;
     }
 
+    @Override
+    public Margin margin() {
+        return margin;
+    }
+
     /**
      * Specify if the header shall be repeated on each page.
      */
@@ -116,10 +121,11 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
     }
 
     protected float renderRow(Document document, TableRow row) {
-        float rowHeight = row.innerHeight(document.getViewPort());
+        Bounds viewPort = document.getCurrentViewPort().apply(horizontalMargin());
+        float rowHeight = row.innerHeight(viewPort);
         checkPageBreak(document, rowHeight);
 
-        Bounds bounds = document.getCurrentViewPort().height(rowHeight);
+        Bounds bounds = viewPort.height(rowHeight);
         row.render(document, bounds);
         drawRowLines(document, rowHeight);
         return rowHeight;
@@ -147,11 +153,13 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
         }
 
         try {
-            PDPageContentStream contentStream = document.getContentStream();
+            var contentStream = document.getContentStream();
             contentStream.setLineWidth(stroke.width());
             contentStream.setStrokingColor(stroke.color());
 
-            Bounds bounds = document.getCurrentViewPort().height(rowHeight);
+            var bounds = document.getCurrentViewPort()
+                    .apply(horizontalMargin())
+                    .height(rowHeight);
 
             contentStream.moveTo(bounds.left(), bounds.top());
             contentStream.lineTo(bounds.right(), bounds.top());
@@ -171,7 +179,7 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
         }
 
         try {
-            PDPageContentStream contentStream = document.getContentStream();
+            var contentStream = document.getContentStream();
             contentStream.setLineWidth(stroke.width());
             contentStream.setStrokingColor(stroke.color());
             boolean first = true;
@@ -186,6 +194,20 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
         } catch (IOException e) {
             throw new PdfUnboxException(e);
         }
+    }
+
+    /**
+     * Get the effective view port, with horizontal margins applied.
+     */
+    protected Bounds effectiveViewport(Document document) {
+        return document.getCurrentViewPort().apply(horizontalMargin());
+    }
+
+    /**
+     * Get the horizontal margins, i.e. only left and right set.
+     */
+    protected Margin horizontalMargin() {
+        return Margin.of(0, margin.right(), 0, margin.left());
     }
 
     private void drawLine(PDPageContentStream contentStream, Position start, Position end) {
@@ -218,7 +240,10 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
 
     private void applyDecorators(Document document) throws IOException {
         float height = tableStartOnPage - document.getPosition();
-        Bounds bounds = document.getViewPort().top(tableStartOnPage).height(height);
+        var bounds = document.getViewPort()
+                .apply(horizontalMargin())
+                .top(tableStartOnPage)
+                .height(height);
         super.applyDecorators(document, bounds);
     }
 

@@ -58,7 +58,7 @@ public class SimplePdf {
                 .add("Size")
                 .add("Price", Align.RIGHT);
         Table table = new FixedColumnsTable(tableModel)
-                .with(Margin.of(10))
+                .with(Margin.of(10,20,10,100 ))
                 .with(border(1, GRAY_500));
         table.addHeader(TableRow.header(tableModel, helvetica_bold(8)).with(background(GRAY_100)));
         table.addRow()

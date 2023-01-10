@@ -95,7 +95,7 @@ public class Container extends AbstractPdfElement {
     }
 
     protected void applyDecorators(Document document, Bounds viewPort) {
-        Bounds bounds = viewPort
+        var bounds = viewPort
                 .height(outerHeight(viewPort))
                 .apply(margin());
         for (Decorator decorator : decorators) {
