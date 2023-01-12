@@ -1,21 +1,21 @@
 package inspired.pdf.unbox.elements;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
-
 import inspired.pdf.unbox.Align;
 import inspired.pdf.unbox.Bounds;
-import inspired.pdf.unbox.Font;
 import inspired.pdf.unbox.Document;
+import inspired.pdf.unbox.Font;
 import inspired.pdf.unbox.base.ColumnModel;
 import inspired.pdf.unbox.base.TableModel;
 import inspired.pdf.unbox.base.TableModel.TableColumn;
 import inspired.pdf.unbox.decorators.Decorator;
 import inspired.pdf.unbox.elements.internal.AbstractDecoratable;
 import inspired.pdf.unbox.internal.SimpleFont;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * Represents a row in a table consisting of cells.
@@ -27,18 +27,24 @@ public class TableRow extends AbstractDecoratable implements PdfElement {
     private final TableModel model;
     private final Font font;
 
-    public static TableRow header(TableModel model) {
+    public static TableRow header(TableModel model, Decorator... decorators) {
         TableRow row = new TableRow(model);
         for (TableColumn column : model) {
             row.addCell(column.title(), column.align());
         }
+        for (Decorator decorator : decorators) {
+            row.with(decorator);
+        }
         return row;
     }
 
-    public static TableRow header(TableModel model, Font font) {
+    public static TableRow header(TableModel model, Font font, Decorator... decorators) {
         TableRow row = new TableRow(model, font);
         for (TableColumn column : model) {
             row.addCell(column.title(), column.align());
+        }
+        for (Decorator decorator : decorators) {
+            row.with(decorator);
         }
         return row;
     }

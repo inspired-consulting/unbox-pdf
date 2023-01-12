@@ -4,14 +4,13 @@ import inspired.pdf.unbox.*;
 import inspired.pdf.unbox.base.TableModel;
 import inspired.pdf.unbox.elements.FixedColumnsTable;
 import inspired.pdf.unbox.internal.TextWriter;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
 import java.io.IOException;
 
-import static inspired.pdf.unbox.Unbox.*;
+import static inspired.pdf.unbox.Unbox.background;
+import static inspired.pdf.unbox.Unbox.paragraph;
 import static inspired.pdf.unbox.decorators.BorderDecorator.border;
-import static inspired.pdf.unbox.elements.TableRow.header;
 import static inspired.pdf.unbox.internal.SimpleFont.helvetica_bold;
 import static inspired.pdf.unbox.themes.UnboxTheme.*;
 
@@ -50,9 +49,9 @@ public class MultiPagePdf {
                 .add("Label", 1f)
                 .add("Number", 1f, Align.RIGHT);
 
-
-        var table = new FixedColumnsTable(model).with(border(0.5f, GRAY_700));
-        table.addHeader(header(model, helvetica_bold(10)).with(background(GRAY_100)));
+        var table = new FixedColumnsTable(model)
+                .withHeader(helvetica_bold(10), background(GRAY_100))
+                .with(border(0.5f, GRAY_700));
         for (int i = 0; i < 200; i++) {
             table.addRow()
                     .addCell("Name " + i)

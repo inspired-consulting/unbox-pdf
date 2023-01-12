@@ -2,8 +2,11 @@ package inspired.pdf.unbox.elements;
 
 import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.Font;
+import inspired.pdf.unbox.Margin;
+import inspired.pdf.unbox.Stroke;
 import inspired.pdf.unbox.base.ColumnModel;
 import inspired.pdf.unbox.base.TableModel;
+import inspired.pdf.unbox.decorators.Decorator;
 import inspired.pdf.unbox.elements.internal.AbstractTable;
 
 /**
@@ -17,13 +20,31 @@ public class FixedColumnsTable extends AbstractTable {
         this.model = model;
     }
 
-    public Table withHeader() {
+    public FixedColumnsTable withHeader() {
         addHeader(TableRow.header(model));
         return this;
     }
 
-    public Table withHeader(Font font) {
-        addHeader(TableRow.header(model, font));
+    public FixedColumnsTable withHeader(Font font, Decorator... decorators) {
+        addHeader(TableRow.header(model, font, decorators));
+        return this;
+    }
+
+    @Override
+    public FixedColumnsTable with(Decorator decorator) {
+        super.with(decorator);
+        return this;
+    }
+
+    @Override
+    public FixedColumnsTable with(Margin margin) {
+        super.with(margin);
+        return this;
+    }
+
+    @Override
+    public FixedColumnsTable with(Stroke stroke) {
+        super.with(stroke);
         return this;
     }
 
