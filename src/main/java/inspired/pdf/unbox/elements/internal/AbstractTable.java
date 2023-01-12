@@ -71,11 +71,6 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
         return this;
     }
 
-    public Table withHeader(TableModel model) {
-        addHeader(TableRow.header(model));
-        return this;
-    }
-
     @Override
     public float innerHeight(Bounds viewPort) {
         return 0;
@@ -121,11 +116,10 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
     }
 
     protected float renderRow(Document document, TableRow row) {
-        Bounds viewPort = document.getCurrentViewPort().apply(horizontalMargin());
-        float rowHeight = row.innerHeight(viewPort);
+        float rowHeight = row.innerHeight(effectiveViewport(document));
         checkPageBreak(document, rowHeight);
 
-        Bounds bounds = viewPort.height(rowHeight);
+        var bounds = effectiveViewport(document).height(rowHeight);
         row.render(document, bounds);
         drawRowLines(document, rowHeight);
         return rowHeight;
@@ -226,7 +220,6 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
                 applyDecorators(document);
                 onBeforeNewPage(document);
                 document.addPage();
-                document.forward(margin.top());
                 tableStartOnPage = document.getPosition();
                 onAfterNewPage(document);
                 if (repeatHeader) {

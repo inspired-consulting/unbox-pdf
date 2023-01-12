@@ -1,6 +1,7 @@
 package inspired.pdf.unbox.elements;
 
 import inspired.pdf.unbox.Document;
+import inspired.pdf.unbox.Font;
 import inspired.pdf.unbox.base.ColumnModel;
 import inspired.pdf.unbox.base.TableModel;
 import inspired.pdf.unbox.elements.internal.AbstractTable;
@@ -16,13 +17,18 @@ public class FixedColumnsTable extends AbstractTable {
         this.model = model;
     }
 
-    public TableModel getModel() {
-        return model;
+    public Table withHeader() {
+        addHeader(TableRow.header(model));
+        return this;
     }
 
-    public FixedColumnsTable withHeader() {
-        addRow(TableRow.header(model));
+    public Table withHeader(Font font) {
+        addHeader(TableRow.header(model, font));
         return this;
+    }
+
+    public TableModel getModel() {
+        return model;
     }
 
     public TableRow addRow() {

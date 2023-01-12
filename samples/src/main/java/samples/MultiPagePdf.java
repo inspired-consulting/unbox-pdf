@@ -1,6 +1,8 @@
 package samples;
 
 import inspired.pdf.unbox.*;
+import inspired.pdf.unbox.base.TableModel;
+import inspired.pdf.unbox.elements.FixedColumnsTable;
 import inspired.pdf.unbox.internal.TextWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -9,8 +11,9 @@ import java.io.IOException;
 
 import static inspired.pdf.unbox.Unbox.*;
 import static inspired.pdf.unbox.decorators.BorderDecorator.border;
+import static inspired.pdf.unbox.elements.TableRow.header;
 import static inspired.pdf.unbox.internal.SimpleFont.helvetica_bold;
-import static inspired.pdf.unbox.themes.UnboxTheme.GRAY_200;
+import static inspired.pdf.unbox.themes.UnboxTheme.*;
 
 public class MultiPagePdf {
 
@@ -42,7 +45,23 @@ public class MultiPagePdf {
         document.render(paragraph("Hello, World!", helvetica_bold(12)).with(Margin.of(10,0)));
         document.addPage();
 
-        PDDocument pdf = document.finish();
+        var model = new TableModel()
+                .add("Name", 1f)
+                .add("Label", 1f)
+                .add("Number", 1f, Align.RIGHT);
+
+
+        var table = new FixedColumnsTable(model).with(border(0.5f, GRAY_700));
+        table.addHeader(header(model, helvetica_bold(10)).with(background(GRAY_100)));
+        for (int i = 0; i < 200; i++) {
+            table.addRow()
+                    .addCell("Name " + i)
+                    .addCell("Label " + i)
+                    .addCell(Integer.toString(i));
+        }
+        document.render(table);
+
+        var pdf = document.finish();
         pdf.save("./samples/out/MultiPagePdf.pdf");
         pdf.close();
 

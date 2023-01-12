@@ -60,6 +60,11 @@ public class Document implements DocumentContext {
         return position.y();
     }
 
+    public float getPositionY() {
+        getPage();
+        return position.y();
+    }
+
     public void setPosition(Position position) {
         this.position = position;
     }
