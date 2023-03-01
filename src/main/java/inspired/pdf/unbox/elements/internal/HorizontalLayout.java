@@ -14,7 +14,7 @@ import static java.lang.Math.max;
 
 public class HorizontalLayout implements ContainerLayout {
 
-    private final ColumnModel columnModel;
+    protected final ColumnModel columnModel;
 
     public HorizontalLayout() {
         columnModel = null;

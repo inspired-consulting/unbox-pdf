@@ -14,6 +14,7 @@ public abstract class AbstractPdfElement implements PdfElement {
 
     private Margin margin = Margin.none();
     private Padding padding = Padding.none();
+    private RenderingHints renderingHints = new RenderingHints();
 
     public AbstractPdfElement with(Margin margin) {
         this.margin = margin;
@@ -33,6 +34,9 @@ public abstract class AbstractPdfElement implements PdfElement {
     public Padding padding() {
         return padding;
     }
+
+    @Override
+    public RenderingHints renderingHints() { return renderingHints; }
 
     private static class EmptyElement extends AbstractPdfElement {
         @Override

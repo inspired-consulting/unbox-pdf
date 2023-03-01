@@ -7,6 +7,8 @@ import inspired.pdf.unbox.elements.Container;
 import inspired.pdf.unbox.elements.Paragraph;
 import inspired.pdf.unbox.elements.PdfElement;
 import inspired.pdf.unbox.elements.internal.AbstractPdfElement;
+import inspired.pdf.unbox.elements.internal.HorizontalStretchLayout;
+import inspired.pdf.unbox.elements.internal.VerticalStretchLayout;
 
 import java.awt.*;
 
@@ -39,16 +41,32 @@ public class Unbox {
         return Container.withColumnLayout();
     }
 
+    public static Container rowStretch() {
+        return new Container(new HorizontalStretchLayout());
+    }
+
     public static Container row(ColumnModel<?> model) {
         return Container.withColumnLayout(model);
     }
 
+    public static Container rowStretch(ColumnModel<?> model) {
+        return new Container(new HorizontalStretchLayout(model)) ;
+    }
+
     public static Container row(float... columnSizes) {
-        return Container.withColumnLayout(SimpleColumnModel.of(columnSizes));
+        return row(SimpleColumnModel.of(columnSizes));
+    }
+
+    public static Container rowStretch(float... columnSizes) {
+        return rowStretch(SimpleColumnModel.of(columnSizes));
     }
 
     public static Container column() {
         return Container.withRowLayout();
+    }
+
+    public static Container columnStretch() {
+        return new Container(new VerticalStretchLayout());
     }
 
     public static PdfElement empty() {

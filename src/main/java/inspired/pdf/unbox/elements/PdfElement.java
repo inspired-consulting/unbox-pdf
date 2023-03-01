@@ -6,6 +6,7 @@ import inspired.pdf.unbox.Margin;
 import inspired.pdf.unbox.decorators.Decoratable;
 import inspired.pdf.unbox.decorators.Decorator;
 import inspired.pdf.unbox.elements.internal.AbstractPdfElement;
+import inspired.pdf.unbox.elements.internal.RenderingHints;
 
 /**
  * Basic element for Unbox PDF documents.
@@ -59,6 +60,12 @@ public interface PdfElement extends Decoratable {
     default Margin margin() {
         return Margin.none();
     }
+
+    /**
+     * The RenderingHints
+     * @return renderingHints
+     */
+    RenderingHints renderingHints();
 
     /**
      * Add a decorator to this element.

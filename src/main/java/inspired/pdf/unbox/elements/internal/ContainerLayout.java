@@ -31,4 +31,5 @@ public interface ContainerLayout {
      */
     Layout layoutType();
 
+    default boolean applyRenderingHintsToContainer() { return true; }
 }

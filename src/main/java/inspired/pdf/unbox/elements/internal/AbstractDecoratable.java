@@ -12,6 +12,7 @@ import java.util.List;
 public abstract class AbstractDecoratable implements PdfElement, Decoratable {
 
     private final List<Decorator> decorators = new ArrayList<>();
+    private RenderingHints renderingHints = new RenderingHints();
 
     public PdfElement with(Decorator decorator) {
         this.decorators.add(decorator);
@@ -28,4 +29,5 @@ public abstract class AbstractDecoratable implements PdfElement, Decoratable {
         return decorators;
     }
 
+    public RenderingHints renderingHints() { return renderingHints; }
 }
