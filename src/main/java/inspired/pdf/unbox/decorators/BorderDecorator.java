@@ -10,6 +10,10 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import java.awt.*;
 import java.io.IOException;
 
+/**
+ * Draws a border around elements.
+ * The border size will not change the elements size.
+ */
 public class BorderDecorator extends Decorator {
 
     private final Border border;

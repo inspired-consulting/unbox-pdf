@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Container for PDF multiple elements.
+ * Container for multiple PDF elements.
  */
 public class Container extends AbstractPdfElement {
 

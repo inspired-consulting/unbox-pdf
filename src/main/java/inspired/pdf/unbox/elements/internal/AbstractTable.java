@@ -3,7 +3,6 @@ package inspired.pdf.unbox.elements.internal;
 import inspired.pdf.unbox.*;
 import inspired.pdf.unbox.base.Column;
 import inspired.pdf.unbox.base.ColumnModel;
-import inspired.pdf.unbox.base.TableModel;
 import inspired.pdf.unbox.decorators.Decorator;
 import inspired.pdf.unbox.elements.Table;
 import inspired.pdf.unbox.elements.TableRow;
