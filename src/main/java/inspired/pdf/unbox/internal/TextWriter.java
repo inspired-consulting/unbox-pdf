@@ -25,21 +25,20 @@ public class TextWriter {
     }
 
     public float write(PDPageContentStream contentStream, Bounds bounds, String text) {
-        return write(contentStream, bounds, text, Align.LEFT);
+        return write(contentStream, bounds, text, Align.LEFT, VAlign.TOP);
     }
 
     public float write(PDPageContentStream stream, Bounds bounds, String text, Align align) {
-        float y = bounds.top() - font.lineHeight();
-        return write(text, bounds, align, stream, y);
+        return write(stream, bounds, text, align, VAlign.TOP);
     }
 
     public float write(PDPageContentStream stream, Bounds bounds, String text, Align align, VAlign vAlign) {
-        float y = offsetY(bounds, vAlign);
-        return write(text, bounds, align, stream, y);
+        String[] chunks = chunk(text, bounds.width());
+        float y = offsetY(bounds, vAlign, chunks.length);
+        return write(chunks, bounds, align, stream, y);
     }
 
-    private float write(String text, Bounds bounds, Align align, PDPageContentStream stream, float y) {
-        String[] chunks = chunk(text, bounds.width());
+    private float write(String[] chunks, Bounds bounds, Align align, PDPageContentStream stream, float y) {
         for (String chunk : chunks) {
             float x = offsetX(bounds, chunk, align);
             writeLine(stream, chunk, x, y);
@@ -75,12 +74,12 @@ public class TextWriter {
         };
     }
 
-    private float offsetY(Bounds bounds, VAlign vAlign) {
+    private float offsetY(Bounds bounds, VAlign vAlign, int numLines) {
         float correction = font.lineHeight() * CORRECTION_FACTOR;
         return switch (vAlign) {
             case TOP -> bounds.top() - font.lineHeight() + correction;
-            case MIDDLE -> bounds.middle() - font.lineHeight() / 2f + correction / 2f;
-            case BOTTOM -> bounds.bottom() + correction;
+            case MIDDLE -> bounds.top() - bounds.height() / 2f + numLines * font.lineHeight() / 2f - font.lineHeight() + correction;
+            case BOTTOM -> bounds.top() - bounds.height() + numLines * font.lineHeight() - font.lineHeight() + correction;
         };
     }
 

@@ -61,19 +61,16 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
 
     @Override
     public float render(Document document, Bounds viewPort)  {
-        float calculatedHeight = innerHeight(viewPort);
+        float calculatedHeight = innerHeight(viewPort) + renderingHints().getExtraPadding().vertical();
         applyDecorators(document, viewPort.apply(margin).height(calculatedHeight));
 
-        var bounds = effectiveBounds(viewPort);
+        var bounds = effectiveBounds(viewPort, calculatedHeight);
         float actualHeight = textWriter.write(document.getContentStream(), bounds, text, align, vAlign);
 
         if (innerHeight > HEIGHT_UNDEFINED) {
             return innerHeight + margin.vertical();
-        } else if (VAlign.TOP == vAlign) {
-            return actualHeight + padding.vertical() + margin.vertical();
-        } else {
-            return viewPort.height() + margin.vertical();
         }
+        return actualHeight + padding.vertical() + margin.vertical() + renderingHints().getExtraPadding().vertical();
     }
 
     @Override
@@ -85,11 +82,8 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
     public float innerHeight(Bounds viewPort) {
         if (innerHeight > HEIGHT_UNDEFINED) {
             return innerHeight;
-        } else if (VAlign.TOP == vAlign) {
-            return textWriter.calculateHeight(text, viewPort) + padding.vertical();
-        } else {
-            return viewPort.height();
         }
+        return textWriter.calculateHeight(text, viewPort.apply(padding)) + padding.vertical();
     }
 
     @Override
@@ -97,11 +91,11 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
         return super.outerHeight(viewPort);
     }
 
-    private Bounds effectiveBounds(Bounds viewPort) {
+    private Bounds effectiveBounds(Bounds viewPort, float calculatedHeight) {
         if (innerHeight > HEIGHT_UNDEFINED) {
             return viewPort.apply(margin).height(innerHeight).apply(padding);
         } else {
-            return viewPort.apply(margin).apply(padding);
+            return viewPort.apply(margin).apply(padding).height(calculatedHeight - padding.bottom());
         }
     }
 
