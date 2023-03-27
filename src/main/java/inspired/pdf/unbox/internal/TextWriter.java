@@ -1,9 +1,13 @@
 package inspired.pdf.unbox.internal;
 
-import inspired.pdf.unbox.*;
+import inspired.pdf.unbox.Align;
+import inspired.pdf.unbox.Bounds;
+import inspired.pdf.unbox.Font;
+import inspired.pdf.unbox.VAlign;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Utility to render text that may span over several lines.
@@ -19,8 +23,8 @@ public class TextWriter {
     }
 
     public float calculateHeight(String text, Bounds viewPort) {
-        String[] lines = chunk(text, viewPort.width());
-        int count = Math.max(1, lines.length);
+        List<String> lines = chunk(text, viewPort.width());
+        int count = Math.max(1, lines.size());
         return count * font.lineHeight();
     }
 
@@ -33,22 +37,22 @@ public class TextWriter {
     }
 
     public float write(PDPageContentStream stream, Bounds bounds, String text, Align align, VAlign vAlign) {
-        String[] chunks = chunk(text, bounds.width());
-        float y = offsetY(bounds, vAlign, chunks.length);
+        List<String> chunks = chunk(text, bounds.width());
+        float y = offsetY(bounds, vAlign, chunks.size());
         return write(chunks, bounds, align, stream, y);
     }
 
-    private float write(String[] chunks, Bounds bounds, Align align, PDPageContentStream stream, float y) {
+    private float write(List<String> chunks, Bounds bounds, Align align, PDPageContentStream stream, float y) {
         for (String chunk : chunks) {
             float x = offsetX(bounds, chunk, align);
             writeLine(stream, chunk, x, y);
             y -= font.lineHeight();
         }
-        int count = Math.max(1, chunks.length);
+        int count = Math.max(1, chunks.size());
         return count * font.lineHeight();
     }
 
-    private String[] chunk(String text, float maxWidth)  {
+    private List<String> chunk(String text, float maxWidth)  {
         return new TextTokenizer(font).chunk(text, maxWidth);
     }
 

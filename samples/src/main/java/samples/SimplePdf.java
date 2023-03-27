@@ -82,6 +82,11 @@ public class SimplePdf {
                 .with(border(2, RED_ORANGE))
                 .with(background(GRAY_100)));
 
+        document.render(paragraph("sadjfasiuhfuisafhsaiudhfiuasdhufihasduifhsadiuhf83zr7892z3w78ehfuiashdf", helvetica_bold(20), Align.CENTER)
+                .with(Padding.of(20))
+                .with(border(2, RED_ORANGE))
+                .with(background(GRAY_100)));
+
         PDDocument pdf = document.finish();
         pdf.save("./samples/out/SimplePdf.pdf");
         pdf.close();

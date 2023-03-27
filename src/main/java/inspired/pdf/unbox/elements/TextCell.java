@@ -1,6 +1,7 @@
 package inspired.pdf.unbox.elements;
 
 import java.io.IOException;
+import java.util.List;
 
 import inspired.pdf.unbox.Align;
 import inspired.pdf.unbox.Bounds;
@@ -40,8 +41,8 @@ public class TextCell extends AbstractTableCell {
     @Override
     public float innerHeight(Bounds viewPort) {
         float lineHeight = font.lineHeight();
-        String[] lines = chunk(viewPort.width() - padding.horizontal());
-        int count = Math.max(1, lines.length);
+        List<String> lines = chunk(viewPort.width() - padding.horizontal());
+        int count = Math.max(1, lines.size());
         return count * lineHeight + LINE_PADDING;
     }
 
@@ -59,8 +60,7 @@ public class TextCell extends AbstractTableCell {
         try {
             float lineHeight = font.lineHeight();
             PDPageContentStream contentStream = document.getContentStream();
-            String[] lines;
-            lines = chunk( bounds.width() - padding.horizontal());
+            List<String> lines = chunk( bounds.width() - padding.horizontal());
             float y =  bounds.top() - lineHeight - padding.top();
             Align align = coalesce(this.align, Align.LEFT);
             for (String line : lines) {
@@ -73,14 +73,14 @@ public class TextCell extends AbstractTableCell {
                 contentStream.endText();
                 y -= lineHeight;
             }
-            int count = Math.max(1, lines.length);
+            int count = Math.max(1, lines.size());
             return count * lineHeight + LINE_PADDING;
         } catch (IOException e) {
             throw new PdfUnboxException(e);
         }
     }
 
-    private String[] chunk(float maxWidth) {
+    private List<String> chunk(float maxWidth) {
         return new TextTokenizer(font).chunkMultiLine(text, maxWidth);
     }
 
