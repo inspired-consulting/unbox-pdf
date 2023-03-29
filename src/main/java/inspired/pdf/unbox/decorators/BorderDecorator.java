@@ -16,6 +16,8 @@ import java.io.IOException;
  */
 public class BorderDecorator extends Decorator {
 
+    public static int LEVEL = 1000;
+
     private final Border border;
     private final Color color;
 
@@ -32,6 +34,7 @@ public class BorderDecorator extends Decorator {
     }
 
     public BorderDecorator(Border border, Color color) {
+        super(LEVEL);
         this.border = border;
         this.color = color;
     }

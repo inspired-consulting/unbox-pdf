@@ -7,12 +7,13 @@ import inspired.pdf.unbox.decorators.Decorator;
 import inspired.pdf.unbox.elements.PdfElement;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractDecoratable implements PdfElement, Decoratable {
 
     private final List<Decorator> decorators = new ArrayList<>();
-    private RenderingHints renderingHints = new RenderingHints();
+    private final RenderingHints renderingHints = new RenderingHints();
 
     public PdfElement with(Decorator decorator) {
         this.decorators.add(decorator);
@@ -26,6 +27,7 @@ public abstract class AbstractDecoratable implements PdfElement, Decoratable {
     }
 
     protected List<Decorator> decorators() {
+        Collections.sort(decorators);
         return decorators;
     }
 

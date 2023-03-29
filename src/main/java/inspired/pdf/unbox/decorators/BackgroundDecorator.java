@@ -13,9 +13,12 @@ import java.io.IOException;
  */
 public class BackgroundDecorator extends Decorator {
 
+    public static int LEVEL = 100;
+
     private final Color color;
 
     public BackgroundDecorator(Color color) {
+        super(LEVEL);
         this.color = color;
     }
 

@@ -14,7 +14,7 @@ public abstract class AbstractPdfElement implements PdfElement {
 
     private Margin margin = Margin.none();
     private Padding padding = Padding.none();
-    private RenderingHints renderingHints = new RenderingHints();
+    private final RenderingHints renderingHints = new RenderingHints();
 
     public AbstractPdfElement with(Margin margin) {
         this.margin = margin;

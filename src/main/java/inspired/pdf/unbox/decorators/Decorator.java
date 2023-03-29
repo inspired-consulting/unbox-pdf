@@ -9,13 +9,20 @@ import inspired.pdf.unbox.elements.internal.RenderingHints;
 /**
  * A decorator can be applied to a PdfElement and extend its visualization, e.g. draw a background or border.
  */
-public abstract class Decorator implements PdfElement {
+public abstract class Decorator implements PdfElement, Comparable<Decorator> {
 
     private PdfElement wrappedElement;
-    private RenderingHints renderingHints = new RenderingHints();
+    private final RenderingHints renderingHints = new RenderingHints();
+
+    private final int level;
 
     public Decorator() {
+        this(0);
+    }
+
+    public Decorator(int level) {
         this.wrappedElement = null;
+        this.level = level;
     }
 
     public static Decorator pass() {
@@ -59,6 +66,11 @@ public abstract class Decorator implements PdfElement {
     }
 
     @Override
+    public int compareTo(Decorator other) {
+        return level - other.level;
+    }
+
+    @Override
     public RenderingHints renderingHints() {
         return renderingHints;
     }
@@ -69,5 +81,6 @@ public abstract class Decorator implements PdfElement {
         public float decorate(Document document, Bounds viewPort) {
             return 0;
         }
+
     }
 }
