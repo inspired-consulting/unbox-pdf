@@ -19,6 +19,8 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
     private Padding padding = Padding.of(2);
     private Margin margin = Margin.none();
 
+    private Integer lineLimit = null;
+
     public Paragraph(String text) {
         this(text, SimpleFont.helvetica(8));
     }
@@ -59,13 +61,21 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
         return this;
     }
 
+    public Paragraph limit(int lineLimit) {
+        if(lineLimit <= 0) {
+            return this;
+        }
+        this.lineLimit = lineLimit;
+        return this;
+    }
+
     @Override
     public float render(Document document, Bounds viewPort)  {
         float calculatedHeight = innerHeight(viewPort) + renderingHints().getExtraPadding().vertical();
         applyDecorators(document, viewPort.apply(margin).height(calculatedHeight));
 
         var bounds = effectiveBounds(viewPort, calculatedHeight);
-        float actualHeight = textWriter.write(document.getContentStream(), bounds, text, align, vAlign);
+        float actualHeight = textWriter.write(document.getContentStream(), bounds, text, align, vAlign, lineLimit);
 
         if (innerHeight > HEIGHT_UNDEFINED) {
             return innerHeight + margin.vertical();
@@ -83,7 +93,7 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
         if (innerHeight > HEIGHT_UNDEFINED) {
             return innerHeight;
         }
-        return textWriter.calculateHeight(text, viewPort.apply(padding)) + padding.vertical();
+        return textWriter.calculateHeight(text, viewPort.apply(padding), lineLimit) + padding.vertical();
     }
 
     @Override
