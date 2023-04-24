@@ -1,13 +1,11 @@
 package inspired.pdf.unbox.internal;
 
-import inspired.pdf.unbox.Align;
-import inspired.pdf.unbox.Bounds;
-import inspired.pdf.unbox.Font;
-import inspired.pdf.unbox.VAlign;
+import inspired.pdf.unbox.*;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Arrays;
 
 /**
  * Utility to render text that may span over several lines.
@@ -22,9 +20,12 @@ public class TextWriter {
         this.font = font;
     }
 
-    public float calculateHeight(String text, Bounds viewPort) {
+    public float calculateHeight(String text, Bounds viewPort, Integer lineLimit) {
         List<String> lines = chunk(text, viewPort.width());
         int count = Math.max(1, lines.size());
+        if(lineLimit != null && count > lineLimit) {
+            count = lineLimit;
+        }
         return count * font.lineHeight();
     }
 
@@ -37,7 +38,14 @@ public class TextWriter {
     }
 
     public float write(PDPageContentStream stream, Bounds bounds, String text, Align align, VAlign vAlign) {
+        return write(stream, bounds, text, align, vAlign, null);
+    }
+
+    public float write(PDPageContentStream stream, Bounds bounds, String text, Align align, VAlign vAlign, Integer lineLimit) {
         List<String> chunks = chunk(text, bounds.width());
+        if(lineLimit != null && lineLimit > 0 && lineLimit < chunks.size()) {
+            chunks = chunks.subList(0, lineLimit);
+        }
         float y = offsetY(bounds, vAlign, chunks.size());
         return write(chunks, bounds, align, stream, y);
     }
@@ -86,5 +94,4 @@ public class TextWriter {
             case BOTTOM -> bounds.top() - bounds.height() + numLines * font.lineHeight() - font.lineHeight() + correction;
         };
     }
-
 }
