@@ -5,6 +5,7 @@ import inspired.pdf.unbox.base.Column;
 import inspired.pdf.unbox.base.ColumnModel;
 import inspired.pdf.unbox.decorators.Decorator;
 import inspired.pdf.unbox.elements.Table;
+import inspired.pdf.unbox.elements.TableCell;
 import inspired.pdf.unbox.elements.TableRow;
 import inspired.pdf.unbox.internal.PdfUnboxException;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -23,6 +24,8 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
     private final List<TableRow> headers = new ArrayList<>();
     private final List<TableRow> rows = new ArrayList<>();
     private Margin margin = Margin.of(0);
+
+    private Padding cellPadding = TableCell.DEFAULT_CELL_PADDING;
     private boolean repeatHeader = true;
     private float tableStartOnPage;
 
@@ -35,12 +38,14 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
 
     @Override
     public TableRow addRow(TableRow row) {
+        row.withDefaultCellPadding(cellPadding);
         this.rows.add(row);
         return row;
     }
 
     @Override
     public TableRow addHeader(TableRow row) {
+        row.withDefaultCellPadding(cellPadding);
         this.headers.add(row);
         return row;
     }
@@ -67,6 +72,13 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
     @Override
     public Table with(Stroke stroke) {
         this.stroke = stroke;
+        return this;
+    }
+
+    public Table withCellPadding(Padding cellPadding) {
+        this.cellPadding = cellPadding;
+        headers.forEach(h -> h.withDefaultCellPadding(cellPadding));
+        rows.forEach(r -> r.withDefaultCellPadding(cellPadding));
         return this;
     }
 

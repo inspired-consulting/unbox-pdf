@@ -18,7 +18,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
  */
 public class TextCell extends AbstractTableCell {
 
-    private final static int LINE_PADDING = 10;
+    private final static int HEIGHT_CORRECTION = 2;
 
     private final Font font;
 
@@ -41,9 +41,9 @@ public class TextCell extends AbstractTableCell {
     @Override
     public float innerHeight(Bounds viewPort) {
         float lineHeight = font.lineHeight();
-        List<String> lines = chunk(viewPort.width() - padding.horizontal());
+        List<String> lines = chunk(viewPort.width() - padding().horizontal());
         int count = Math.max(1, lines.size());
-        return count * lineHeight + LINE_PADDING;
+        return count * lineHeight + padding().vertical() + HEIGHT_CORRECTION;
     }
 
     @Override
@@ -60,8 +60,8 @@ public class TextCell extends AbstractTableCell {
         try {
             float lineHeight = font.lineHeight();
             PDPageContentStream contentStream = document.getContentStream();
-            List<String> lines = chunk( bounds.width() - padding.horizontal());
-            float y =  bounds.top() - lineHeight - padding.top();
+            List<String> lines = chunk( bounds.width() - padding().horizontal());
+            float y =  bounds.top() - lineHeight - padding().top() + 1;
             Align align = coalesce(this.align, Align.LEFT);
             for (String line : lines) {
                 float startX = startX(bounds, align, line);
@@ -74,7 +74,7 @@ public class TextCell extends AbstractTableCell {
                 y -= lineHeight;
             }
             int count = Math.max(1, lines.size());
-            return count * lineHeight + LINE_PADDING;
+            return count * lineHeight + padding().vertical();
         } catch (IOException e) {
             throw new PdfUnboxException(e);
         }
@@ -90,9 +90,9 @@ public class TextCell extends AbstractTableCell {
         }
         float textWidth = font.width(text);
         return switch (align) {
-            case LEFT -> bounds.left() + padding.left();
-            case CENTER -> (int) (bounds.left() + padding.horizontalShift() + (bounds.width() - textWidth) / 2);
-            case RIGHT -> (int) (bounds.left() + bounds.width() - padding.right() - textWidth);
+            case LEFT -> bounds.left() + padding().left();
+            case CENTER -> (int) (bounds.left() + padding().horizontalShift() + (bounds.width() - textWidth) / 2);
+            case RIGHT -> (int) (bounds.left() + bounds.width() - padding().right() - textWidth);
         };
     }
 

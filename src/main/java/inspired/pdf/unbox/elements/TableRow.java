@@ -1,9 +1,6 @@
 package inspired.pdf.unbox.elements;
 
-import inspired.pdf.unbox.Align;
-import inspired.pdf.unbox.Bounds;
-import inspired.pdf.unbox.Document;
-import inspired.pdf.unbox.Font;
+import inspired.pdf.unbox.*;
 import inspired.pdf.unbox.base.ColumnModel;
 import inspired.pdf.unbox.base.TableModel;
 import inspired.pdf.unbox.base.TableModel.TableColumn;
@@ -26,6 +23,7 @@ public class TableRow extends AbstractDecoratable implements PdfElement {
     private final List<TableCell> cells = new ArrayList<>();
     private final TableModel model;
     private final Font font;
+    private Padding cellPadding;
 
     public static TableRow header(TableModel model, Decorator... decorators) {
         TableRow row = new TableRow(model);
@@ -71,11 +69,15 @@ public class TableRow extends AbstractDecoratable implements PdfElement {
     }
 
     public TableRow addCell(String text) {
-        return addCell(text, null);
+        return addCell(text, null, null);
     }
 
     public TableRow addCell(String text, Align align) {
         return addCell(text, align, null);
+    }
+
+    public TableRow addCell(String text, Font font) {
+        return addCell(text, Align.LEFT, font);
     }
 
     public TableRow addCell(String text, Align align, Font font) {
@@ -118,6 +120,18 @@ public class TableRow extends AbstractDecoratable implements PdfElement {
         return this;
     }
 
+    public TableRow withCellPadding(Padding cellPadding) {
+        this.cellPadding = cellPadding;
+        return this;
+    }
+
+    public TableRow withDefaultCellPadding(Padding cellPadding) {
+        if (this.cellPadding == null) {
+            this.cellPadding = cellPadding;
+        }
+        return this;
+    }
+
     @Override
     public float render(Document document, Bounds bounds) {
         applyDecorators(document, bounds);
@@ -141,6 +155,9 @@ public class TableRow extends AbstractDecoratable implements PdfElement {
         float max = 0f;
         for (int i = 0; i < size(); i++) {
             TableCell cell = prepareCell(i);
+            if (cellPadding != null) {
+                cell.withDefaultPadding(cellPadding);
+            }
             float width = columns.width(i);
             max = Math.max(max, cell.innerHeight(viewPort.width(width)));
         }

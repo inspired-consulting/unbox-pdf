@@ -8,11 +8,27 @@ import inspired.pdf.unbox.elements.TableCell;
 
 public abstract class AbstractTableCell extends AbstractDecoratable implements TableCell {
 
-    protected Padding padding = Padding.of(4, 4);
     protected Align align = Align.LEFT;
+    private Padding padding;
+
+    public Padding padding() {
+        if (padding != null) {
+            return padding;
+        } else {
+            return DEFAULT_CELL_PADDING;
+        }
+    }
 
     public AbstractTableCell withPadding(Padding padding) {
         this.padding = padding;
+        return this;
+    }
+
+    @Override
+    public AbstractTableCell withDefaultPadding(Padding padding) {
+        if (this.padding == null) {
+            this.padding = padding;
+        }
         return this;
     }
 
