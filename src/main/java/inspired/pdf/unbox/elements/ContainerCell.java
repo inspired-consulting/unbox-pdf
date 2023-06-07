@@ -19,7 +19,7 @@ public class ContainerCell extends AbstractTableCell {
 
     @Override
     public float innerHeight(Bounds viewPort) {
-        return container.innerHeight(viewPort);
+        return container.innerHeight(viewPort) + padding().vertical();
     }
 
     @Override
@@ -28,7 +28,7 @@ public class ContainerCell extends AbstractTableCell {
 
     @Override
     protected float renderCell(Document document, Bounds viewPort) {
-        return container.render(document, viewPort);
+        return container.render(document, viewPort.apply(padding())) + padding().vertical();
     }
 
 }

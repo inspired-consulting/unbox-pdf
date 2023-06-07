@@ -19,7 +19,7 @@ public abstract class AbstractTableCell extends AbstractDecoratable implements T
         }
     }
 
-    public AbstractTableCell withPadding(Padding padding) {
+    public AbstractTableCell with(Padding padding) {
         this.padding = padding;
         return this;
     }
