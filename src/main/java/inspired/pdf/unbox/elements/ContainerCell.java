@@ -4,12 +4,19 @@ import inspired.pdf.unbox.Bounds;
 import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.elements.internal.AbstractTableCell;
 
+/**
+ * This cell allows to add arbitrary elements to a table.
+ */
 public class ContainerCell extends AbstractTableCell {
 
     private final Container container;
 
     public ContainerCell(Container.Layout layout) {
-        this.container = new Container(layout);
+        this(new Container(layout));
+    }
+
+    public ContainerCell(Container container) {
+        this.container = container;
     }
 
     public ContainerCell add(PdfElement element) {
@@ -24,6 +31,7 @@ public class ContainerCell extends AbstractTableCell {
 
     @Override
     public void setValue(Object value) {
+        // ignore
     }
 
     @Override
