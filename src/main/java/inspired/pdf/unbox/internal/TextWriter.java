@@ -2,10 +2,10 @@ package inspired.pdf.unbox.internal;
 
 import inspired.pdf.unbox.*;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.util.Matrix;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Arrays;
 
 /**
  * Utility to render text that may span over several lines.
@@ -27,6 +27,10 @@ public class TextWriter {
             count = lineLimit;
         }
         return count * font.lineHeight();
+    }
+
+    public float calculateHeightVerticalText(String text) {
+        return font.width(text);
     }
 
     public float write(PDPageContentStream contentStream, Bounds bounds, String text) {
@@ -64,6 +68,13 @@ public class TextWriter {
         return new TextTokenizer(font).chunk(text, maxWidth);
     }
 
+    /**
+     *
+     * @param contentStream
+     * @param text
+     * @param x Lower left corner of the text
+     * @param y Lower left corner of the text
+     */
     private void writeLine(PDPageContentStream contentStream, String text, float x, float y) {
         try {
             contentStream.beginText();
@@ -93,5 +104,26 @@ public class TextWriter {
             case MIDDLE -> bounds.top() - bounds.height() / 2f + numLines * font.lineHeight() / 2f - font.lineHeight() + correction;
             case BOTTOM -> bounds.top() - bounds.height() + numLines * font.lineHeight() - font.lineHeight() + correction;
         };
+    }
+
+    public float writeVerticalText(final PDPageContentStream contentStream, final Bounds bounds, final String text) {
+        float textLength = calculateHeightVerticalText(text);
+        float correction = font.lineHeight() * CORRECTION_FACTOR;
+        float offsetX = (bounds.width() + font.lineHeight() - correction) / 2f;
+        float offsetY = (bounds.height() + textLength) / 2f;
+        try {
+            contentStream.beginText();
+            contentStream.setNonStrokingColor(font.getColor());
+            contentStream.setFont(font.getFont(), font.getSize());
+            contentStream.newLineAtOffset(offsetX,offsetY);
+
+            Matrix matrix = Matrix.getRotateInstance(Math.toRadians(90), bounds.left() + offsetX,bounds.top() - offsetY);
+            contentStream.setTextMatrix(matrix);
+            contentStream.showText(text);
+            contentStream.endText();
+        } catch (IOException e) {
+            throw new PdfUnboxException(e);
+        }
+        return textLength;
     }
 }
