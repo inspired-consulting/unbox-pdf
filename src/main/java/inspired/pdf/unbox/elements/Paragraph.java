@@ -10,17 +10,17 @@ import inspired.pdf.unbox.internal.TextWriter;
  */
 public class Paragraph extends AbstractDecoratable implements PdfElement {
 
-    private final static float HEIGHT_UNDEFINED = -1f;
+    protected final static float HEIGHT_UNDEFINED = -1f;
 
-    private final TextWriter textWriter;
-    private final String text;
+    protected final TextWriter textWriter;
+    protected final String text;
 
-    private Align align = Align.LEFT;
-    private VAlign vAlign = VAlign.TOP;
-    private float innerHeight = HEIGHT_UNDEFINED;
+    protected Align align = Align.LEFT;
+    protected VAlign vAlign = VAlign.TOP;
+    protected float innerHeight = HEIGHT_UNDEFINED;
 
-    private Padding padding = Padding.of(2);
-    private Margin margin = Margin.none();
+    protected Padding padding = Padding.of(2);
+    protected Margin margin = Margin.none();
 
     private Integer lineLimit = null;
 
@@ -119,11 +119,11 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
         return "Paragraph['" + text + "']";
     }
 
-    private Bounds effectiveBounds(Bounds viewPort, float calculatedHeight) {
+    protected Bounds effectiveBounds(Bounds viewPort, float calculatedHeight) {
         if (innerHeight > HEIGHT_UNDEFINED) {
             return viewPort.apply(margin).height(innerHeight).apply(padding);
         } else {
-            return viewPort.apply(margin).apply(padding).height(calculatedHeight - padding.bottom());
+            return viewPort.apply(margin).height(calculatedHeight).apply(padding);
         }
     }
 
