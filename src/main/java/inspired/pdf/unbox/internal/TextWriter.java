@@ -54,6 +54,27 @@ public class TextWriter {
         return write(chunks, bounds, align, stream, y);
     }
 
+    public float writeVerticalText(PDPageContentStream contentStream, Bounds bounds, String text) {
+        float textLength = calculateHeightVerticalText(text);
+        float correction = font.lineHeight() * CORRECTION_FACTOR;
+        float offsetX = (bounds.width() + font.lineHeight() - correction) / 2f;
+        float offsetY = (bounds.height() + textLength) / 2f;
+        try {
+            contentStream.beginText();
+            contentStream.setNonStrokingColor(font.getColor());
+            contentStream.setFont(font.getFont(), font.getSize());
+            contentStream.newLineAtOffset(offsetX,offsetY);
+
+            var matrix = Matrix.getRotateInstance(Math.toRadians(90), bounds.left() + offsetX,bounds.top() - offsetY);
+            contentStream.setTextMatrix(matrix);
+            contentStream.showText(text);
+            contentStream.endText();
+        } catch (IOException e) {
+            throw new PdfUnboxException(e);
+        }
+        return textLength;
+    }
+
     private float write(List<String> chunks, Bounds bounds, Align align, PDPageContentStream stream, float y) {
         for (String chunk : chunks) {
             float x = offsetX(bounds, chunk, align);
@@ -70,8 +91,8 @@ public class TextWriter {
 
     /**
      *
-     * @param contentStream
-     * @param text
+     * @param contentStream The content stream to write to
+     * @param text The text to write
      * @param x Lower left corner of the text
      * @param y Lower left corner of the text
      */
@@ -106,24 +127,4 @@ public class TextWriter {
         };
     }
 
-    public float writeVerticalText(final PDPageContentStream contentStream, final Bounds bounds, final String text) {
-        float textLength = calculateHeightVerticalText(text);
-        float correction = font.lineHeight() * CORRECTION_FACTOR;
-        float offsetX = (bounds.width() + font.lineHeight() - correction) / 2f;
-        float offsetY = (bounds.height() + textLength) / 2f;
-        try {
-            contentStream.beginText();
-            contentStream.setNonStrokingColor(font.getColor());
-            contentStream.setFont(font.getFont(), font.getSize());
-            contentStream.newLineAtOffset(offsetX,offsetY);
-
-            Matrix matrix = Matrix.getRotateInstance(Math.toRadians(90), bounds.left() + offsetX,bounds.top() - offsetY);
-            contentStream.setTextMatrix(matrix);
-            contentStream.showText(text);
-            contentStream.endText();
-        } catch (IOException e) {
-            throw new PdfUnboxException(e);
-        }
-        return textLength;
-    }
 }

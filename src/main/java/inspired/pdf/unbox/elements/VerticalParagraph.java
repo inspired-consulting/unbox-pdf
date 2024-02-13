@@ -4,7 +4,8 @@ import inspired.pdf.unbox.*;
 import inspired.pdf.unbox.internal.SimpleFont;
 
 /**
- * Caution: This Paragraph will render only one line of text and might bust your layout if this line gets too long
+ * A paragraph that renders text vertically.
+ * Caution: This Paragraph will render only one line of text and might bust your layout if this line gets too long.
  * Works best with Stretch-Layouts (rowStretch() or HorizontalStretchLayout)
  */
 public class VerticalParagraph extends Paragraph  {
