@@ -7,6 +7,9 @@ import inspired.pdf.unbox.elements.PdfElement;
 
 import java.util.List;
 
+/**
+ * Vertical layout that renders all elements vertically.
+ */
 public class VerticalLayout implements ContainerLayout {
 
     @Override

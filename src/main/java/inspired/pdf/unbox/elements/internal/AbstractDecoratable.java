@@ -19,7 +19,7 @@ public abstract class AbstractDecoratable implements PdfElement, Decoratable {
     private final RenderingHints renderingHints = new RenderingHints();
 
     @Override
-    public AbstractDecoratable with(Decorator decorator) {
+    public PdfElement with(Decorator decorator) {
         this.decorators.add(decorator);
         return this;
     }
