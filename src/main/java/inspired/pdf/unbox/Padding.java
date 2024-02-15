@@ -2,10 +2,11 @@ package inspired.pdf.unbox;
 
 /**
  * The padding describes the space inside the element.
- * @param top Padding top
- * @param right Padding right
+ *
+ * @param top    Padding top
+ * @param right  Padding right
  * @param bottom Padding bottom
- * @param left Padding left
+ * @param left   Padding left
  */
 public record Padding(float top, float right, float bottom, float left) {
 
@@ -26,19 +27,19 @@ public record Padding(float top, float right, float bottom, float left) {
     }
 
     public static Padding top(float top) {
-        return new Padding(top, 0,0,0);
+        return new Padding(top, 0, 0, 0);
     }
 
     public static Padding right(float right) {
-        return new Padding(0, right,0,0);
+        return new Padding(0, right, 0, 0);
     }
 
     public static Padding bottom(float bottom) {
-        return new Padding(0, 0,bottom,0);
+        return new Padding(0, 0, bottom, 0);
     }
 
     public static Padding left(float left) {
-        return new Padding(0, 0,0, left);
+        return new Padding(0, 0, 0, left);
     }
 
     public static Padding none() {
@@ -55,6 +56,11 @@ public record Padding(float top, float right, float bottom, float left) {
 
     public float horizontalShift() {
         return left - right;
+    }
+
+    public Padding add(Padding padding) {
+        return Padding.of(top + padding.top, right + padding.right,
+            bottom + padding.bottom, left + padding.left);
     }
 
 }

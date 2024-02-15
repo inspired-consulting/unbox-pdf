@@ -17,6 +17,13 @@ public class TextTokenizer {
         this.font = font;
     }
 
+    /**
+     * Chunk the text into lines that fit the given maximum width, regarding line breaks (\n).
+     *
+     * @param text     The text to chunk.
+     * @param maxWidth The maximum width of a line.
+     * @return The chunked lines.
+     */
     public List<String> chunkMultiLine(String text, float maxWidth) {
         var chunkedLines = new ArrayList<String>();
         var lines = text.split("\\n");
@@ -26,6 +33,13 @@ public class TextTokenizer {
         return chunkedLines;
     }
 
+    /**
+     * Chunk the text into lines that fit the given maximum width, regarding spaces.
+     *
+     * @param text     The text to chunk.
+     * @param maxWidth The maximum width of a line.
+     * @return The chunked lines.
+     */
     public List<String> chunk(String text, float maxWidth) {
         if (isBlank(text)) {
             return Collections.emptyList();
@@ -73,7 +87,7 @@ public class TextTokenizer {
     }
 
     private boolean isBlank(String text) {
-        return text == null || text.trim().length() == 0;
+        return text == null || text.trim().isEmpty();
     }
 
     private List<String> breakUp(String word, float maxWidth) {

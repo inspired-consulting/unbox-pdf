@@ -10,14 +10,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Base class for elements that can be decorated.
+ */
 public abstract class AbstractDecoratable implements PdfElement, Decoratable {
 
     private final List<Decorator> decorators = new ArrayList<>();
     private final RenderingHints renderingHints = new RenderingHints();
 
-    public PdfElement with(Decorator decorator) {
+    @Override
+    public AbstractDecoratable with(Decorator decorator) {
         this.decorators.add(decorator);
         return this;
+    }
+
+    public RenderingHints renderingHints() {
+        return renderingHints;
     }
 
     protected void applyDecorators(Document document, Bounds viewPort) {
@@ -31,5 +39,4 @@ public abstract class AbstractDecoratable implements PdfElement, Decoratable {
         return decorators;
     }
 
-    public RenderingHints renderingHints() { return renderingHints; }
 }

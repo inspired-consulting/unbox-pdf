@@ -12,15 +12,18 @@ import java.util.List;
 
 import static java.lang.Math.max;
 
+/**
+ * Layout for elements in a horizontal row, i.e. in columns
+ */
 public class HorizontalLayout implements ContainerLayout {
 
-    protected final ColumnModel columnModel;
+    protected final ColumnModel<?> columnModel;
 
     public HorizontalLayout() {
         columnModel = null;
     }
 
-    public HorizontalLayout(ColumnModel columnModel) {
+    public HorizontalLayout(ColumnModel<?> columnModel) {
         this.columnModel = columnModel;
     }
 

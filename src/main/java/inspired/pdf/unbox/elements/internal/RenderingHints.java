@@ -17,10 +17,7 @@ public class RenderingHints {
     }
 
     public RenderingHints addExtraPadding(Padding padding) {
-       extraPadding = Padding.of(extraPadding.top() + padding.top(),
-               extraPadding.right() + padding.right(),
-               extraPadding.bottom() + padding.bottom(),
-               extraPadding.left() + padding.left());
+       extraPadding = extraPadding.add(padding);
        return this;
     }
 

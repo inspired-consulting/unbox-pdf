@@ -24,19 +24,43 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
 
     private Integer lineLimit = null;
 
+    /**
+     * Create a new paragraph with the given text and default font.
+     *
+     * @param text The text of the paragraph
+     */
     public Paragraph(String text) {
         this(text, false);
     }
 
+    /**
+     * Create a new paragraph with the given text and overflow settings.
+     *
+     * @param text     The text of the paragraph
+     * @param overflow If true, the text will be written completely even if it does not fit the bounds.
+     */
     public Paragraph(String text, boolean overflow) {
         this(text, SimpleFont.helvetica(8), overflow);
     }
 
+    /**
+     * Create a new paragraph with the given text and font.
+     *
+     * @param text The text of the paragraph
+     * @param font The font to use
+     */
     public Paragraph(String text, Font font) {
         this.textWriter = new TextWriter(font);
         this.text = text;
     }
 
+    /**
+     * Create a new paragraph with the given text, font and overflow settings.
+     *
+     * @param text     The text of the paragraph.
+     * @param font     The font to use.
+     * @param overflow If true, the text will be written completely even if it does not fit the bounds.
+     */
     public Paragraph(String text, Font font, boolean overflow) {
         this.textWriter = new TextWriter(font, overflow);
         this.text = text;
@@ -87,7 +111,7 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
      */
     public Paragraph limit(int lineLimit) {
         if (lineLimit <= 0) {
-            return this;
+            throw new IllegalArgumentException("Line limit must be greater than 0");
         }
         this.lineLimit = lineLimit;
         return this;

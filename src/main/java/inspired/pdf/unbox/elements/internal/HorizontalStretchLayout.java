@@ -12,13 +12,16 @@ import java.util.List;
 
 import static java.lang.Math.max;
 
+/**
+ * Horizontal layout that stretches all columns to the height of the highest column.
+ */
 public class HorizontalStretchLayout extends HorizontalLayout {
 
     public HorizontalStretchLayout() {
         this(null);
     }
 
-    public HorizontalStretchLayout(ColumnModel columnModel) {
+    public HorizontalStretchLayout(ColumnModel<?> columnModel) {
         super(columnModel);
     }
 
