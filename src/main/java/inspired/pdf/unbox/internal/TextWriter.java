@@ -16,25 +16,22 @@ public class TextWriter {
 
     private final Font font;
 
-    private final boolean overflow;
+    private boolean overflow;
 
     /**
      * Create a new text writer with the given font.
      * @param font  The font to use
      */
     public TextWriter(Font font) {
-        this(font, false);
+        this.font = font;
     }
 
     /**
-     * Create a new text writer with the given font and overflow setting.
      * If overflow is true, the text will be written even if it does not fit the bounds.
-     * @param font  The font to use
-     * @param overflow  If true, the text will be written even if it does not fit the bounds
      */
-    public TextWriter(Font font, boolean overflow) {
-        this.font = font;
-        this.overflow = overflow;
+    public TextWriter withOverflow(boolean overflow) {
+        this.overflow = true;
+        return this;
     }
 
     public float calculateHeight(String text, Bounds viewPort, Integer lineLimit) {
@@ -107,7 +104,9 @@ public class TextWriter {
     }
 
     private boolean enoughSpace(final Bounds bounds, final int index) {
-        return overflow || ((index + 1) * font.lineHeight() <= bounds.height());
+        // 0.99f is a correction factor to avoid text being cut off due to rounding differences
+        float lineHeight = font.lineHeight() * 0.99f;
+        return overflow || ((index + 1) * lineHeight <= bounds.height());
     }
 
     private List<String> chunk(String text, float maxWidth) {

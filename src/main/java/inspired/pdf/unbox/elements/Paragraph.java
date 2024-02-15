@@ -24,23 +24,14 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
 
     private Integer lineLimit = null;
 
-    /**
-     * Create a new paragraph with the given text and default font.
-     *
-     * @param text The text of the paragraph
-     */
-    public Paragraph(String text) {
-        this(text, false);
-    }
 
     /**
      * Create a new paragraph with the given text and overflow settings.
      *
      * @param text     The text of the paragraph
-     * @param overflow If true, the text will be written completely even if it does not fit the bounds.
      */
-    public Paragraph(String text, boolean overflow) {
-        this(text, SimpleFont.helvetica(8), overflow);
+    public Paragraph(String text) {
+        this(text, SimpleFont.helvetica(8));
     }
 
     /**
@@ -55,24 +46,34 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
     }
 
     /**
-     * Create a new paragraph with the given text, font and overflow settings.
+     * Set the margin for this paragraph.
      *
-     * @param text     The text of the paragraph.
-     * @param font     The font to use.
-     * @param overflow If true, the text will be written completely even if it does not fit the bounds.
+     * @param margin The margin to use
+     * @return The paragraph.
      */
-    public Paragraph(String text, Font font, boolean overflow) {
-        this.textWriter = new TextWriter(font, overflow);
-        this.text = text;
-    }
-
     public Paragraph with(Margin margin) {
         this.margin = margin;
         return this;
     }
 
+    /**
+     * Set the padding for this paragraph.
+     *
+     * @param padding The padding to use
+     * @return The paragraph.
+     */
     public Paragraph with(Padding padding) {
         this.padding = padding;
+        return this;
+    }
+
+    /**
+     * If overflow is true, the text will be written even if it does not fit the bounds.
+     * @param overflow The overflow setting
+     * @return The paragraph.
+     */
+    public Paragraph withOverflow(boolean overflow) {
+        textWriter.withOverflow(overflow);
         return this;
     }
 
