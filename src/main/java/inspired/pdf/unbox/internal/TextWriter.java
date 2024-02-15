@@ -76,17 +76,25 @@ public class TextWriter {
     }
 
     private float write(List<String> chunks, Bounds bounds, Align align, PDPageContentStream stream, float y) {
-        for (String chunk : chunks) {
+        int index = 0;
+        if(chunks.size() == 0) {
+            return 0;
+        }
+        while(index < chunks.size() && enoughSpace(bounds, index)) {
+            String chunk = chunks.get(index++);
             float x = offsetX(bounds, chunk, align);
             writeLine(stream, chunk, x, y);
             y -= font.lineHeight();
         }
-        int count = Math.max(1, chunks.size());
-        return count * font.lineHeight();
+        return index * font.lineHeight();
+    }
+
+    private boolean enoughSpace(final Bounds bounds, final int index) {
+        return (index + 1) * font.lineHeight() <= bounds.height();
     }
 
     private List<String> chunk(String text, float maxWidth)  {
-        return new TextTokenizer(font).chunk(text, maxWidth);
+        return new TextTokenizer(font).chunkMultiLine(text, maxWidth);
     }
 
     /**

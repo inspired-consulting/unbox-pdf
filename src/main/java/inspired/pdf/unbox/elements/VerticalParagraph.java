@@ -15,7 +15,7 @@ public class VerticalParagraph extends Paragraph  {
     }
 
     public VerticalParagraph(String text, Font font) {
-        super(text, font);
+        super(text.replace("\n", ""), font);
     }
 
     @Override
