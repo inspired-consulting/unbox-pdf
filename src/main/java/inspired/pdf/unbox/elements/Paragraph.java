@@ -25,11 +25,20 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
     private Integer lineLimit = null;
 
     public Paragraph(String text) {
-        this(text, SimpleFont.helvetica(8));
+        this(text, false);
+    }
+
+    public Paragraph(String text, boolean overflow) {
+        this(text, SimpleFont.helvetica(8), overflow);
     }
 
     public Paragraph(String text, Font font) {
         this.textWriter = new TextWriter(font);
+        this.text = text;
+    }
+
+    public Paragraph(String text, Font font, boolean overflow) {
+        this.textWriter = new TextWriter(font, overflow);
         this.text = text;
     }
 
@@ -61,6 +70,7 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
 
     /**
      * Specify the inner height instead of calculation.
+     *
      * @param height The inner height, i.e. without padding and margin.
      * @return The paragraph.
      */
@@ -71,6 +81,7 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
 
     /**
      * Set the maximum number of lines for this paragraph. If the text is longer it will be truncated.
+     *
      * @param lineLimit The maximum number of lines. May be null.
      * @return The paragraph.
      */

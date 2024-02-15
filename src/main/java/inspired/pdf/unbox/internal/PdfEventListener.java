@@ -7,8 +7,8 @@ import inspired.pdf.unbox.Document;
  */
 public interface PdfEventListener {
 
-    default void onNewPage(Document document) {};
+    default void onNewPage(Document document) {}
 
-    default void onFinished(Document document) {};
+    default void onFinished(Document document) {}
 
 }

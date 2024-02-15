@@ -16,14 +16,31 @@ public class TextWriter {
 
     private final Font font;
 
+    private final boolean overflow;
+
+    /**
+     * Create a new text writer with the given font.
+     * @param font  The font to use
+     */
     public TextWriter(Font font) {
+        this(font, false);
+    }
+
+    /**
+     * Create a new text writer with the given font and overflow setting.
+     * If overflow is true, the text will be written even if it does not fit the bounds.
+     * @param font  The font to use
+     * @param overflow  If true, the text will be written even if it does not fit the bounds
+     */
+    public TextWriter(Font font, boolean overflow) {
         this.font = font;
+        this.overflow = overflow;
     }
 
     public float calculateHeight(String text, Bounds viewPort, Integer lineLimit) {
         List<String> lines = chunk(text, viewPort.width());
         int count = Math.max(1, lines.size());
-        if(lineLimit != null && count > lineLimit) {
+        if (lineLimit != null && count > lineLimit) {
             count = lineLimit;
         }
         return count * font.lineHeight();
@@ -47,7 +64,7 @@ public class TextWriter {
 
     public float write(PDPageContentStream stream, Bounds bounds, String text, Align align, VAlign vAlign, Integer lineLimit) {
         List<String> chunks = chunk(text, bounds.width());
-        if(lineLimit != null && lineLimit > 0 && lineLimit < chunks.size()) {
+        if (lineLimit != null && lineLimit > 0 && lineLimit < chunks.size()) {
             chunks = chunks.subList(0, lineLimit);
         }
         float y = offsetY(bounds, vAlign, chunks.size());
@@ -63,9 +80,9 @@ public class TextWriter {
             contentStream.beginText();
             contentStream.setNonStrokingColor(font.getColor());
             contentStream.setFont(font.getFont(), font.getSize());
-            contentStream.newLineAtOffset(offsetX,offsetY);
+            contentStream.newLineAtOffset(offsetX, offsetY);
 
-            var matrix = Matrix.getRotateInstance(Math.toRadians(90), bounds.left() + offsetX,bounds.top() - offsetY);
+            var matrix = Matrix.getRotateInstance(Math.toRadians(90), bounds.left() + offsetX, bounds.top() - offsetY);
             contentStream.setTextMatrix(matrix);
             contentStream.showText(text);
             contentStream.endText();
@@ -76,11 +93,11 @@ public class TextWriter {
     }
 
     private float write(List<String> chunks, Bounds bounds, Align align, PDPageContentStream stream, float y) {
-        int index = 0;
-        if(chunks.size() == 0) {
+        if (chunks.isEmpty()) {
             return 0;
         }
-        while(index < chunks.size() && enoughSpace(bounds, index)) {
+        int index = 0;
+        while (index < chunks.size() && enoughSpace(bounds, index)) {
             String chunk = chunks.get(index++);
             float x = offsetX(bounds, chunk, align);
             writeLine(stream, chunk, x, y);
@@ -90,19 +107,18 @@ public class TextWriter {
     }
 
     private boolean enoughSpace(final Bounds bounds, final int index) {
-        return (index + 1) * font.lineHeight() <= bounds.height();
+        return overflow || ((index + 1) * font.lineHeight() <= bounds.height());
     }
 
-    private List<String> chunk(String text, float maxWidth)  {
+    private List<String> chunk(String text, float maxWidth) {
         return new TextTokenizer(font).chunkMultiLine(text, maxWidth);
     }
 
     /**
-     *
      * @param contentStream The content stream to write to
-     * @param text The text to write
-     * @param x Lower left corner of the text
-     * @param y Lower left corner of the text
+     * @param text          The text to write
+     * @param x             Lower left corner of the text
+     * @param y             Lower left corner of the text
      */
     private void writeLine(PDPageContentStream contentStream, String text, float x, float y) {
         try {
@@ -127,11 +143,14 @@ public class TextWriter {
     }
 
     private float offsetY(Bounds bounds, VAlign vAlign, int numLines) {
-        float correction = font.lineHeight() * CORRECTION_FACTOR;
+        float lineHeight = font.lineHeight();
+        float correction = lineHeight * CORRECTION_FACTOR;
         return switch (vAlign) {
-            case TOP -> bounds.top() - font.lineHeight() + correction;
-            case MIDDLE -> bounds.top() - bounds.height() / 2f + numLines * font.lineHeight() / 2f - font.lineHeight() + correction;
-            case BOTTOM -> bounds.top() - bounds.height() + numLines * font.lineHeight() - font.lineHeight() + correction;
+            case TOP -> bounds.top() - lineHeight + correction;
+            case MIDDLE ->
+                bounds.top() - bounds.height() / 2f + numLines * lineHeight / 2f - lineHeight + correction;
+            case BOTTOM ->
+                bounds.top() - bounds.height() + numLines * lineHeight - lineHeight + correction;
         };
     }
 

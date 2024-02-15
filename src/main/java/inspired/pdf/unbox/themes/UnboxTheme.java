@@ -18,7 +18,7 @@ public class UnboxTheme {
     public static Color WHITE = new Color(255, 255, 255);
     public static Color BLACK = new Color(0, 0, 0);
 
-    public static Color GRAY_100 = new Color(244, 244, 244);;
+    public static Color GRAY_100 = new Color(244, 244, 244);
     public static Color GRAY_200 = new Color(230, 230, 230);
     public static Color GRAY_300 = new Color(210, 210, 210);
     public static Color GRAY_400 = new Color(188, 188, 188);

@@ -1,6 +1,7 @@
 package samples;
 
 import inspired.pdf.unbox.Border;
+import inspired.pdf.unbox.Bounds;
 import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.Padding;
 import inspired.pdf.unbox.decorators.BorderDecorator;
@@ -14,6 +15,9 @@ import java.io.IOException;
 
 import static inspired.pdf.unbox.Unbox.*;
 
+/**
+ * Demonstrates the support for multi-line text in paragraphs.
+ */
 public class MultiLineSupportForParagraph {
 
     public static void main(String[] args) throws IOException {
@@ -37,7 +41,7 @@ public class MultiLineSupportForParagraph {
         container.add(new VerticalParagraph("Stretch\nNextLine").with(borderColumn));
         container.add(new Paragraph("Test Text\nNextLine\n SpaceNextLine \nNext Line").with(borderColumn));
         container.add(new Paragraph("Limited3\nNextLine\n SpaceNextLine \nNext Line").limit(3).with(borderColumn));
-        container.add(new Paragraph("Limited3\nNextLine\n SpaceNextLine \nNext Line").limit(3).with(Padding.of(10)).with(borderColumn));
+        container.add(new Paragraph("Line\nwith\noverflow\n should \n be \n written \n even \n if \n to \n \n long", true).withInnerHeight(40).with(Padding.of(5)).with(borderColumn));
         container.add(new Paragraph("InnerHeight40\nNextLine\n SpaceNextLine \nNext Line\nNext Line\nNext Line\nNext Line\nNext Line\nNext Line\nNext Line\nNext Line\nNext Line\nNext Line").withInnerHeight(40).with(borderColumn));
         container.add(new Paragraph("InnerHeight40\nPadding10\n SpaceNextLine \nNext Line\nNext Line\nNext Line\nNext Line\nNext Line\nNext Line\nNext Line\nNext Line\nNext Line\nNext Line").withInnerHeight(40).with(Padding.of(10)).with(borderColumn));
         document.render(container);
