@@ -15,6 +15,9 @@ import java.io.IOException;
 import static inspired.pdf.unbox.Unbox.*;
 import static inspired.pdf.unbox.internal.SimpleFont.helvetica_bold;
 
+/**
+ * Demonstrates the support for columns with stretch layout.
+ */
 public class StretchingColumns {
 
     public static void main(String[] args) throws IOException {
@@ -116,12 +119,12 @@ public class StretchingColumns {
         document.render(container.with(border).with(Padding.of(5))
                 .add(paragraph("Ohne Col").limit(1).with(border))
                 .add(column().with(borderColumn)
-                        .add(paragraph("Col m Border").limit(-5)))
+                        .add(paragraph("Col m Border")))
                 .add(column().with(borderColumn)
                         .add(paragraph("Col m Border").limit(5))
                         .add(paragraph("Col m Border").limit(1)))
                 .add(column().with(borderColumn)
-                        .add(paragraph("P mit Border").limit(0).with(border))
+                        .add(paragraph("P mit Border").limit(1).with(border))
                         .add(paragraph("P mit Border").limit(1).with(border)))
                 .add(new Container(new VerticalStretchLayout()).with(borderColumn)
                         .add(paragraph("VerticalStretch").limit(1).with(border))
