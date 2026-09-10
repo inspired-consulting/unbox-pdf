@@ -30,7 +30,7 @@ public class TextWriter {
      * If overflow is true, the text will be written even if it does not fit the bounds.
      */
     public TextWriter withOverflow(boolean overflow) {
-        this.overflow = true;
+        this.overflow = overflow;
         return this;
     }
 

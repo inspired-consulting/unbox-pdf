@@ -81,7 +81,7 @@ public class TableRow extends AbstractDecoratable implements PdfElement {
     }
 
     public TableRow addCell(String text, Align align, Font font) {
-        if (model.size() >= cells.size()) {
+        if (model.size() > cells.size()) {
             TableColumn column = model.get(cells.size());
             Align effectiveAlign = coalesce(align, column.align());
             Font effectiveFont = coalesce(font, column.font(), this.font);
