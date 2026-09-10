@@ -1,69 +1,153 @@
-
 # Unbox PDF
 
-## A PDF toolkit for Java based on PdfBox
+A Java library for creating PDFs with Apache PDFBox. Its fluent API provides
+paragraphs, rows, columns, tables, and custom drawing, with HTML-inspired margins,
+padding, borders, and backgrounds.
 
-This toolkit provides some components that are hopefully helpful to create your custom PDFs with Java.
+## Build and test
 
-A lot of concepts are borrowed from HTML, like Margins, Paddings and Borders. 
+Use a JDK compatible with Java 17 and an installed Maven. The current project
+version is `0.10.0-SNAPSHOT`; the build uses PDFBox 2.0.30.
 
-The following code shows by example how to use this toolkit.
+Run from the repository root:
 
-
-```Java
-Document document = new Document();
-
-// add a paragraph
-document.render(paragraph("Hello, World!", Align.LEFT, helvetica_bold(12)));
-
-// add a row with several paragraphs
-document.render(new Row().with(Margin.of(10,0))
-        .add(paragraph("Col 1").with(background(NEON_GREEN)))
-        .add(paragraph("Col 2", Align.CENTER).with(background(GRAY_100)))
-        .add(paragraph("Col 3", Align.RIGHT).with(background(RED_ORANGE.brighter())))
-);
-
-// Add paragraph with background
-document.render(paragraph("Hello, Again!", Align.RIGHT)
-        .with(Margin.left(100))
-        .with(Padding.of(10, 30))
-        .with(border(2, UnboxTheme.GREEN))
-        .with(background(NEON_GREEN)));
-
-// Add a table with fixed column model
-TableModel tableModel = new TableModel()
-        .add("Article", 2f)
-        .add("Size")
-        .add("Price", Align.RIGHT);
-Table table = new FixedColumnsTable(tableModel)
-        .with(Margin.of(10))
-        .with(border(1, GRAY_500));
-table.addHeader(TableRow.header(tableModel, helvetica_bold(8)).with(background(GRAY_100)));
-table.addRow()
-        .addCell("SmartTV 200+")
-        .addCell("55", Align.LEFT, helvetica_bold(8, RED_ORANGE))
-        .addCell("200.12 EUR");
-table.addRow().withCells("SmartPhone", "5,5", "320.00 EUR");
-document.render(table);
-
-// render some graphics on a canvas
-document.render(new Canvas(100) {
-    @Override
-    public void paint(PDPageContentStream contentStream, Bounds viewPort) throws IOException {
-        drawCircle(contentStream, viewPort.left() + 100, viewPort.top() -50, 50, NEON_GREEN);
-    }
-}.with(Margin.bottom(10)));
-
-document.render(paragraph("Done!", Align.CENTER, helvetica_bold(12))
-        .with(Padding.of(20))
-        .with(border(2, RED_ORANGE))
-        .with(background(GRAY_100)));
-
-PDDocument pdf = document.finish();
-        pdf.save("./samples/out/SimplePdf.pdf");
-        pdf.close();
+```bash
+mvn test
+mvn package
 ```
 
-The result will look like this:
+To install the library locally, including for the separate samples project:
 
-![sample pdf](./docs/SamplePdf_1.png)
+```bash
+mvn -Dgpg.skip install
+```
+
+Signing is bound to Maven's `verify` phase. `-Dgpg.skip` allows a local installation
+without a signing key; `test` and `package` do not reach that phase.
+[Maven Wrapper setup](docs/plans/maven-wrapper.md) is planned; `./mvnw` is not yet
+available.
+
+After installing locally, another Maven project can use this checkout's version:
+
+```xml
+<dependency>
+    <groupId>consulting.inspired</groupId>
+    <artifactId>unbox-pdf</artifactId>
+    <version>0.10.0-SNAPSHOT</version>
+</dependency>
+```
+
+## Example
+
+The following class creates a PDF in `target/`. Run it with the library and its
+PDFBox dependencies on the classpath, for example from a consuming Maven project
+in your IDE.
+
+```java
+import inspired.pdf.unbox.Align;
+import inspired.pdf.unbox.Document;
+import inspired.pdf.unbox.Margin;
+import inspired.pdf.unbox.Padding;
+import inspired.pdf.unbox.base.TableModel;
+import inspired.pdf.unbox.elements.FixedColumnsTable;
+import org.apache.pdfbox.pdmodel.PDDocument;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import static inspired.pdf.unbox.Unbox.background;
+import static inspired.pdf.unbox.Unbox.paragraph;
+import static inspired.pdf.unbox.Unbox.row;
+import static inspired.pdf.unbox.decorators.BorderDecorator.border;
+import static inspired.pdf.unbox.internal.SimpleFont.helvetica_bold;
+import static inspired.pdf.unbox.themes.UnboxTheme.GRAY_100;
+import static inspired.pdf.unbox.themes.UnboxTheme.GRAY_500;
+
+public class Example {
+    public static void main(String[] args) throws IOException {
+        Path output = Path.of("target", "example.pdf");
+        Files.createDirectories(output.getParent());
+        Document document = new Document();
+
+        document.render(paragraph("Hello, World!", helvetica_bold(12)));
+        document.render(row()
+            .with(Margin.of(10, 0))
+            .add(paragraph("Left"))
+            .add(paragraph("Center", Align.CENTER))
+            .add(paragraph("Right", Align.RIGHT)));
+
+        TableModel model = new TableModel()
+            .add("Article", 2f)
+            .add("Size")
+            .add("Price", Align.RIGHT);
+        FixedColumnsTable table = new FixedColumnsTable(model)
+            .withHeader(helvetica_bold(8), background(GRAY_100))
+            .with(Margin.of(10))
+            .with(border(1, GRAY_500));
+        table.addRow().withCells("SmartTV 200+", "55", "200.12 EUR");
+        table.addRow().withCells("SmartPhone", "5.5", "320.00 EUR");
+        document.render(table);
+
+        document.render(paragraph("Done!", helvetica_bold(12), Align.CENTER)
+            .with(Padding.of(10))
+            .with(background(GRAY_100)));
+
+        try (PDDocument pdf = document.finish()) {
+            pdf.save(output.toFile());
+        }
+    }
+}
+```
+
+`Document` renders elements from top to bottom. `finish()` returns the PDFBox
+`PDDocument`; the caller saves and closes it. Tables handle page breaks between
+rows and repeat headers by default. Arbitrary elements and table rows are not
+split automatically across pages.
+
+## Samples
+
+`samples/` is a separate Maven project, not a module of the root build. Install
+the library first, then compile the examples:
+
+```bash
+mvn -Dgpg.skip install
+mvn -f samples/pom.xml package
+mkdir -p samples/out
+```
+
+Open the samples project in your IDE and run a sample's `main` method with the
+repository root as its working directory. Examples include `samples.SimplePdf`,
+`samples.MultiPagePdf`, `samples.StretchingColumns`,
+`samples.MultiLineSupportForParagraph`, and `samples.VerticalText`.
+They write to `samples/out/`.
+
+An illustration from an earlier version of the sample:
+
+![Sample PDF illustration](docs/SamplePdf_1.png)
+
+## Contributing and AI-assisted development
+
+[AGENTS.md](AGENTS.md) contains shared build, coding, and validation instructions
+for Codex and Claude Code. [CLAUDE.md](CLAUDE.md) imports that file so both tools use
+the same guidance. Maintain shared instructions in `AGENTS.md`.
+
+- [Library principles](docs/specs/library-principles.md): architecture, contracts,
+  and extension conventions.
+- [Quality audit](docs/plans/quality-audit.md): three confirmed open rendering bugs,
+  follow-up investigations, and validation steps.
+- [Maven Wrapper plan](docs/plans/maven-wrapper.md): consistent Maven setup for
+  contributors and CI.
+
+Put behavior specifications in `docs/specs/` and implementation plans in
+`docs/plans/`. Ask before introducing production or test dependencies.
+
+Run `mvn test` after Java changes. Document regression tests compare generated PDFs
+byte-for-byte with committed references; inspect intentional rendering changes
+visually before accepting updated references. Documentation-only changes need
+consistency and link checks. The current GitHub workflow runs on release creation;
+there is no push or pull-request test workflow.
+
+## License
+
+[MIT](LICENSE).
