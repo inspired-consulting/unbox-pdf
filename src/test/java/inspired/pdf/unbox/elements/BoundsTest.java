@@ -4,9 +4,11 @@ import inspired.pdf.unbox.Bounds;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static inspired.pdf.unbox.GeometryAssertions.assertBounds;
+import static inspired.pdf.unbox.GeometryAssertions.assertPosition;
 
 /**
- * Test cases for Bounds.
+ * Verifies coordinate, edge, movement, and bounds-combination operations.
  */
 public class BoundsTest {
 
@@ -37,6 +39,27 @@ public class BoundsTest {
         assertEquals(300, joined.top());
         assertEquals(550, joined.right());
         assertEquals(90, joined.bottom());
+    }
+
+    @Test
+    public void exposes_edges_and_center_positions() {
+        Bounds bounds = new Bounds(10, 300, 100, 80);
+
+        assertEquals(220, bounds.bottom());
+        assertEquals(60, bounds.center());
+        assertEquals(260, bounds.middle());
+        assertPosition(bounds.topLeft(), 10, 300);
+        assertPosition(bounds.topRight(), 110, 300);
+        assertPosition(bounds.bottomLeft(), 10, 220);
+        assertPosition(bounds.bottomRight(), 110, 220);
+    }
+
+    @Test
+    public void moves_preserve_size_and_change_one_coordinate() {
+        Bounds bounds = new Bounds(10, 300, 100, 80);
+
+        assertBounds(bounds.moveRight(25), 35, 300, 100, 80);
+        assertBounds(bounds.moveDown(25), 10, 275, 100, 80);
     }
 
 }

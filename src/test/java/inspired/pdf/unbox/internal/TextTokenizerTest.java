@@ -7,6 +7,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Verifies text wrapping, explicit line breaks, and long-word splitting.
+ */
 class TextTokenizerTest {
 
     Font font = SimpleFont.helvetica(9);

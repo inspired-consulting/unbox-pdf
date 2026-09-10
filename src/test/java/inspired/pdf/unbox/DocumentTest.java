@@ -72,6 +72,9 @@ class CustomTableCell extends AbstractTableCell {
 }
 
 
+/**
+ * Guards complete document rendering and the committed PDF regression fixtures.
+ */
 class DocumentTest {
     @TempDir
     Path folder;

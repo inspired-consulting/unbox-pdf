@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Verifies vertical container measurement, including child margins and padding.
+ */
 public class ColumnTest {
 
     public static final SimpleFont HELVETICA_10 = SimpleFont.helvetica(10);

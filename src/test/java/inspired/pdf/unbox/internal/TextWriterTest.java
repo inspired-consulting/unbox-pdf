@@ -11,6 +11,9 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Verifies bounded text rendering and the explicit overflow contract.
+ */
 class TextWriterTest {
 
     @Test

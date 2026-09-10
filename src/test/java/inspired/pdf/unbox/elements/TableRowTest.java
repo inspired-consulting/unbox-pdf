@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
+/**
+ * Protects row cell creation at model boundaries and default-column expansion.
+ */
 class TableRowTest {
 
     @Test
