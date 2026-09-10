@@ -7,7 +7,7 @@ padding, borders, and backgrounds.
 ## Build and test
 
 Use a JDK compatible with Java 17 and an installed Maven. The current project
-version is `0.10.0-SNAPSHOT`; the build uses PDFBox 2.0.30.
+version is `0.10.0-SNAPSHOT`; the build uses PDFBox 2.0.37.
 
 Run from the repository root:
 
