@@ -184,7 +184,8 @@ PDFBox I/O failures are generally wrapped in `PdfUnboxException` inside the libr
 
 ## Build and verification conventions
 
-The root Maven project targets Java 17 and builds the library JAR, source JAR,
+The root Maven project targets Java 17 (using Maven's `release` setting) and builds
+the library JAR, source JAR,
 and Javadoc JAR. Its direct production dependency is PDFBox, currently 2.0.37.
 The `samples/` directory is a separate Maven project that depends on an installed
 library artifact of the matching version.

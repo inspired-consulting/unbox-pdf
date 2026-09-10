@@ -6,7 +6,8 @@ padding, borders, and backgrounds.
 
 ## Build and test
 
-Use a JDK compatible with Java 17. Maven is provided by the checked-in wrapper.
+Use a JDK compatible with Java 17. CI uses JDK 21 while the published artifact
+remains Java 17-compatible. Maven is provided by the checked-in wrapper.
 The current project version is `0.10.0-SNAPSHOT`; the build uses PDFBox 2.0.37.
 
 Run from the repository root:
