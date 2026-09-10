@@ -6,26 +6,30 @@ padding, borders, and backgrounds.
 
 ## Build and test
 
-Use a JDK compatible with Java 17 and an installed Maven. The current project
-version is `0.10.0-SNAPSHOT`; the build uses PDFBox 2.0.37.
+Use a JDK compatible with Java 17. Maven is provided by the checked-in wrapper.
+The current project version is `0.10.0-SNAPSHOT`; the build uses PDFBox 2.0.37.
 
 Run from the repository root:
 
 ```bash
-mvn test
-mvn package
+./mvnw test
+./mvnw package
 ```
 
 To install the library locally, including for the separate samples project:
 
 ```bash
-mvn -Dgpg.skip install
+./mvnw -Dgpg.skip install
 ```
 
 Signing is bound to Maven's `verify` phase. `-Dgpg.skip` allows a local installation
 without a signing key; `test` and `package` do not reach that phase.
-[Maven Wrapper setup](docs/plans/maven-wrapper.md) is planned; `./mvnw` is not yet
-available.
+The wrapper pins Maven 3.9.16 and verifies its distribution checksum. On first
+use it downloads Maven into `~/.m2/wrapper/dists/`; subsequent runs reuse it.
+Network access is needed for this download and uncached dependencies. No separate
+Maven installation is required. On Windows use `mvnw.cmd` instead of `./mvnw`.
+The Unix launcher requires a POSIX shell, curl or wget, unzip, and SHA-256 tooling
+(`shasum` or `sha256sum`); the Windows launcher uses PowerShell.
 
 After installing locally, another Maven project can use this checkout's version:
 
@@ -111,8 +115,8 @@ split automatically across pages.
 the library first, then compile the examples:
 
 ```bash
-mvn -Dgpg.skip install
-mvn -f samples/pom.xml package
+./mvnw -Dgpg.skip install
+./mvnw -f samples/pom.xml package
 mkdir -p samples/out
 ```
 
@@ -136,13 +140,13 @@ the same guidance. Maintain shared instructions in `AGENTS.md`.
   and extension conventions.
 - [Quality audit](docs/plans/quality-audit.md): three confirmed open rendering bugs,
   follow-up investigations, and validation steps.
-- [Maven Wrapper plan](docs/plans/maven-wrapper.md): consistent Maven setup for
+- [Maven Wrapper setup](docs/plans/maven-wrapper.md): consistent Maven setup for
   contributors and CI.
 
 Put behavior specifications in `docs/specs/` and implementation plans in
 `docs/plans/`. Ask before introducing production or test dependencies.
 
-Run `mvn test` after Java changes. Document regression tests compare generated PDFs
+Run `./mvnw test` after Java changes. Document regression tests compare generated PDFs
 byte-for-byte with committed references; inspect intentional rendering changes
 visually before accepting updated references. Documentation-only changes need
 consistency and link checks. The current GitHub workflow runs on release creation;

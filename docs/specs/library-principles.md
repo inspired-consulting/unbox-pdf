@@ -189,7 +189,7 @@ and Javadoc JAR. Its direct production dependency is PDFBox, currently 2.0.37.
 The `samples/` directory is a separate Maven project that depends on an installed
 library artifact of the matching version.
 
-Use `mvn test` for the JUnit Jupiter suite. Use `mvn -Dgpg.skip install` for a local
+Use `./mvnw test` for the JUnit Jupiter suite. Use `./mvnw -Dgpg.skip install` for a local
 installation without signing; GPG signing is otherwise bound to `verify`.
 
 Tests combine focused geometry and text tests with complete document regression

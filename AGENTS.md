@@ -21,17 +21,17 @@ creation. There is no CLI or application server.
 Run these from the repository root:
 
 ```bash
-mvn test                                      # all tests
-mvn -Dtest=TextTokenizerTest test              # one test class
-mvn '-Dtest=DocumentTest#createTable' test     # one test method
-mvn package                                   # build JAR, sources, and Javadoc
-mvn -Dgpg.skip install                        # test and install for local samples
+./mvnw test                                    # all tests
+./mvnw -Dtest=TextTokenizerTest test           # one test class
+./mvnw '-Dtest=DocumentTest                    #createTable' test     # one test method
+./mvnw package                                 # build JAR, sources, and Javadoc
+./mvnw -Dgpg.skip install                      # test and install for local samples
 ```
 
 The POM binds GPG signing to `verify`. Use `-Dgpg.skip` for local `verify` or
 `install` when no signing key is configured. `test` and `package` do not reach
-that phase. There is no Maven wrapper; use an installed Maven and a JDK compatible
-with the Java 17 target.
+that phase. Use the checked-in Maven Wrapper, which pins Maven 3.9.16, and a JDK
+compatible with the Java 17 target. On Windows use `mvnw.cmd` in place of `./mvnw`.
 
 Install the library before building `samples/`; it depends on the installed
 artifact of the matching version and is not a root reactor module. Run a sample's
@@ -47,7 +47,7 @@ Create that directory first and use the repository root as the working directory
 - Preserve Java 17 compatibility and existing public APIs unless the task calls
   for an API change.
 - Add focused regression tests for bug fixes and meaningful tests for new behavior.
-- Run `mvn test` after Java changes. Report any checks that could not run and why.
+- Run `./mvnw test` after Java changes. Report any checks that could not run and why.
   Documentation-only changes need link and consistency checks, not a Java build.
 - Do not manually edit or commit generated build output. Regenerate it through
   the build. Update PDF test references only for intentional output changes,

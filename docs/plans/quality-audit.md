@@ -120,8 +120,7 @@ of individual bug fixes unless it is needed to correct the behavior.
    regression coverage before its fix.
 2. Address each confirmed bug in a separate reviewable change, starting with the
    high-priority findings. Document expected layout changes and API implications.
-3. Run `mvn test` after each Java change; use `./mvnw test` once the wrapper plan
-   has been implemented.
+3. Run `./mvnw test` after each Java change.
 4. Visually inspect PDFs when positions, wrapping, or pagination change. Update
    reference PDFs only after confirming the new output is intentional.
 5. Update the library specification where behavior or supported boundaries change,
