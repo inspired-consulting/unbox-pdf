@@ -141,7 +141,9 @@ mkdir -p samples/out
 Open the samples project in your IDE and run a sample's `main` method with the
 repository root as its working directory. Examples include `samples.SimplePdf`,
 `samples.MultiPagePdf`, `samples.StretchingColumns`,
-`samples.MultiLineSupportForParagraph`, and `samples.VerticalText`.
+`samples.MultiLineSupportForParagraph`, `samples.VerticalText`, and
+`samples.FlexTableReport`, which shows a `FlexTable` with a different column
+model per row.
 They write to `samples/out/`.
 
 An illustration from an earlier version of the sample:

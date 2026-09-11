@@ -1,6 +1,5 @@
 package inspired.pdf.unbox.elements;
 
-import inspired.pdf.unbox.Bounds;
 import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.Font;
 import inspired.pdf.unbox.base.ColumnModel;
@@ -21,15 +20,10 @@ public class FlexTable extends AbstractTable {
     @Override
     protected float renderRow(Document document, TableRow row) {
         float rowHeight = super.renderRow(document, row);
-        ColumnModel<?> columns = row.columnModel().scaleToSize(document.getViewPort().width());
-        drawColumnLines(document, columns, rowHeight);
-        return rowHeight;
-    }
-
-    private void drawColumnLines(Document document, ColumnModel<?> columns, float height) {
-        Bounds viewPort = document.getViewPort();
-        Bounds bounds = new Bounds(viewPort.left(), document.getPosition(), viewPort.width(), height);
+        var bounds = effectiveViewport(document).height(rowHeight);
+        ColumnModel<?> columns = row.columnModel().scaleToSize(bounds.width());
         drawColumnLines(document, columns, bounds);
+        return rowHeight;
     }
 
 }

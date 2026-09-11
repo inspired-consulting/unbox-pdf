@@ -187,18 +187,6 @@ to zero yields `NaN` column widths, and PDFBox later throws
 Implementation approach: validate widths in the model constructors and in
 `scaleToSize()` and throw an `IllegalArgumentException` that names the problem.
 
-### 12. `FlexTable` column lines ignore the table margin
-
-Priority: Low. Confirmed by code reading.
-
-`FlexTable.drawColumnLines()` uses `document.getViewPort()`, while
-`FixedColumnsTable` and the row lines use the viewport with the table's horizontal
-margin applied. A `FlexTable` with left or right margin draws its column lines
-offset from its rows.
-
-Implementation approach: use `effectiveViewport(document)` in `FlexTable` and add
-a `FlexTable` regression PDF with a margin.
-
 ## Follow-up tasks
 
 - `TableModel` default cells and column cell prototypes are shared mutable
