@@ -157,8 +157,10 @@ Put behavior specifications in `docs/specs/` and implementation plans in
 Run `./mvnw test` after Java changes. Document regression tests compare generated PDFs
 byte-for-byte with committed references; inspect intentional rendering changes
 visually before accepting updated references. Documentation-only changes need
-consistency and link checks. The current GitHub workflow runs on release creation;
-there is no push or pull-request test workflow.
+consistency and link checks. The CI workflow runs the tests on JDK 17 and 21 for
+pushes to `main` and for pull requests. The publish workflow runs on release
+creation and deploys to Maven Central through the Central Portal; the required
+secrets are listed in the [security audit](docs/plans/security-audit.md).
 
 ## License
 

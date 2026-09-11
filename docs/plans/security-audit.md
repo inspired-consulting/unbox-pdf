@@ -1,8 +1,9 @@
 # Security and supply-chain audit
 
-Status: Completed on 2026-09-11 against commit `4cb41e6`. No fix has been
-implemented yet. Rendering defects are tracked in the
-[quality audit](quality-audit.md).
+Status: Completed on 2026-09-11 against commit `4cb41e6`. Findings S1 to S4
+were addressed in the working tree on the same day; see the
+[release setup](#release-setup) section for the remaining manual steps.
+Rendering defects are tracked in the [quality audit](quality-audit.md).
 
 ## Scope and threat model
 
@@ -23,7 +24,10 @@ it writes content streams, and the library never builds PDF syntax from text.
 
 ### S1. Publishing target no longer exists
 
-Priority: High. Releases cannot be published.
+Priority: High. Releases cannot be published. Fixed in the POM on 2026-09-11:
+`central-publishing-maven-plugin` 0.11.0 with server id `central` replaces the
+Nexus staging plugin and the OSSRH distribution management. Portal credentials
+still need to be created; see the release setup below.
 
 `pom.xml` deploys to `https://s01.oss.sonatype.org` with the
 `nexus-staging-maven-plugin`. Sonatype shut down OSSRH on 30 June 2025. The
@@ -34,7 +38,12 @@ Portal user token, or the compatibility endpoint
 
 ### S2. Release workflow cannot sign artifacts
 
-Priority: High. Same effect as S1.
+Priority: High. Same effect as S1. Fixed in the workflow on 2026-09-11: the
+`setup-java` step imports the key from the `GPG_PRIVATE_KEY` secret, and
+`maven-gpg-plugin` 3.2.8 reads the passphrase from `MAVEN_GPG_PASSPHRASE`. The
+secrets still need to be created. The plugin's `bestPractices` switch is left
+off so that a local `settings.xml` with a `gpg.passphrase` property keeps
+working; enable it once local signing uses the environment variable too.
 
 `.github/workflows/maven-publish.yml` runs `./mvnw --batch-mode deploy`, which
 reaches the `verify` phase and the bound `maven-gpg-plugin`, but the workflow
@@ -45,7 +54,10 @@ Portal plugin's own mechanism.
 
 ### S3. GitHub Actions on deprecated majors and unpinned
 
-Priority: Medium. Supply-chain hygiene.
+Priority: Medium. Supply-chain hygiene. Fixed on 2026-09-11: both workflows use
+`actions/checkout` v7.0.1 and `actions/setup-java` v6.0.1 pinned to commit SHAs,
+and permissions are reduced to `contents: read`. Dependabot is not configured
+yet.
 
 The workflow uses `actions/checkout@v3` and `actions/setup-java@v3`. Both run on
 Node.js 16, which GitHub has deprecated; the current majors are considerably
@@ -60,7 +72,9 @@ dependency updates arrive as pull requests.
 ### S4. No continuous test workflow
 
 Priority: Medium. Regressions and vulnerable dependency updates are not caught
-before release.
+before release. Fixed on 2026-09-11: `.github/workflows/ci.yml` runs
+`./mvnw -Dgpg.skip verify` on JDK 17 and 21 for pushes to `main` and for pull
+requests.
 
 The only workflow triggers on release creation. Add a workflow that runs
 `./mvnw --batch-mode test` on pushes and pull requests with JDK 21 and, since the
@@ -120,6 +134,40 @@ Priority: Low.
 - Manual review of `Document`, `DocumentFinisher`, and the content-stream
   handling for resource leaks: streams are closed on the normal path; on an
   exception the caller must close `Document.getDocument()`.
+
+## Release setup
+
+The release workflow runs in the GitHub environment `Maven Release` and reads
+these secrets from it. Its protection rules (required reviewers from the
+`devs` team, no self-review) gate every publish run.
+
+| Secret | Content |
+| --- | --- |
+| `CENTRAL_USERNAME` | Username part of a Central Portal user token. |
+| `CENTRAL_TOKEN` | Password part of the same token. |
+| `GPG_PRIVATE_KEY` | ASCII-armored private signing key (`gpg --armor --export-secret-keys <key id>`). |
+| `GPG_PASSPHRASE` | Passphrase of that key. |
+
+Steps before the first release with the new setup:
+
+1. Sign in at <https://central.sonatype.com> with the account that owned the
+   OSSRH namespace and confirm that the namespace `consulting.inspired` is listed
+   under Namespaces. OSSRH namespaces were migrated automatically; if it is
+   missing, register it again and verify it through DNS.
+2. Generate a user token in the Portal account settings and store its two parts
+   as `CENTRAL_USERNAME` and `CENTRAL_TOKEN`.
+3. Publish the public signing key to a key server that Central accepts, such as
+   `keyserver.ubuntu.com`, if that has not been done for the current key.
+4. Optionally run `./mvnw --batch-mode deploy` locally with the same
+   environment variables and a `settings.xml` server entry named `central`
+   to validate the bundle before creating a GitHub release. Set
+   `-DautoPublish=false` for a dry run that stops after validation; the
+   deployment can then be dropped in the Portal.
+5. Create a GitHub release. The workflow publishes and waits until the
+   artifact is published on Central.
+
+Remove the old `OSSRH_USERNAME` and `OSSRH_TOKEN` secrets; they are no longer
+used.
 
 ## Recommended order
 
