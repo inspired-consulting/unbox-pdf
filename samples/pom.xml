@@ -16,7 +16,7 @@
         <dependency>
             <groupId>consulting.inspired</groupId>
             <artifactId>unbox-pdf</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

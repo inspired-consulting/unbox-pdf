@@ -226,8 +226,7 @@ Those capabilities require separate designs and validation if introduced.
 
 Place feature and behavior specifications in `docs/specs/`. Place implementation
 plans and execution steps in `docs/plans/`. Known defects and limitations are
-tracked in the [quality audit](../plans/quality-audit.md) and the
-[security audit](../plans/security-audit.md).
+tracked in the [quality audit](../plans/quality-audit.md).
 
 ## Source references
 

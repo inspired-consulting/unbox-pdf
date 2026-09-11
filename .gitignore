@@ -30,3 +30,6 @@ out/
 # MacOS
 .DS_Store
 
+
+# Local audit notes
+/docs/plans/security-audit.md

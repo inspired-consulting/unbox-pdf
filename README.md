@@ -157,8 +157,7 @@ the same guidance. Maintain shared instructions in `AGENTS.md`.
 
 - [Library principles](docs/specs/library-principles.md): architecture, contracts,
   and extension conventions.
-- [Quality audit](docs/plans/quality-audit.md): open rendering and layout tasks.
-- [Security audit](docs/plans/security-audit.md): open security and supply-chain tasks.
+- [Quality audit](docs/plans/quality-audit.md): open rendering, layout, and maintenance tasks.
 - [Maven Wrapper setup](docs/plans/maven-wrapper.md): consistent Maven setup for
   contributors and CI.
 

@@ -1,8 +1,8 @@
-# Rendering and layout quality audit
+# Quality and maintenance audit
 
-Open rendering and layout tasks. Remove findings when resolved; keep behavior
+Open rendering, layout, and maintenance tasks. Remove findings when resolved; keep behavior
 contracts in [library principles](../specs/library-principles.md) and related
-specifications. Security tasks are in the [security audit](security-audit.md).
+specifications.
 
 ## Open findings
 
@@ -235,6 +235,22 @@ a `FlexTable` regression PDF with a margin.
   abort generation must close `getDocument()` themselves.
 - `TextCell.innerHeight()` adds a two-point correction that `renderCell()` does
   not return. Rows are therefore slightly taller than the reported cell height.
+
+## Dependency and build maintenance
+
+### Dependency update automation
+
+Priority: Low.
+
+Configure Dependabot for the `github-actions` and `maven` ecosystems so dependency
+and workflow updates arrive as pull requests.
+
+### PDFBox migration planning
+
+Priority: Low.
+
+Assess migration to PDFBox 3.x, including changes to `PDType1Font` constants,
+document loading, and PDF regression output.
 
 ## Validation for fixes
 
