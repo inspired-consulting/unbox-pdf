@@ -213,8 +213,6 @@ a `FlexTable` regression PDF with a margin.
   rendered overflowing. Paragraphs clip lines unless overflow is enabled; other
   elements draw past the footer. An oversized body row behaves the same way.
   These are documented limitations, not crashes.
-- Use try-with-resources for the page content streams created by
-  `DocumentFinisher` so listener failures cannot leave those streams open.
 - `TextCell.innerHeight()` adds a two-point correction that `renderCell()` does
   not return. Rows are therefore slightly taller than the reported cell height.
 

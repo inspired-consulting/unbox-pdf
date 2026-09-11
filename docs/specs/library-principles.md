@@ -73,7 +73,8 @@ Page lifecycle extensions implement `PdfEventListener`:
 
 - `DocumentHeader` and `DocumentFooter` draw when a page is created.
 - `DocumentFinisher` appends content to each page after the page count is known,
-  supporting features such as “Page x of y.”
+  supporting features such as “Page x of y.” Each callback stream is closed even
+  when the callback throws; the failure propagates to the caller.
 
 ## Geometry and the box model
 

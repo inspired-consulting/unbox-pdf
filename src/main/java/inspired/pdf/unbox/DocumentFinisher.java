@@ -9,6 +9,10 @@ import org.apache.pdfbox.pdmodel.PDPageTree;
 
 import java.io.IOException;
 
+/**
+ * Appends content to each page after rendering, with access to the final page count.
+ * Each callback's content stream is closed even if the callback fails.
+ */
 public abstract class DocumentFinisher implements PdfEventListener {
 
     public abstract void finish(DocumentContext context, PDPageContentStream contentStream, int pageNumber, int pageCount);
@@ -16,9 +20,10 @@ public abstract class DocumentFinisher implements PdfEventListener {
     protected void finish(Document document, PDDocument pdf, PDPageTree allPages) throws IOException {
         int pageNum = 1;
         for (PDPage page : allPages) {
-            PDPageContentStream contentStream = new PDPageContentStream(pdf, page, PDPageContentStream.AppendMode.APPEND, true,true);
-            finish(document, contentStream, pageNum, allPages.getCount());
-            contentStream.close();
+            try (PDPageContentStream contentStream = new PDPageContentStream(
+                    pdf, page, PDPageContentStream.AppendMode.APPEND, true, true)) {
+                finish(document, contentStream, pageNum, allPages.getCount());
+            }
             pageNum++;
         }
     }
