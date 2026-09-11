@@ -35,4 +35,37 @@ class TableRowTest {
         assertEquals(Align.RIGHT, model.get(0).align());
         assertEquals(TableModel.DEFAULT_WIDTH, model.get(1).width());
     }
+
+    @Test
+    void valuesExtendEmptyRowModel() {
+        TableRow row = new TableRow();
+
+        assertSame(row, row.withValues("a", "b", "c"));
+        assertEquals(3, row.size());
+        assertEquals(3, row.columnModel().size());
+    }
+
+    @Test
+    void surplusValuesExtendDefinedColumns() {
+        TableModel model = new TableModel().add("Amount", 2f, Align.RIGHT);
+        TableRow row = new TableRow(model);
+
+        row.withValues("42", "extra");
+
+        assertEquals(2, row.size());
+        assertEquals(2, model.size());
+        assertEquals(2f, model.get(0).width());
+        assertEquals(TableModel.DEFAULT_WIDTH, model.get(1).width());
+    }
+
+    @Test
+    void fewerValuesThanColumnsKeepModel() {
+        TableModel model = TableModel.of(1f, 1f, 1f);
+        TableRow row = new TableRow(model);
+
+        row.withValues("only");
+
+        assertEquals(1, row.size());
+        assertEquals(3, model.size());
+    }
 }

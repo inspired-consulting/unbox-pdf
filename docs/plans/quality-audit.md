@@ -60,28 +60,6 @@ Implementation approach:
 Completion: an ordinary element that fits on a fresh page is moved there when its
 total occupied height exceeds the current body space.
 
-### 4. Value rows on `FlexTable` always fail
-
-Priority: High. The public method is unusable and untested.
-
-`AbstractTable.addRow(Object...)` calls `addRow()`, which `FlexTable` does not
-override, so the row gets an empty `TableModel`. `TableRow.prepareCell()` then
-calls `model.get(i)` and throws `IndexOutOfBoundsException`. `FixedColumnsTable`
-fails the same way when a value row has more values than the model has columns.
-
-Reproduction: `new FlexTable().addRow("a", "b", "c")` followed by
-`document.render(table)` throws `IndexOutOfBoundsException: Index 0 out of bounds
-for length 0`. `new FixedColumnsTable(TableModel.of(1f, 1f)).addRow("a", "b", "c")`
-throws the same exception with index 2.
-
-Implementation approach:
-
-- Decide whether extra values extend the model with `DEFAULT_COLUMN`, as
-  `addCell(TableCell)` already does, or fail with a descriptive
-  `IllegalArgumentException`. Apply the same rule to both table types.
-- Add tests for value rows on `FlexTable`, for surplus values, and for fewer
-  values than columns.
-
 ### 6. Text outside WinAnsiEncoding aborts document generation
 
 Priority: Medium. Crash caused by ordinary caller data.

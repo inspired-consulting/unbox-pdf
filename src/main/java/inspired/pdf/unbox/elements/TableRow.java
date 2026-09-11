@@ -111,6 +111,9 @@ public class TableRow extends AbstractDecoratable implements PdfElement {
     public TableRow withValues(Object... values) {
         this.values.clear();
         this.values.addAll(Arrays.asList(values));
+        while (model.size() < this.values.size()) {
+            model.add(TableModel.DEFAULT_COLUMN);
+        }
         return this;
     }
 
