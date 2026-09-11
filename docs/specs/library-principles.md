@@ -115,10 +115,11 @@ Every `PdfElement` provides:
 from the caller. Elements that manage cursor movement internally must avoid
 reporting the same movement again.
 
-Ordinary elements are moved to a new page when their measured inner height does
-not fit. There is no general mechanism for splitting arbitrary elements across
-pages, and the initial fit check does not include their margins. An element taller
-than a full page is not automatically made to fit.
+Ordinary elements are moved to a new page when their measured inner height plus
+their top margin does not fit. The bottom margin is spacing to the next element
+and may be absorbed by the page end, so it is not part of the fit check. There is
+no general mechanism for splitting arbitrary elements across pages. An element
+taller than a full page is not automatically made to fit.
 
 Tables deliberately use a different strategy. `AbstractTable.innerHeight()`
 returns zero, and table rendering measures and advances one row at a time. It

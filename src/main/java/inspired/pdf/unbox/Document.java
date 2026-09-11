@@ -120,7 +120,9 @@ public class Document implements DocumentContext, AutoCloseable {
     }
 
     public void render(PdfElement element) {
-        float height = element.innerHeight(getCurrentViewPort());
+        // The top margin is occupied before the content; the bottom margin may be
+        // absorbed by the page end, so it does not count towards the fit check.
+        float height = element.innerHeight(getCurrentViewPort()) + element.margin().top();
         forwardPageIfNeeded(height);
         float forward = element.render(this, getCurrentViewPort());
         forward(forward);

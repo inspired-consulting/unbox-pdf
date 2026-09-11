@@ -36,30 +36,6 @@ Implementation approach:
 Completion: invalid header geometry fails clearly without unbounded page creation,
 and ordinary tables continue to repeat headers correctly.
 
-### 3. Document page-fit checks exclude element margins
-
-Priority: Medium. Content can extend into the footer region. Re-confirmed on
-2026-09-11.
-
-`Document.render()` checks `innerHeight()` against the remaining page space, but
-ordinary element rendering also consumes vertical margins.
-
-Reproduction: create the first page, forward the cursor until 20 points remain in
-the body viewport, then render a default paragraph with `Margin.top(30)`. It
-stays on the same page and leaves about minus 23 points of remaining body space.
-
-Implementation approach:
-
-- Add boundary tests for top and bottom margins, exact fits, and elements that
-  fit only after advancing to a new page.
-- Include occupied vertical margins in ordinary element fit checks.
-- Preserve tables' internal row advancement and pagination; do not apply a generic
-  height change without checking that contract.
-- Cover containers and header/footer reservations, and inspect pagination changes.
-
-Completion: an ordinary element that fits on a fresh page is moved there when its
-total occupied height exceeds the current body space.
-
 ### 6. Text outside WinAnsiEncoding aborts document generation
 
 Priority: Medium. Crash caused by ordinary caller data.
