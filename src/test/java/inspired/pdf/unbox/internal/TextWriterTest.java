@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -66,7 +67,7 @@ class TextWriterTest {
         String[] clipLines = renderLines(WRAPPING_FONT, WRAPPING_MAX_WIDTH, WRAPPING_TEXT, 5, Overflow.CLIP);
         assertEquals(String.join("\n", clipLines), String.join("\n", ellipsisLines));
         for (String line : ellipsisLines) {
-            assertTrue(!line.contains("…"), "did not expect an ellipsis in: " + line);
+            assertFalse(line.contains("…"), "did not expect an ellipsis in: " + line);
         }
     }
 

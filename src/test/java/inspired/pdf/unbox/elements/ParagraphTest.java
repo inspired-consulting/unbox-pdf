@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -29,7 +30,7 @@ class ParagraphTest {
         String plain = render(new Paragraph(WRAPPING_TEXT, SimpleFont.helvetica(9)).limit(1));
         String clip = render(new Paragraph(WRAPPING_TEXT, SimpleFont.helvetica(9)).limit(1, Overflow.CLIP));
         assertEquals(clip, plain);
-        assertTrue(!plain.contains("…"));
+        assertFalse(plain.contains("…"));
     }
 
     @Test
