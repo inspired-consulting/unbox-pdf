@@ -1,29 +1,10 @@
 # Rendering and layout quality audit
 
-Status: Second audit completed on 2026-09-11 against commit `4cb41e6`. The
-three findings of the first audit were reproduced again and remain open. The
-second audit assessed the follow-up areas and added findings 4 to 12. No fix
-has been implemented yet.
+Open rendering and layout tasks. Remove findings when resolved; keep behavior
+contracts in [library principles](../specs/library-principles.md) and related
+specifications. Security tasks are in the [security audit](security-audit.md).
 
-Security, dependency, and build-pipeline findings are recorded separately in
-the [security audit](security-audit.md).
-
-## Objective
-
-Prevent silent content loss, document-generation crashes, and incorrect page
-placement. Fix confirmed issues in small, independently reviewable changes and
-extend coverage around the boundaries that existing PDF references do not test.
-
-Read [library principles](../specs/library-principles.md) before changing rendering
-contracts. Keep this work separate from the [Maven Wrapper setup](maven-wrapper.md).
-
-## Validation baseline
-
-- `./mvnw test`: 33 tests, all passing on 2026-09-11 (JDK 21, PDFBox 2.0.37).
-- Reproductions below were run with a throwaway probe program against
-  `target/classes`. They are not part of the test suite yet.
-
-## Confirmed open findings
+## Open findings
 
 ### 1. Paragraph measurement ignores horizontal margins
 
@@ -157,27 +138,12 @@ way.
 
 Implementation approach:
 
-- Document the limitation in the library specification and the README.
 - Consider a configurable replacement strategy in `TextTokenizer` or `Font`
   (for example, replace unsupported characters with `?`) so that generation
   does not abort on user-supplied text. Embedding a Unicode TrueType font is a
   separate feature.
 - Add tests that cover a supported non-ASCII character such as `ä` and an
   unsupported one.
-
-### 7. `PdfUnboxException` discards the cause
-
-Priority: Medium. Diagnostics loss; no functional impact.
-
-The constructor accepts an `IOException` but never calls `super(e)`, so
-`getMessage()` and `getCause()` return `null`. Every wrapped PDFBox failure
-loses its reason.
-
-Reproduction: `new PdfUnboxException(new IOException("disk full"))` has a null
-message and a null cause.
-
-Implementation approach: pass the cause to the superclass and add a constructor
-that accepts a message and a cause. Add a one-line test.
 
 ### 8. Table cell decorators are drawn twice
 
@@ -211,7 +177,7 @@ derives the effective content bounds, and add tests for each combination.
 
 ### 10. Stretch rendering hints accumulate across renders
 
-Priority: Low. Documented limitation; recorded here for completeness.
+Priority: Low.
 
 `HorizontalStretchLayout` and `VerticalStretchLayout` add extra padding to the
 children's `RenderingHints` on every render and never reset it.
@@ -247,7 +213,7 @@ offset from its rows.
 Implementation approach: use `effectiveViewport(document)` in `FlexTable` and add
 a `FlexTable` regression PDF with a margin.
 
-## Observations without a scheduled fix
+## Follow-up tasks
 
 - `AbstractTableCell.with(Decorator)` returns `PdfElement`, so a decorated cell
   cannot be passed directly to `TableRow.addCell(TableCell)` without a cast.
@@ -270,38 +236,8 @@ a `FlexTable` regression PDF with a margin.
 - `TextCell.innerHeight()` adds a two-point correction that `renderCell()` does
   not return. Rows are therefore slightly taller than the reported cell height.
 
-## Follow-up areas assessed on 2026-09-11
+## Validation for fixes
 
-- Measured versus rendered widths in containers: finding 9.
-- Empty stretch containers and element reuse: findings 5 and 10.
-- Cell prototypes, padding propagation, decorator ordering: finding 8 and the
-  shared-prototype observation above.
-- Narrow widths and explicit line breaks: covered by `TextTokenizerTest`; no new
-  defect found.
-- Oversized elements and rows: no crash beyond finding 2; behavior recorded above.
-
-## Already completed
-
-- Corrected the `TableRow.addCell()` model-boundary comparison from `>=` to `>`.
-- Corrected `TextWriter.withOverflow(boolean)` to honor its argument.
-- Added six regression tests for those fixes. All 22 tests passed after the fixes,
-  including the existing byte-exact PDF comparisons. This is historical validation,
-  not a substitute for running checks after future changes.
-
-## Execution and validation
-
-1. Reproduce each open finding against the current revision and add focused
-   regression coverage before its fix.
-2. Address each confirmed bug in a separate reviewable change. Suggested order:
-   findings 2, 4, 5, and 7 first because they are crashes or trivial fixes, then
-   findings 1, 3, and 9 together because they share the width and height
-   contract, then the remaining low-priority items.
-3. Run `./mvnw test` after each Java change.
-4. Visually inspect PDFs when positions, wrapping, or pagination change. Update
-   reference PDFs only after confirming the new output is intentional.
-5. Update the library specification where behavior or supported boundaries change,
-   and mark findings completed here with their validation results.
-
-The audit is complete when the confirmed findings are resolved or explicitly
-accepted as limitations, and relevant regression tests and documentation reflect
-the supported behavior.
+Reproduce each finding and add focused regression coverage. Run `./mvnw test`
+after Java changes and visually inspect intentional PDF changes before updating
+references. Update the relevant specification and remove the resolved task here.

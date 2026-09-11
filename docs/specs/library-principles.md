@@ -189,7 +189,8 @@ through the `Font` interface. See the quality audit for the planned handling.
 `Canvas` exposes a PDFBox content stream and viewport for custom graphics. This
 is the escape hatch for drawing that does not warrant a reusable element.
 PDFBox I/O failures are generally wrapped in `PdfUnboxException` inside the library.
-The current exception drops the cause; see the quality audit.
+The exception preserves the original I/O cause and supports an optional contextual
+message.
 
 ## Build and verification conventions
 

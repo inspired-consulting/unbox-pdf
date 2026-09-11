@@ -157,10 +157,8 @@ the same guidance. Maintain shared instructions in `AGENTS.md`.
 
 - [Library principles](docs/specs/library-principles.md): architecture, contracts,
   and extension conventions.
-- [Quality audit](docs/plans/quality-audit.md): confirmed open rendering bugs,
-  assessed follow-up areas, and validation steps. Last audit: 2026-09-11.
-- [Security audit](docs/plans/security-audit.md): dependency status, release
-  pipeline, and input-handling findings. Last audit: 2026-09-11.
+- [Quality audit](docs/plans/quality-audit.md): open rendering and layout tasks.
+- [Security audit](docs/plans/security-audit.md): open security and supply-chain tasks.
 - [Maven Wrapper setup](docs/plans/maven-wrapper.md): consistent Maven setup for
   contributors and CI.
 
@@ -173,7 +171,7 @@ visually before accepting updated references. Documentation-only changes need
 consistency and link checks. The CI workflow runs the tests on JDK 17 and 21 for
 pushes to `main` and for pull requests. The publish workflow runs on release
 creation and deploys to Maven Central through the Central Portal; the required
-secrets are listed in the [security audit](docs/plans/security-audit.md).
+secrets are listed in [release publishing](docs/specs/release-publishing.md).
 
 ## License
 
