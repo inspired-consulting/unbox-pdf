@@ -1,7 +1,12 @@
 # Rendering and layout quality audit
 
-Status: Planned. Initial findings were reproduced during repository review;
-the three fixes below remain open.
+Status: Second audit completed on 2026-09-11 against commit `4cb41e6`. The
+three findings of the first audit were reproduced again and remain open. The
+second audit assessed the follow-up areas and added findings 4 to 12. No fix
+has been implemented yet.
+
+Security, dependency, and build-pipeline findings are recorded separately in
+the [security audit](security-audit.md).
 
 ## Objective
 
@@ -12,19 +17,25 @@ extend coverage around the boundaries that existing PDF references do not test.
 Read [library principles](../specs/library-principles.md) before changing rendering
 contracts. Keep this work separate from the [Maven Wrapper setup](maven-wrapper.md).
 
+## Validation baseline
+
+- `./mvnw test`: 33 tests, all passing on 2026-09-11 (JDK 21, PDFBox 2.0.37).
+- Reproductions below were run with a throwaway probe program against
+  `target/classes`. They are not part of the test suite yet.
+
 ## Confirmed open findings
 
 ### 1. Paragraph measurement ignores horizontal margins
 
-Priority: High — silent text loss.
+Priority: High. Silent text loss. Re-confirmed on 2026-09-11.
 
 `Paragraph.innerHeight()` measures text using the viewport width minus padding,
 while rendering also subtracts horizontal margins. Text therefore wraps into more
 lines than the allocated height permits, and trailing content can disappear.
 
 Reproduction: render a default paragraph containing `"word ".repeat(30) + "END"`
-with `Margin.left(450)` on a default document. During review, only ten words were
-extracted from the resulting document and `END` was missing.
+with `Margin.left(450)` on a default document. Only ten words are extracted from
+the resulting document and `END` is missing.
 
 Implementation approach:
 
@@ -41,15 +52,17 @@ are placed after the full paragraph height.
 
 ### 2. Oversized table headers recursively create pages
 
-Priority: High — document-generation crash.
+Priority: High. Document-generation crash. Re-confirmed on 2026-09-11.
 
 `AbstractTable.checkPageBreak()` repeats headers after creating a page. If a header
 cannot fit on a fresh page, rendering it triggers another page break and another
 header repetition without a terminating condition.
 
 Reproduction: a table header containing a custom cell whose `innerHeight()` returns
-2,000 points causes `StackOverflowError`. A review probe created 243 pages before
-failing; the exact count depends on the available stack and is not a test oracle.
+2,000 points causes `StackOverflowError`. The same happens with an ordinary
+`TextCell` header whose text wraps to more lines than fit on a page, so
+caller-supplied text can trigger this crash. The number of pages created before
+the failure depends on the available stack and is not a test oracle.
 
 Implementation approach:
 
@@ -69,14 +82,15 @@ and ordinary tables continue to repeat headers correctly.
 
 ### 3. Document page-fit checks exclude element margins
 
-Priority: Medium — content can extend into the footer region.
+Priority: Medium. Content can extend into the footer region. Re-confirmed on
+2026-09-11.
 
 `Document.render()` checks `innerHeight()` against the remaining page space, but
 ordinary element rendering also consumes vertical margins.
 
-Reproduction: leave 20 points in the body viewport, then render a default paragraph
-with `Margin.top(30)`. During review it stayed on the same page and left roughly
-minus 23 points of remaining body space.
+Reproduction: create the first page, forward the cursor until 20 points remain in
+the body viewport, then render a default paragraph with `Margin.top(30)`. It
+stays on the same page and leaves about minus 23 points of remaining body space.
 
 Implementation approach:
 
@@ -90,21 +104,181 @@ Implementation approach:
 Completion: an ordinary element that fits on a fresh page is moved there when its
 total occupied height exceeds the current body space.
 
-## Follow-up audit areas
+### 4. Value rows on `FlexTable` always fail
 
-These are investigation targets, not additional confirmed findings:
+Priority: High. The public method is unusable and untested.
 
-- Consistency of measured and rendered widths/heights in horizontal and vertical
-  containers, especially with nested margins and padding.
-- Empty stretch containers and reuse of elements with mutable rendering hints.
-- Table cell prototypes, padding propagation, and decorator ordering.
-- Text wrapping at very narrow widths and preservation of explicit line breaks.
-- Oversized ordinary elements and table rows: distinguish documented limitations
-  from unintended clipping, crashes, or cursor corruption.
+`AbstractTable.addRow(Object...)` calls `addRow()`, which `FlexTable` does not
+override, so the row gets an empty `TableModel`. `TableRow.prepareCell()` then
+calls `model.get(i)` and throws `IndexOutOfBoundsException`. `FixedColumnsTable`
+fails the same way when a value row has more values than the model has columns.
 
-For each new finding, record a minimal reproduction, expected and actual behavior,
-impact, and source location before scheduling a fix. Keep broader refactoring out
-of individual bug fixes unless it is needed to correct the behavior.
+Reproduction: `new FlexTable().addRow("a", "b", "c")` followed by
+`document.render(table)` throws `IndexOutOfBoundsException: Index 0 out of bounds
+for length 0`. `new FixedColumnsTable(TableModel.of(1f, 1f)).addRow("a", "b", "c")`
+throws the same exception with index 2.
+
+Implementation approach:
+
+- Decide whether extra values extend the model with `DEFAULT_COLUMN`, as
+  `addCell(TableCell)` already does, or fail with a descriptive
+  `IllegalArgumentException`. Apply the same rule to both table types.
+- Add tests for value rows on `FlexTable`, for surplus values, and for fewer
+  values than columns.
+
+### 5. Empty vertical stretch container crashes
+
+Priority: Medium. Crash on an edge case that is easy to reach through composition.
+
+`VerticalStretchLayout.render()` accesses `elements.get(elements.size() - 1)`
+without checking for an empty list.
+
+Reproduction: `document.render(Unbox.columnStretch())` throws
+`IndexOutOfBoundsException: Index -1 out of bounds for length 0`. Empty
+`Unbox.row()`, `Unbox.rowStretch()`, and `Unbox.column()` render without error.
+
+Implementation approach: skip the hint transfer when the container is empty and
+add a test that renders every empty container type.
+
+### 6. Text outside WinAnsiEncoding aborts document generation
+
+Priority: Medium. Crash caused by ordinary caller data.
+
+All default fonts are PDFBox standard 14 fonts with `WinAnsiEncoding`.
+`Font.width()` and `showText()` throw `IllegalArgumentException` for any
+character that the encoding does not contain. The exception is a PDFBox
+exception, not a `PdfUnboxException`, and it surfaces from `innerHeight()`
+before anything is drawn.
+
+Reproduction: `document.render(Unbox.paragraph("Ā 中文 😀"))` throws
+`IllegalArgumentException: U+0100 ('Amacron') is not available in the font
+Helvetica, encoding: WinAnsiEncoding`. A `TextCell` with an emoji fails the same
+way.
+
+Implementation approach:
+
+- Document the limitation in the library specification and the README.
+- Consider a configurable replacement strategy in `TextTokenizer` or `Font`
+  (for example, replace unsupported characters with `?`) so that generation
+  does not abort on user-supplied text. Embedding a Unicode TrueType font is a
+  separate feature.
+- Add tests that cover a supported non-ASCII character such as `ä` and an
+  unsupported one.
+
+### 7. `PdfUnboxException` discards the cause
+
+Priority: Medium. Diagnostics loss; no functional impact.
+
+The constructor accepts an `IOException` but never calls `super(e)`, so
+`getMessage()` and `getCause()` return `null`. Every wrapped PDFBox failure
+loses its reason.
+
+Reproduction: `new PdfUnboxException(new IOException("disk full"))` has a null
+message and a null cause.
+
+Implementation approach: pass the cause to the superclass and add a constructor
+that accepts a message and a cause. Add a one-line test.
+
+### 8. Table cell decorators are drawn twice
+
+Priority: Low. Output bloat; visible for semi-transparent colors or borders.
+
+`AbstractTableCell.render()` applies the cell decorators and then calls
+`renderCell()`. `TextCell.renderCell()` applies them again.
+
+Reproduction: a `TextCell` with one `BackgroundDecorator` emits two filled
+rectangles in the page content stream.
+
+Implementation approach: remove the second call in `TextCell`. This changes the
+bytes of generated PDFs, so the reference PDFs of `DocumentTest` must be
+regenerated and inspected.
+
+### 9. Measurement and rendering widths differ in containers and cells
+
+Priority: Medium. Same defect class as finding 1. Confirmed by code reading; no
+runtime reproduction has been recorded yet.
+
+- `HorizontalLayout.innerHeight()` applies only the container padding, while
+  `render()` applies margin and padding. A container with horizontal margin
+  measures its children too wide.
+- `VerticalLayout.innerHeight()` passes the unmodified viewport to the children,
+  ignoring container margin and padding.
+- `ContainerCell.innerHeight()` measures the inner container at the full cell
+  width, while `renderCell()` renders it with the cell padding applied.
+
+Implementation approach: fix together with finding 1 using one helper that
+derives the effective content bounds, and add tests for each combination.
+
+### 10. Stretch rendering hints accumulate across renders
+
+Priority: Low. Documented limitation; recorded here for completeness.
+
+`HorizontalStretchLayout` and `VerticalStretchLayout` add extra padding to the
+children's `RenderingHints` on every render and never reset it.
+
+Reproduction: rendering the same `Unbox.rowStretch()` container twice doubles the
+bottom padding of the shorter child (about 46 points after the first render,
+about 92 after the second).
+
+Implementation approach: reset or scope the hints per render so that elements can
+be rendered repeatedly, for example in headers and footers. Update the
+specification if rendering becomes repeatable.
+
+### 11. Zero-width column models produce NaN geometry
+
+Priority: Low. Clear crash with a misleading message.
+
+`ColumnModel.scaleToSize()` divides by the overall width. A model whose widths sum
+to zero yields `NaN` column widths, and PDFBox later throws
+`IllegalArgumentException: NaN is not a finite number`.
+
+Implementation approach: validate widths in the model constructors and in
+`scaleToSize()` and throw an `IllegalArgumentException` that names the problem.
+
+### 12. `FlexTable` column lines ignore the table margin
+
+Priority: Low. Confirmed by code reading.
+
+`FlexTable.drawColumnLines()` uses `document.getViewPort()`, while
+`FixedColumnsTable` and the row lines use the viewport with the table's horizontal
+margin applied. A `FlexTable` with left or right margin draws its column lines
+offset from its rows.
+
+Implementation approach: use `effectiveViewport(document)` in `FlexTable` and add
+a `FlexTable` regression PDF with a margin.
+
+## Observations without a scheduled fix
+
+- `AbstractTableCell.with(Decorator)` returns `PdfElement`, so a decorated cell
+  cannot be passed directly to `TableRow.addCell(TableCell)` without a cast.
+  Narrowing the return type would align the cells with the other fluent APIs.
+- `TableModel` default cells and column cell prototypes are shared mutable
+  objects. `TableRow.innerHeight()` sets the table's default padding on them
+  permanently, so a model reused by tables with different cell paddings keeps
+  the padding of the first table. `TableModel.DEFAULT_COLUMN` is a public
+  static field that is not final.
+- Negative viewport widths from oversized margins are accepted silently. The
+  tokenizer does not loop on them; text is split into single characters and then
+  clipped. Validation would give a clearer failure.
+- An ordinary element taller than one page is moved to a fresh page and then
+  rendered overflowing. Paragraphs clip lines unless overflow is enabled; other
+  elements draw past the footer. An oversized body row behaves the same way.
+  These are documented limitations, not crashes.
+- `DocumentFinisher` creates page content streams outside try-with-resources,
+  and `Document` has no failure path that closes the `PDDocument`. Callers that
+  abort generation must close `getDocument()` themselves.
+- `TextCell.innerHeight()` adds a two-point correction that `renderCell()` does
+  not return. Rows are therefore slightly taller than the reported cell height.
+
+## Follow-up areas assessed on 2026-09-11
+
+- Measured versus rendered widths in containers: finding 9.
+- Empty stretch containers and element reuse: findings 5 and 10.
+- Cell prototypes, padding propagation, decorator ordering: finding 8 and the
+  shared-prototype observation above.
+- Narrow widths and explicit line breaks: covered by `TextTokenizerTest`; no new
+  defect found.
+- Oversized elements and rows: no crash beyond finding 2; behavior recorded above.
 
 ## Already completed
 
@@ -118,14 +292,16 @@ of individual bug fixes unless it is needed to correct the behavior.
 
 1. Reproduce each open finding against the current revision and add focused
    regression coverage before its fix.
-2. Address each confirmed bug in a separate reviewable change, starting with the
-   high-priority findings. Document expected layout changes and API implications.
+2. Address each confirmed bug in a separate reviewable change. Suggested order:
+   findings 2, 4, 5, and 7 first because they are crashes or trivial fixes, then
+   findings 1, 3, and 9 together because they share the width and height
+   contract, then the remaining low-priority items.
 3. Run `./mvnw test` after each Java change.
 4. Visually inspect PDFs when positions, wrapping, or pagination change. Update
    reference PDFs only after confirming the new output is intentional.
 5. Update the library specification where behavior or supported boundaries change,
    and mark findings completed here with their validation results.
 
-The initial audit is complete when the three confirmed findings are resolved,
-follow-up areas have been assessed with remaining issues recorded, and relevant
-regression tests and documentation reflect the supported behavior.
+The audit is complete when the confirmed findings are resolved or explicitly
+accepted as limitations, and relevant regression tests and documentation reflect
+the supported behavior.

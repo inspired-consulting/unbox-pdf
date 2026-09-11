@@ -95,5 +95,8 @@ rendering or PDFBox may fail these tests even when output looks equivalent.
   relevant specification when changing a documented contract.
 - Use `docs/plans/` for implementation steps for substantial changes. Small,
   localized fixes do not require a separate plan.
+- Check `docs/plans/quality-audit.md` and `docs/plans/security-audit.md` for
+  known open findings before fixing a bug; mark a finding resolved there with
+  its validation result when the fix lands.
 - Keep detailed architecture in the specification rather than duplicating it here.
   Keep this file concise and update it when commands or working conventions change.

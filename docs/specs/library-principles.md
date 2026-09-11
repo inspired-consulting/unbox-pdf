@@ -178,9 +178,16 @@ handles line breaks, whitespace-based wrapping, and splitting long words.
 `TextWriter` measures and draws text with horizontal and vertical alignment,
 line limits, and overflow handling. `VerticalParagraph` supports rotated text.
 
+`SimpleFont` wraps the PDFBox standard 14 fonts, which use `WinAnsiEncoding`.
+Measuring or drawing a character outside that encoding throws a PDFBox
+`IllegalArgumentException`; the library does not substitute characters. Callers
+that render arbitrary text must filter it or provide an embedded Unicode font
+through the `Font` interface. See the quality audit for the planned handling.
+
 `Canvas` exposes a PDFBox content stream and viewport for custom graphics. This
 is the escape hatch for drawing that does not warrant a reusable element.
 PDFBox I/O failures are generally wrapped in `PdfUnboxException` inside the library.
+The current exception drops the cause; see the quality audit.
 
 ## Build and verification conventions
 
@@ -215,7 +222,9 @@ HTML/CSS behavior, thread safety, or repeatable rendering of mutable elements.
 Those capabilities require separate designs and validation if introduced.
 
 Place feature and behavior specifications in `docs/specs/`. Place implementation
-plans and execution steps in `docs/plans/`.
+plans and execution steps in `docs/plans/`. Known defects and limitations are
+tracked in the [quality audit](../plans/quality-audit.md) and the
+[security audit](../plans/security-audit.md).
 
 ## Source references
 

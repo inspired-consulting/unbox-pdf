@@ -110,6 +110,11 @@ public class Example {
 rows and repeat headers by default. Arbitrary elements and table rows are not
 split automatically across pages.
 
+The default fonts are the PDFBox standard 14 fonts with `WinAnsiEncoding`. Text
+containing characters outside that encoding, such as `Ā`, CJK characters, or
+emoji, currently fails with an `IllegalArgumentException` from PDFBox. Filter such
+text or supply an embedded Unicode font through the `Font` interface.
+
 ## Samples
 
 `samples/` is a separate Maven project, not a module of the root build. Install
@@ -139,8 +144,10 @@ the same guidance. Maintain shared instructions in `AGENTS.md`.
 
 - [Library principles](docs/specs/library-principles.md): architecture, contracts,
   and extension conventions.
-- [Quality audit](docs/plans/quality-audit.md): three confirmed open rendering bugs,
-  follow-up investigations, and validation steps.
+- [Quality audit](docs/plans/quality-audit.md): confirmed open rendering bugs,
+  assessed follow-up areas, and validation steps. Last audit: 2026-09-11.
+- [Security audit](docs/plans/security-audit.md): dependency status, release
+  pipeline, and input-handling findings. Last audit: 2026-09-11.
 - [Maven Wrapper setup](docs/plans/maven-wrapper.md): consistent Maven setup for
   contributors and CI.
 
