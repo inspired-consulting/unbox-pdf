@@ -55,7 +55,6 @@ import inspired.pdf.unbox.Margin;
 import inspired.pdf.unbox.Padding;
 import inspired.pdf.unbox.base.TableModel;
 import inspired.pdf.unbox.elements.FixedColumnsTable;
-import org.apache.pdfbox.pdmodel.PDDocument;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -73,40 +72,40 @@ public class Example {
     public static void main(String[] args) throws IOException {
         Path output = Path.of("target", "example.pdf");
         Files.createDirectories(output.getParent());
-        Document document = new Document();
+        try (Document document = new Document()) {
 
-        document.render(paragraph("Hello, World!", helvetica_bold(12)));
-        document.render(row()
-            .with(Margin.of(10, 0))
-            .add(paragraph("Left"))
-            .add(paragraph("Center", Align.CENTER))
-            .add(paragraph("Right", Align.RIGHT)));
+            document.render(paragraph("Hello, World!", helvetica_bold(12)));
+            document.render(row()
+                .with(Margin.of(10, 0))
+                .add(paragraph("Left"))
+                .add(paragraph("Center", Align.CENTER))
+                .add(paragraph("Right", Align.RIGHT)));
 
-        TableModel model = new TableModel()
-            .add("Article", 2f)
-            .add("Size")
-            .add("Price", Align.RIGHT);
-        FixedColumnsTable table = new FixedColumnsTable(model)
-            .withHeader(helvetica_bold(8), background(GRAY_100))
-            .with(Margin.of(10))
-            .with(border(1, GRAY_500));
-        table.addRow().withCells("SmartTV 200+", "55", "200.12 EUR");
-        table.addRow().withCells("SmartPhone", "5.5", "320.00 EUR");
-        document.render(table);
+            TableModel model = new TableModel()
+                .add("Article", 2f)
+                .add("Size")
+                .add("Price", Align.RIGHT);
+            FixedColumnsTable table = new FixedColumnsTable(model)
+                .withHeader(helvetica_bold(8), background(GRAY_100))
+                .with(Margin.of(10))
+                .with(border(1, GRAY_500));
+            table.addRow().withCells("SmartTV 200+", "55", "200.12 EUR");
+            table.addRow().withCells("SmartPhone", "5.5", "320.00 EUR");
+            document.render(table);
 
-        document.render(paragraph("Done!", helvetica_bold(12), Align.CENTER)
-            .with(Padding.of(10))
-            .with(background(GRAY_100)));
+            document.render(paragraph("Done!", helvetica_bold(12), Align.CENTER)
+                .with(Padding.of(10))
+                .with(background(GRAY_100)));
 
-        try (PDDocument pdf = document.finish()) {
-            pdf.save(output.toFile());
+            document.finish().save(output.toFile());
         }
     }
 }
 ```
 
 `Document` renders elements from top to bottom. `finish()` returns the PDFBox
-`PDDocument`; the caller saves and closes it. Tables handle page breaks between
+`PDDocument`; save it before the try-with-resources block closes `Document` and
+its PDF resources. Tables handle page breaks between
 rows and repeat headers by default. Arbitrary elements and table rows are not
 split automatically across pages.
 

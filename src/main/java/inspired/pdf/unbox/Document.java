@@ -13,9 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Utility to write linear PDFs from top to bottom. Supports to break page.
+ * Creates PDFs by rendering elements from top to bottom with page-break support.
+ * Owns the PDF and content stream; use try-with-resources and save the result of
+ * {@link #finish()} before closing. Closing releases resources without finishing rendering.
  */
-public class Document implements DocumentContext {
+public class Document implements DocumentContext, AutoCloseable {
 
     private final Orientation orientation;
 
@@ -26,6 +28,7 @@ public class Document implements DocumentContext {
 
     private PDPage page;
     private PDPageContentStream contentStream;
+    private boolean closed;
 
     private final List<PdfEventListener> eventListeners = new ArrayList<>();
 
@@ -133,6 +136,7 @@ public class Document implements DocumentContext {
     }
 
     public PDPage addPage(Orientation orientation) {
+        ensureOpen();
         closeContentStream();
         PDRectangle rectangle = PDRectangle.A4;
 
@@ -155,6 +159,11 @@ public class Document implements DocumentContext {
         }
     }
 
+    /**
+     * Complete rendering and return the PDF for saving. The PDF remains open until
+     * this document or the returned PDF is closed.
+     * @return The completed PDF.
+     */
     public PDDocument finish() {
         // ensure that at least one page has been written.
         getPage();
@@ -164,6 +173,7 @@ public class Document implements DocumentContext {
     }
 
     public PDPageContentStream getContentStream() {
+        ensureOpen();
         if (contentStream == null) {
             try {
                 contentStream = new PDPageContentStream(document, getPage());
@@ -175,6 +185,7 @@ public class Document implements DocumentContext {
     }
 
     public PDPage getPage() {
+        ensureOpen();
         if (page == null) {
             addPage();
         }
@@ -185,7 +196,31 @@ public class Document implements DocumentContext {
         return document;
     }
 
+    /**
+     * Release the content stream and PDF, without completing rendering or invoking
+     * finish listeners. Repeated calls have no effect. Save the PDF before closing.
+     */
+    @Override
+    public void close() {
+        if (closed) {
+            return;
+        }
+        closed = true;
+        // Always close the PDF, including when closing the content stream fails.
+        try (PDDocument pdf = document) {
+            closeContentStream();
+        } catch (IOException e) {
+            throw new PdfUnboxException(e);
+        }
+    }
+
     // internal
+
+    private void ensureOpen() {
+        if (closed) {
+            throw new IllegalStateException("Document is closed");
+        }
+    }
 
     protected void onNewPage(PDPage page) {
         for (PdfEventListener listener : eventListeners) {

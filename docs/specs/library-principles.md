@@ -57,9 +57,17 @@ distance. Rendering writes content immediately; it does not build a document tre
 for a later global layout pass.
 
 `finish()` ensures at least one page exists, closes the active stream, invokes
-finish listeners, and returns the PDFBox document. The caller is responsible for
-saving and closing that document. Treat finishing as the terminal step of the
-construction lifecycle; repeated finishing is not specified as idempotent.
+finish listeners, and returns the PDFBox document for saving. `Document` implements
+`AutoCloseable`: prefer try-with-resources and save the returned PDF before leaving
+the block. `close()` releases the current content stream and underlying PDF without
+creating pages or invoking finish listeners, including after rendering failures.
+It attempts PDF cleanup even if stream cleanup fails and wraps I/O failures in
+`PdfUnboxException`. Repeated closing is harmless. Rendering, page access, and
+finishing after close fail with `IllegalStateException`.
+
+Existing callers may still close the PDF returned by `finish()` themselves.
+Treat finishing as the terminal step of the construction lifecycle; repeated
+finishing is not specified as idempotent.
 
 Page lifecycle extensions implement `PdfEventListener`:
 

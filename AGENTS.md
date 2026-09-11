@@ -44,6 +44,8 @@ Create that directory first and use the repository root as the working directory
 - Keep changes focused on the requested behavior and preserve unrelated work.
 - Ask before adding any new production or test dependency.
 - Follow existing architecture and naming conventions.
+- Add brief class-level Javadoc to new or touched Java classes, including tests,
+  describing their purpose unless there is a clear reason to omit it.
 - Follow `.editorconfig`: four-space indentation, LF, UTF-8, and a final newline.
 - Preserve Java 17 compatibility and existing public APIs unless the task calls
   for an API change.
@@ -87,7 +89,8 @@ rendering or PDFBox may fail these tests even when output looks equivalent.
 - Stretch layouts mutate rendering hints. Horizontal stretching pads shorter
   children; vertical stretching passes extra padding to the last child. Do not
   assume element rendering is stateless.
-- The caller saves and closes the `PDDocument` returned by `Document.finish()`.
+- Prefer try-with-resources for `Document`; save the PDF returned by `finish()`
+  before closing. Callers may still close the returned `PDDocument` directly.
 
 ## Specifications and plans
 

@@ -7,6 +7,9 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
+/**
+ * Verifies that wrapped I/O failures retain their causes and diagnostic messages.
+ */
 class PdfUnboxExceptionTest {
 
     @Test

@@ -107,20 +107,6 @@ Implementation approach:
 - Add tests for value rows on `FlexTable`, for surplus values, and for fewer
   values than columns.
 
-### 5. Empty vertical stretch container crashes
-
-Priority: Medium. Crash on an edge case that is easy to reach through composition.
-
-`VerticalStretchLayout.render()` accesses `elements.get(elements.size() - 1)`
-without checking for an empty list.
-
-Reproduction: `document.render(Unbox.columnStretch())` throws
-`IndexOutOfBoundsException: Index -1 out of bounds for length 0`. Empty
-`Unbox.row()`, `Unbox.rowStretch()`, and `Unbox.column()` render without error.
-
-Implementation approach: skip the hint transfer when the container is empty and
-add a test that renders every empty container type.
-
 ### 6. Text outside WinAnsiEncoding aborts document generation
 
 Priority: Medium. Crash caused by ordinary caller data.
@@ -230,9 +216,8 @@ a `FlexTable` regression PDF with a margin.
   rendered overflowing. Paragraphs clip lines unless overflow is enabled; other
   elements draw past the footer. An oversized body row behaves the same way.
   These are documented limitations, not crashes.
-- `DocumentFinisher` creates page content streams outside try-with-resources,
-  and `Document` has no failure path that closes the `PDDocument`. Callers that
-  abort generation must close `getDocument()` themselves.
+- Use try-with-resources for the page content streams created by
+  `DocumentFinisher` so listener failures cannot leave those streams open.
 - `TextCell.innerHeight()` adds a two-point correction that `renderCell()` does
   not return. Rows are therefore slightly taller than the reported cell height.
 
