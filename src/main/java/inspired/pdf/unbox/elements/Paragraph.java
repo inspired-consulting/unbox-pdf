@@ -147,7 +147,7 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
         if (innerHeight > HEIGHT_UNDEFINED) {
             return innerHeight;
         }
-        return textWriter.calculateHeight(text, viewPort.apply(padding), lineLimit) + padding.vertical();
+        return textWriter.calculateHeight(text, viewPort.apply(margin).apply(padding), lineLimit) + padding.vertical();
     }
 
     @Override

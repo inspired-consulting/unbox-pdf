@@ -6,31 +6,6 @@ specifications.
 
 ## Open findings
 
-### 1. Paragraph measurement ignores horizontal margins
-
-Priority: High. Silent text loss. Re-confirmed on 2026-09-11.
-
-`Paragraph.innerHeight()` measures text using the viewport width minus padding,
-while rendering also subtracts horizontal margins. Text therefore wraps into more
-lines than the allocated height permits, and trailing content can disappear.
-
-Reproduction: render a default paragraph containing `"word ".repeat(30) + "END"`
-with `Margin.left(450)` on a default document. Only ten words are extracted from
-the resulting document and `END` is missing.
-
-Implementation approach:
-
-- Add a regression test that checks the complete text survives rendering with
-  horizontal margins when no line limit or fixed height requests truncation.
-- Make measurement and rendering agree on the effective text width; check callers
-  to avoid subtracting margins twice.
-- Cover left and right margins, padding, and paragraphs in containers. Preserve
-  intentional line limits and fixed-height clipping.
-- Review resulting height and page-break changes, including reference PDFs.
-
-Completion: text is retained within the intended bounds and subsequent elements
-are placed after the full paragraph height.
-
 ### 2. Oversized table headers recursively create pages
 
 Priority: High. Document-generation crash. Re-confirmed on 2026-09-11.
