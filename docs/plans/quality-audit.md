@@ -105,17 +105,6 @@ Implementation approach: reset or scope the hints per render so that elements ca
 be rendered repeatedly, for example in headers and footers. Update the
 specification if rendering becomes repeatable.
 
-### 11. Zero-width column models produce NaN geometry
-
-Priority: Low. Clear crash with a misleading message.
-
-`ColumnModel.scaleToSize()` divides by the overall width. A model whose widths sum
-to zero yields `NaN` column widths, and PDFBox later throws
-`IllegalArgumentException: NaN is not a finite number`.
-
-Implementation approach: validate widths in the model constructors and in
-`scaleToSize()` and throw an `IllegalArgumentException` that names the problem.
-
 ## Follow-up tasks
 
 - `TableModel` default cells and column cell prototypes are shared mutable

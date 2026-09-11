@@ -78,13 +78,15 @@ public class SimpleColumnModel implements ColumnModel<Column> {
         return columns.stream().map(Column::width).reduce(Float::sum).orElse(0f);
     }
 
+    @Override
     public SimpleColumnModel scale(float scale) {
         List<Column> adapted = columns.stream().map(c -> c.scale(scale)).collect(Collectors.toList());
         return new SimpleColumnModel(adapted);
     }
 
+    @Override
     public SimpleColumnModel scaleToSize(float width) {
-        return scale(width / getOverallWidth());
+        return scale(scaleFactor(width));
     }
 
     public List<Bounds> toBounds(Bounds viewPort) {

@@ -114,7 +114,7 @@ public class TableModel implements ColumnModel<TableModel.TableColumn> {
 
     @Override
     public TableModel scaleToSize(float tableWidth) {
-        return scale(tableWidth / getOverallWidth());
+        return scale(scaleFactor(tableWidth));
     }
 
     public List<Bounds> toBounds(Bounds viewPort) {

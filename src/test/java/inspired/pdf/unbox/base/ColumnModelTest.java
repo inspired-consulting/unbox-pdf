@@ -8,6 +8,8 @@ import java.util.List;
 import static inspired.pdf.unbox.GeometryAssertions.assertBounds;
 import static inspired.pdf.unbox.GeometryAssertions.assertClose;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Verifies relative column scaling and the bounds produced for each column.
@@ -56,5 +58,40 @@ class ColumnModelTest {
         assertEquals(2f, model.width(0));
         assertEquals(3f, model.width(1));
         assertEquals(4f, model.width(2));
+    }
+
+    @Test
+    void negativeAndNonFiniteWidthsAreRejected() {
+        assertThrows(IllegalArgumentException.class, () -> new Column(-1f));
+        assertThrows(IllegalArgumentException.class, () -> new Column(Float.NaN));
+        assertThrows(IllegalArgumentException.class, () -> SimpleColumnModel.of(1f, Float.POSITIVE_INFINITY));
+        assertThrows(IllegalArgumentException.class, () -> new TableModel.TableColumn(-2f));
+        assertThrows(IllegalArgumentException.class, () -> TableModel.of(1f, Float.NaN));
+    }
+
+    @Test
+    void allZeroWidthsFailWithDescriptiveMessage() {
+        IllegalArgumentException simple = assertThrows(IllegalArgumentException.class,
+                () -> SimpleColumnModel.of(0f, 0f).scaleToSize(100));
+        assertTrue(simple.getMessage().contains("positive"), simple.getMessage());
+
+        IllegalArgumentException table = assertThrows(IllegalArgumentException.class,
+                () -> TableModel.of(0f, 0f).scaleToSize(100));
+        assertTrue(table.getMessage().contains("positive"), table.getMessage());
+    }
+
+    @Test
+    void singleZeroWidthColumnAmongPositiveColumnsScales() {
+        SimpleColumnModel model = SimpleColumnModel.of(1f, 0f, 3f).scaleToSize(400);
+
+        assertClose(100, model.width(0));
+        assertClose(0, model.width(1));
+        assertClose(300, model.width(2));
+    }
+
+    @Test
+    void emptyModelScalesToEmptyModel() {
+        assertEquals(0, new SimpleColumnModel().scaleToSize(100).size());
+        assertEquals(0, new TableModel().scaleToSize(100).size());
     }
 }
