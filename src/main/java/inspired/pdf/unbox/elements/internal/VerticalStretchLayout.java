@@ -18,7 +18,7 @@ public class VerticalStretchLayout extends VerticalLayout {
         Bounds bounds = viewPort.apply(container.margin()).apply(container.padding());
         float forward = 0f;
         if (!elements.isEmpty()) {
-            elements.get(elements.size() - 1).renderingHints().addExtraPadding(container.renderingHints().getExtraPadding());
+            elements.get(elements.size() - 1).renderingHints().setExtraPadding(container.renderingHints().getExtraPadding());
         }
         for (PdfElement element : elements) {
             float elementHeight = element.render(document, bounds);

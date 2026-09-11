@@ -21,6 +21,22 @@ public class RenderingHints {
        return this;
     }
 
+    /**
+     * Replace the extra padding. Layouts set hints per render instead of accumulating them.
+     */
+    public RenderingHints setExtraPadding(Padding padding) {
+        extraPadding = padding;
+        return this;
+    }
+
+    /**
+     * Clear all hints. Containers reset their children before measuring and rendering.
+     */
+    public RenderingHints reset() {
+        extraPadding = Padding.of(0);
+        return this;
+    }
+
     public Padding getExtraPadding() {
         return extraPadding;
     }

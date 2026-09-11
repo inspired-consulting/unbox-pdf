@@ -75,13 +75,23 @@ public class Container extends AbstractPdfElement {
 
     @Override
     public float render(Document document, Bounds viewPort) {
+        resetChildHints();
         applyDecorators(document, viewPort);
         return layout.render(document, viewPort, this, elements);
     }
 
     @Override
     public float innerHeight(Bounds viewPort) {
+        resetChildHints();
         return layout.innerHeight(viewPort, this, elements);
+    }
+
+    /**
+     * Hints on children are owned by this container's layout and set during render.
+     * Clearing them first keeps measurement and repeated rendering free of stale state.
+     */
+    private void resetChildHints() {
+        elements.forEach(element -> element.renderingHints().reset());
     }
 
     @Override

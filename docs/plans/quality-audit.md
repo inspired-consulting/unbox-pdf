@@ -90,21 +90,6 @@ runtime reproduction has been recorded yet.
 Implementation approach: fix together with finding 1 using one helper that
 derives the effective content bounds, and add tests for each combination.
 
-### 10. Stretch rendering hints accumulate across renders
-
-Priority: Low.
-
-`HorizontalStretchLayout` and `VerticalStretchLayout` add extra padding to the
-children's `RenderingHints` on every render and never reset it.
-
-Reproduction: rendering the same `Unbox.rowStretch()` container twice doubles the
-bottom padding of the shorter child (about 46 points after the first render,
-about 92 after the second).
-
-Implementation approach: reset or scope the hints per render so that elements can
-be rendered repeatedly, for example in headers and footers. Update the
-specification if rendering becomes repeatable.
-
 ## Follow-up tasks
 
 - `TableModel` default cells and column cell prototypes are shared mutable

@@ -147,8 +147,11 @@ Containers compose `PdfElement` children and delegate geometry to a
 - Vertical stretching passes extra padding to the last child of a column.
 
 Stretching uses mutable `RenderingHints`; individual elements may ignore them.
-Do not assume rendering is a pure operation or that sharing an element between
-layouts is safe without considering accumulated state.
+A container clears the hints of its children whenever it measures or renders, and
+its layout sets them again during render. Rendering the same container repeatedly
+therefore yields the same result, which headers and footers rely on. Rendering is
+still not a pure operation, and sharing one element between two layouts at the
+same time is not supported.
 
 ## Decoration
 
@@ -236,8 +239,9 @@ rendering state explicit in feature specifications because they affect how
 elements compose.
 
 This initial specification does not promise arbitrary content splitting, full
-HTML/CSS behavior, thread safety, or repeatable rendering of mutable elements.
-Those capabilities require separate designs and validation if introduced.
+HTML/CSS behavior, or thread safety. Those capabilities require separate designs
+and validation if introduced. Repeated rendering is supported only as described
+for containers and stretch hints above.
 
 Place feature and behavior specifications in `docs/specs/`. Place implementation
 plans and execution steps in `docs/plans/`. Known defects and limitations are

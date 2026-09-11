@@ -42,7 +42,7 @@ public class HorizontalStretchLayout extends HorizontalLayout {
             PdfElement element = elements.get(i);
             Column column = columns.get(i);
             Bounds adjusted = bounds.width(column.width()).left(offsetX);
-            element.renderingHints().addExtraPadding(Padding.bottom(maxInnerHeight - element.innerHeight(adjusted)));
+            element.renderingHints().setExtraPadding(Padding.bottom(maxInnerHeight - element.innerHeight(adjusted)));
             forward = max(element.render(document, adjusted), forward);
             offsetX += column.width();
         }
