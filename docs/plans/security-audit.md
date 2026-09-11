@@ -166,8 +166,16 @@ Steps before the first release with the new setup:
 5. Create a GitHub release. The workflow publishes and waits until the
    artifact is published on Central.
 
-Remove the old `OSSRH_USERNAME` and `OSSRH_TOKEN` secrets; they are no longer
-used.
+To test the pipeline without a release, enable snapshots for the namespace in
+the Portal ("Enable SNAPSHOTs" in the namespace menu) and start the workflow
+manually from the Actions tab while the version ends with `-SNAPSHOT`. The
+artifact then lands in
+`https://central.sonatype.com/repository/maven-snapshots/`. Consumers of
+snapshots must add that URL as a repository with snapshots enabled.
+
+The old `OSSRH_USERNAME` and `OSSRH_TOKEN` secrets were removed on 2026-09-11.
+Steps 1 to 3 were completed on the same day; the namespace has snapshots
+enabled.
 
 ## Recommended order
 

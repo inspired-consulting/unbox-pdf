@@ -3,6 +3,9 @@ name: Publish to Maven Central
 on:
   release:
     types: [created]
+  # Manual runs publish the current version of the selected branch.
+  # With a -SNAPSHOT version this uploads to the Central snapshot repository.
+  workflow_dispatch:
 
 permissions:
   contents: read
