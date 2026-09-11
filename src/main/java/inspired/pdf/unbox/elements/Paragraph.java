@@ -69,12 +69,12 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
     }
 
     /**
-     * If overflow is true, the text will be written even if it does not fit the bounds.
+     * Specify what should happen to overflowing text.
      * @param overflow The overflow setting
      * @return The paragraph.
      */
-    public Paragraph withOverflow(boolean overflow) {
-        textWriter.withOverflow(overflow);
+    public Paragraph with(Overflow overflow) {
+        this.overflow = java.util.Objects.requireNonNull(overflow, "overflow");
         return this;
     }
 
@@ -106,30 +106,17 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
     }
 
     /**
-     * Set the maximum number of lines for this paragraph. If the text is longer it will be
-     * truncated with a hard clip, matching {@code limit(lineLimit, Overflow.CLIP)}.
+     * Set the number of lines for which space is allocated, preserving the overflow mode.
+     * CLIP and ELLIPSIS truncate to this limit; OVERFLOW draws beyond it.
      *
-     * @param lineLimit The maximum number of lines. May be null.
+     * @param lineLimit The maximum number of allocated lines; must be positive.
      * @return The paragraph.
      */
     public Paragraph limit(int lineLimit) {
-        return limit(lineLimit, Overflow.CLIP);
-    }
-
-    /**
-     * Set the maximum number of lines for this paragraph. If the text is longer it will be
-     * truncated; {@code overflow} controls whether the last kept line ends with an ellipsis.
-     *
-     * @param lineLimit The maximum number of lines.
-     * @param overflow  How to handle truncation of the last kept line.
-     * @return The paragraph.
-     */
-    public Paragraph limit(int lineLimit, Overflow overflow) {
         if (lineLimit <= 0) {
             throw new IllegalArgumentException("Line limit must be greater than 0");
         }
         this.lineLimit = lineLimit;
-        this.overflow = overflow;
         return this;
     }
 
@@ -143,6 +130,9 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
 
         if (innerHeight > HEIGHT_UNDEFINED) {
             return innerHeight + margin.vertical();
+        }
+        if (overflow == Overflow.OVERFLOW) {
+            return calculatedHeight + margin.vertical();
         }
         return actualHeight + padding.vertical() + margin.vertical() + renderingHints().getExtraPadding().vertical();
     }

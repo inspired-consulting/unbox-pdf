@@ -176,7 +176,9 @@ content drawing in the cell.
 `Font` combines PDFBox font access with size, color, and metrics. `TextTokenizer`
 handles line breaks, whitespace-based wrapping, and splitting long words.
 `TextWriter` measures and draws text with horizontal and vertical alignment,
-line limits, and overflow handling. `VerticalParagraph` supports rotated text.
+line limits, and overflow handling. Paragraphs own one overflow policy for both
+line limits and available height; see the [overflow contract](paragraph-truncation-ellipsis.md).
+`VerticalParagraph` supports rotated text.
 
 `SimpleFont` wraps the PDFBox standard 14 fonts, which use `WinAnsiEncoding`.
 Measuring or drawing a character outside that encoding throws a PDFBox

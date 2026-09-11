@@ -115,6 +115,19 @@ containing characters outside that encoding, such as `Ā`, CJK characters, or
 emoji, currently fails with an `IllegalArgumentException` from PDFBox. Filter such
 text or supply an embedded Unicode font through the `Font` interface.
 
+### Paragraph overflow
+
+Paragraphs clip excess text by default. To mark truncation with an ellipsis:
+
+```java
+paragraph("First\nSecond").limit(1).with(Overflow.ELLIPSIS);
+```
+
+Import `inspired.pdf.unbox.Overflow` for this example. The policy also applies to
+fixed paragraph heights; `Overflow.OVERFLOW` draws beyond the allocated space.
+See the [overflow contract](docs/specs/paragraph-truncation-ellipsis.md) for details
+and API migration guidance.
+
 ## Samples
 
 `samples/` is a separate Maven project, not a module of the root build. Install

@@ -1,5 +1,8 @@
 # Test plan: paragraph truncation ellipsis
 
+Historical test plan for the original API. The implemented unified API and current
+coverage are documented in [the overflow contract](paragraph-truncation-ellipsis.md).
+
 Status: Proposed. Covers testing for
 [paragraph-truncation-ellipsis.md](paragraph-truncation-ellipsis.md), which
 tracks [issue #16](https://github.com/inspired-consulting/unbox-pdf/issues/16).

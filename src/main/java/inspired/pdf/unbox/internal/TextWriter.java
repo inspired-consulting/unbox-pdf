@@ -17,22 +17,12 @@ public class TextWriter {
 
     private final Font font;
 
-    private boolean overflow;
-
     /**
      * Create a new text writer with the given font.
      * @param font  The font to use
      */
     public TextWriter(Font font) {
         this.font = font;
-    }
-
-    /**
-     * If overflow is true, the text will be written even if it does not fit the bounds.
-     */
-    public TextWriter withOverflow(boolean overflow) {
-        this.overflow = overflow;
-        return this;
     }
 
     public float calculateHeight(String text, Bounds viewPort, Integer lineLimit) {
@@ -65,16 +55,28 @@ public class TextWriter {
     }
 
     public float write(PDPageContentStream stream, Bounds bounds, String text, Align align, VAlign vAlign, Integer lineLimit, Overflow overflowMode) {
+        java.util.Objects.requireNonNull(overflowMode, "overflowMode");
         List<String> chunks = chunk(text, bounds.width());
-        if (lineLimit != null && lineLimit > 0 && lineLimit < chunks.size()) {
-            List<String> kept = new ArrayList<>(chunks.subList(0, lineLimit));
-            if (overflowMode == Overflow.ELLIPSIS) {
-                int last = kept.size() - 1;
-                kept.set(last, withEllipsis(kept.get(last), bounds.width()));
+        int alignmentLines = chunks.size();
+        if (overflowMode != Overflow.OVERFLOW) {
+            int capacity = chunks.size();
+            if (lineLimit != null) {
+                capacity = Math.min(capacity, Math.max(0, lineLimit));
             }
-            chunks = kept;
+            alignmentLines = capacity;
+            // Preserve the existing tolerance for floating-point height rounding.
+            while (capacity > 0 && capacity * font.lineHeight() * 0.99f > bounds.height()) {
+                capacity--;
+            }
+            if (capacity < chunks.size()) {
+                chunks = new ArrayList<>(chunks.subList(0, capacity));
+                if (overflowMode == Overflow.ELLIPSIS && capacity > 0) {
+                    chunks.set(capacity - 1, withEllipsis(chunks.get(capacity - 1), bounds.width()));
+                }
+            }
         }
-        float y = offsetY(bounds, vAlign, chunks.size());
+        // Keep legacy CLIP alignment, which aligns the line-limited text before height clipping.
+        float y = offsetY(bounds, vAlign, overflowMode == Overflow.CLIP ? alignmentLines : chunks.size());
         return write(chunks, bounds, align, stream, y);
     }
 
@@ -128,19 +130,13 @@ public class TextWriter {
             return 0;
         }
         int index = 0;
-        while (index < chunks.size() && enoughSpace(bounds, index)) {
+        while (index < chunks.size()) {
             String chunk = chunks.get(index++);
             float x = offsetX(bounds, chunk, align);
             writeLine(stream, chunk, x, y);
             y -= font.lineHeight();
         }
         return index * font.lineHeight();
-    }
-
-    private boolean enoughSpace(final Bounds bounds, final int index) {
-        // 0.99f is a correction factor to avoid text being cut off due to rounding differences
-        float lineHeight = font.lineHeight() * 0.99f;
-        return overflow || ((index + 1) * lineHeight <= bounds.height());
     }
 
     private List<String> chunk(String text, float maxWidth) {

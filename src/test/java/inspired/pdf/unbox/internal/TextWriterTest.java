@@ -29,19 +29,18 @@ class TextWriterTest {
     }
 
     @Test
-    void explicitFalseClipsTextToBounds() throws IOException {
-        assertEquals("first", render(new TextWriter(SimpleFont.helvetica(10)).withOverflow(false)));
+    void explicitClipClipsTextToBounds() throws IOException {
+        assertEquals("first", render(new TextWriter(SimpleFont.helvetica(10)), Overflow.CLIP));
     }
 
     @Test
-    void explicitTrueAllowsTextBeyondBounds() throws IOException {
-        assertEquals("first\nsecond", render(new TextWriter(SimpleFont.helvetica(10)).withOverflow(true)));
+    void explicitOverflowAllowsTextBeyondBounds() throws IOException {
+        assertEquals("first\nsecond", render(new TextWriter(SimpleFont.helvetica(10)), Overflow.OVERFLOW));
     }
 
     @Test
-    void overflowCanBeDisabledAfterEnablingIt() throws IOException {
-        TextWriter writer = new TextWriter(SimpleFont.helvetica(10)).withOverflow(true).withOverflow(false);
-        assertEquals("first", render(writer));
+    void ellipsisMarksHeightClipping() throws IOException {
+        assertEquals("first…", render(new TextWriter(SimpleFont.helvetica(10)), Overflow.ELLIPSIS));
     }
 
     // Fixture shared by the ellipsis tests below: with helvetica(9) and maxWidth 100, this
@@ -140,12 +139,16 @@ class TextWriterTest {
     }
 
     private String render(TextWriter writer) throws IOException {
+        return render(writer, Overflow.CLIP);
+    }
+
+    private String render(TextWriter writer, Overflow mode) throws IOException {
         try (PDDocument pdf = new PDDocument()) {
             PDPage page = new PDPage();
             pdf.addPage(page);
             Bounds bounds = new Bounds(20, 100, 200, SimpleFont.helvetica(10).lineHeight());
             try (PDPageContentStream stream = new PDPageContentStream(pdf, page)) {
-                writer.write(stream, bounds, "first\nsecond");
+                writer.write(stream, bounds, "first\nsecond", Align.LEFT, VAlign.TOP, null, mode);
             }
             PDFTextStripper stripper = new PDFTextStripper();
             stripper.setLineSeparator("\n");
