@@ -179,6 +179,11 @@ Custom cell implementations extend `AbstractTableCell` and supply measurement,
 value assignment, and cell drawing. Keep row pagination in the table and local
 content drawing in the cell.
 
+`AbstractTableCell.with(Decorator)` retains the base cell type. `TextCell` and
+`ContainerCell` retain their concrete types when configuring decorators, padding,
+default padding, and alignment, so chains can be passed directly to `addCell(...)`
+and container-cell chains can continue with `add(...)`.
+
 ## Text and lower-level drawing
 
 `Font` combines PDFBox font access with size, color, and metrics. `TextTokenizer`

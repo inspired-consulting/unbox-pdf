@@ -5,7 +5,12 @@ import inspired.pdf.unbox.Bounds;
 import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.Padding;
 import inspired.pdf.unbox.elements.TableCell;
+import inspired.pdf.unbox.decorators.Decorator;
 
+/**
+ * Base for table cells with padding, alignment, and decorators.
+ * Fluent configuration preserves the table-cell type for direct row insertion.
+ */
 public abstract class AbstractTableCell extends AbstractDecoratable implements TableCell {
 
     protected Align align = Align.LEFT;
@@ -17,6 +22,12 @@ public abstract class AbstractTableCell extends AbstractDecoratable implements T
         } else {
             return DEFAULT_CELL_PADDING;
         }
+    }
+
+    @Override
+    public AbstractTableCell with(Decorator decorator) {
+        super.with(decorator);
+        return this;
     }
 
     public AbstractTableCell with(Padding padding) {

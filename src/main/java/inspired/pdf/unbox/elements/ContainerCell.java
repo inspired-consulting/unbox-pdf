@@ -1,6 +1,9 @@
 package inspired.pdf.unbox.elements;
 
+import inspired.pdf.unbox.Align;
 import inspired.pdf.unbox.Bounds;
+import inspired.pdf.unbox.Padding;
+import inspired.pdf.unbox.decorators.Decorator;
 import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.elements.internal.AbstractTableCell;
 
@@ -21,6 +24,30 @@ public class ContainerCell extends AbstractTableCell {
 
     public ContainerCell add(PdfElement element) {
         container.add(element);
+        return this;
+    }
+
+    @Override
+    public ContainerCell with(Decorator decorator) {
+        super.with(decorator);
+        return this;
+    }
+
+    @Override
+    public ContainerCell with(Padding padding) {
+        super.with(padding);
+        return this;
+    }
+
+    @Override
+    public ContainerCell withDefaultPadding(Padding padding) {
+        super.withDefaultPadding(padding);
+        return this;
+    }
+
+    @Override
+    public ContainerCell withAlign(Align align) {
+        super.withAlign(align);
         return this;
     }
 

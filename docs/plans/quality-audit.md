@@ -201,9 +201,6 @@ a `FlexTable` regression PDF with a margin.
 
 ## Follow-up tasks
 
-- `AbstractTableCell.with(Decorator)` returns `PdfElement`, so a decorated cell
-  cannot be passed directly to `TableRow.addCell(TableCell)` without a cast.
-  Narrowing the return type would align the cells with the other fluent APIs.
 - `TableModel` default cells and column cell prototypes are shared mutable
   objects. `TableRow.innerHeight()` sets the table's default padding on them
   permanently, so a model reused by tables with different cell paddings keeps

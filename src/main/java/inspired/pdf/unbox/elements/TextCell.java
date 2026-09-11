@@ -5,6 +5,8 @@ import java.util.List;
 
 import inspired.pdf.unbox.Align;
 import inspired.pdf.unbox.Bounds;
+import inspired.pdf.unbox.Padding;
+import inspired.pdf.unbox.decorators.Decorator;
 import inspired.pdf.unbox.Font;
 import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.elements.internal.AbstractTableCell;
@@ -36,6 +38,30 @@ public class TextCell extends AbstractTableCell {
         this.font = font != null ? font : SimpleFont.helvetica(8);
         this.text = text != null ? text : "";
         this.align = align;
+    }
+
+    @Override
+    public TextCell with(Decorator decorator) {
+        super.with(decorator);
+        return this;
+    }
+
+    @Override
+    public TextCell with(Padding padding) {
+        super.with(padding);
+        return this;
+    }
+
+    @Override
+    public TextCell withDefaultPadding(Padding padding) {
+        super.withDefaultPadding(padding);
+        return this;
+    }
+
+    @Override
+    public TextCell withAlign(Align align) {
+        super.withAlign(align);
+        return this;
     }
 
     @Override
