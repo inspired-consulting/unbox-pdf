@@ -23,6 +23,7 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
     protected Margin margin = Margin.none();
 
     private Integer lineLimit = null;
+    private Overflow overflow = Overflow.CLIP;
 
 
     /**
@@ -105,16 +106,30 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
     }
 
     /**
-     * Set the maximum number of lines for this paragraph. If the text is longer it will be truncated.
+     * Set the maximum number of lines for this paragraph. If the text is longer it will be
+     * truncated with a hard clip, matching {@code limit(lineLimit, Overflow.CLIP)}.
      *
      * @param lineLimit The maximum number of lines. May be null.
      * @return The paragraph.
      */
     public Paragraph limit(int lineLimit) {
+        return limit(lineLimit, Overflow.CLIP);
+    }
+
+    /**
+     * Set the maximum number of lines for this paragraph. If the text is longer it will be
+     * truncated; {@code overflow} controls whether the last kept line ends with an ellipsis.
+     *
+     * @param lineLimit The maximum number of lines.
+     * @param overflow  How to handle truncation of the last kept line.
+     * @return The paragraph.
+     */
+    public Paragraph limit(int lineLimit, Overflow overflow) {
         if (lineLimit <= 0) {
             throw new IllegalArgumentException("Line limit must be greater than 0");
         }
         this.lineLimit = lineLimit;
+        this.overflow = overflow;
         return this;
     }
 
@@ -124,7 +139,7 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
         applyDecorators(document, viewPort.apply(margin).height(calculatedHeight));
 
         var bounds = effectiveBounds(viewPort, calculatedHeight);
-        float actualHeight = textWriter.write(document.getContentStream(), bounds, text, align, vAlign, lineLimit);
+        float actualHeight = textWriter.write(document.getContentStream(), bounds, text, align, vAlign, lineLimit, overflow);
 
         if (innerHeight > HEIGHT_UNDEFINED) {
             return innerHeight + margin.vertical();

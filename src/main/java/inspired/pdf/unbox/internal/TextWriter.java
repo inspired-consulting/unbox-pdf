@@ -5,6 +5,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.util.Matrix;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -60,12 +61,45 @@ public class TextWriter {
     }
 
     public float write(PDPageContentStream stream, Bounds bounds, String text, Align align, VAlign vAlign, Integer lineLimit) {
+        return write(stream, bounds, text, align, vAlign, lineLimit, Overflow.CLIP);
+    }
+
+    public float write(PDPageContentStream stream, Bounds bounds, String text, Align align, VAlign vAlign, Integer lineLimit, Overflow overflowMode) {
         List<String> chunks = chunk(text, bounds.width());
         if (lineLimit != null && lineLimit > 0 && lineLimit < chunks.size()) {
-            chunks = chunks.subList(0, lineLimit);
+            List<String> kept = new ArrayList<>(chunks.subList(0, lineLimit));
+            if (overflowMode == Overflow.ELLIPSIS) {
+                int last = kept.size() - 1;
+                kept.set(last, withEllipsis(kept.get(last), bounds.width()));
+            }
+            chunks = kept;
         }
         float y = offsetY(bounds, vAlign, chunks.size());
         return write(chunks, bounds, align, stream, y);
+    }
+
+    /**
+     * Trim {@code line} down to the widest prefix that still fits {@code maxWidth} once an
+     * ellipsis is appended. Returns a bare ellipsis if even that does not fit.
+     */
+    String withEllipsis(String line, float maxWidth) {
+        String ellipsis = "…";
+        String withEllipsis = line + ellipsis;
+        if (font.width(withEllipsis) <= maxWidth) {
+            return withEllipsis;
+        }
+        String trimmed = line;
+        while (!trimmed.isEmpty()) {
+            trimmed = trimmed.substring(0, trimmed.length() - 1);
+            while (trimmed.endsWith(" ")) {
+                trimmed = trimmed.substring(0, trimmed.length() - 1);
+            }
+            String candidate = trimmed + ellipsis;
+            if (font.width(candidate) <= maxWidth) {
+                return candidate;
+            }
+        }
+        return ellipsis;
     }
 
     public float writeVerticalText(PDPageContentStream contentStream, Bounds bounds, String text) {
