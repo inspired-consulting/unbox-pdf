@@ -4,6 +4,8 @@ A Java library for creating PDFs with Apache PDFBox. Its fluent API provides
 paragraphs, rows, columns, tables, and custom drawing, with HTML-inspired margins,
 padding, borders, and backgrounds.
 
+See the [changelog](CHANGELOG.md) for changes since version 0.6.0 and API migration notes.
+
 ## Build and test
 
 Use a JDK compatible with Java 17. CI uses JDK 21 while the published artifact
