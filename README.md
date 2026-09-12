@@ -120,6 +120,16 @@ such text fail with a `PdfUnboxException` instead. To render such characters, em
 TrueType font with `document.loadFont(path)` and use `face.at(size)` or
 `face.at(size, color)` as the font; the face is valid for that document only.
 
+### Styled text runs
+
+A paragraph can mix fonts on one line. Appended runs flow and wrap as one text,
+and runs on the same line share the baseline:
+
+```java
+document.render(paragraph("82 %", helvetica_bold(10))
+    .add(" of rated load", new SimpleFont(PDType1Font.HELVETICA, 8, GRAY_600)));
+```
+
 ### Paragraph overflow
 
 Paragraphs clip excess text by default. To mark truncation with an ellipsis:

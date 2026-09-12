@@ -218,6 +218,12 @@ line limits, and overflow handling. Paragraphs own one overflow policy for both
 line limits and available height; see the [overflow contract](paragraph-truncation-ellipsis.md).
 `VerticalParagraph` supports rotated text.
 
+A paragraph may contain several `TextRun`s appended with `add(text, font)`.
+`TextRunWriter` wraps all runs as one text, gives each line the height of its
+tallest font, and draws the pieces of a line on one baseline, so mixed sizes and
+colors align. Single-run paragraphs keep using `TextWriter`; see
+[styled text runs](../plans/styled-text-runs.md).
+
 `SimpleFont` wraps PDFBox fonts; the standard 14 fonts use `WinAnsiEncoding`.
 `Font.encodable(text)` prepares text for a font, and both measuring and drawing
 apply it, so they always agree. `SimpleFont` replaces characters the font cannot

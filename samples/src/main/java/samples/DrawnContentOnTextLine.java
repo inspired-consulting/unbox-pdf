@@ -43,9 +43,9 @@ public class DrawnContentOnTextLine {
         try (Document document = new Document()) {
             document.render(paragraph("Load factors per switchboard", helvetica_bold(12)).with(Margin.bottom(6)));
 
-            document.render(loadRow("Main switchboard", 0.82f, RED_ORANGE));
-            document.render(loadRow("Emergency switchboard", 0.35f, KELLY_GREEN));
-            document.render(loadRow("Galley distribution", 0.58f, KELLY_GREEN));
+            document.render(loadRow("Main switchboard", "2 × 1,250 kVA", 0.82f, RED_ORANGE));
+            document.render(loadRow("Emergency switchboard", "400 kVA", 0.35f, KELLY_GREEN));
+            document.render(loadRow("Galley distribution", "160 kVA", 0.58f, KELLY_GREEN));
 
             document.render(paragraph("").with(Margin.bottom(10)));
             document.render(legendRow(RED_ORANGE, "above 75 % of rated load"));
@@ -55,11 +55,14 @@ public class DrawnContentOnTextLine {
         }
     }
 
-    /** Label, percentage, and a bar that is drawn on the same line as the percentage. */
-    private static Container loadRow(String label, float share, Color color) {
+    /**
+     * Label with a muted rating in one paragraph of two runs, the percentage, and a bar that
+     * is drawn on the same line as the percentage.
+     */
+    private static Container loadRow(String label, String rating, float share, Color color) {
         Paragraph value = paragraph(String.format("%.0f %%", share * 100), VALUE, Align.RIGHT);
         return Container.withColumnLayout(SimpleColumnModel.of(3f, 1f, 4f))
-                .add(paragraph(label, LABEL))
+                .add(paragraph(label, LABEL).add("  " + rating, LEGEND))
                 .add(value)
                 .add(bar(value, share, color));
     }

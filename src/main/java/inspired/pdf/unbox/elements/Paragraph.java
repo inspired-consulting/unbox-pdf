@@ -3,10 +3,17 @@ package inspired.pdf.unbox.elements;
 import inspired.pdf.unbox.*;
 import inspired.pdf.unbox.elements.internal.AbstractDecoratable;
 import inspired.pdf.unbox.internal.SimpleFont;
+import inspired.pdf.unbox.internal.TextRunWriter;
 import inspired.pdf.unbox.internal.TextWriter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * A paragraph consists of text that can span multiple lines and may be aligned horizontally and vertically.
+ * Further runs of text with their own font can be appended with {@link #add(String, Font)}; all runs
+ * wrap as one text, and runs on the same line share the baseline.
  */
 public class Paragraph extends AbstractDecoratable implements PdfElement {
 
@@ -14,6 +21,8 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
 
     protected final TextWriter textWriter;
     protected final String text;
+    private final Font font;
+    private final List<TextRun> runs = new ArrayList<>();
 
     protected Align align = Align.LEFT;
     protected VAlign vAlign = VAlign.TOP;
@@ -42,8 +51,44 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
      * @param font The font to use
      */
     public Paragraph(String text, Font font) {
+        this.font = Objects.requireNonNull(font, "font");
         this.textWriter = new TextWriter(font);
         this.text = text;
+        this.runs.add(new TextRun(text == null ? "" : text, font));
+    }
+
+    /**
+     * Append a run of text drawn with its own font. The run continues the paragraph text:
+     * words flow across runs and wrap as one text, and runs on one line share the baseline.
+     *
+     * @param text The text to append
+     * @param font The font of the appended text
+     * @return The paragraph.
+     */
+    public Paragraph add(String text, Font font) {
+        runs.add(new TextRun(text, font));
+        return this;
+    }
+
+    /**
+     * Append a run of text drawn with the paragraph's font.
+     */
+    public Paragraph add(String text) {
+        return add(text, font);
+    }
+
+    /**
+     * The font of the paragraph, used for its first run and for {@link #add(String)}.
+     */
+    public Font font() {
+        return font;
+    }
+
+    /**
+     * The runs of this paragraph in order; a plain paragraph has one run.
+     */
+    public List<TextRun> runs() {
+        return List.copyOf(runs);
     }
 
     /**
@@ -134,7 +179,9 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
         applyDecorators(document, viewPort.apply(margin).height(calculatedHeight));
 
         var bounds = effectiveBounds(viewPort, calculatedHeight);
-        float actualHeight = textWriter.write(document.getContentStream(), bounds, text, align, vAlign, lineLimit, overflow);
+        float actualHeight = runs.size() == 1
+                ? textWriter.write(document.getContentStream(), bounds, text, align, vAlign, lineLimit, overflow)
+                : new TextRunWriter(font).write(document.getContentStream(), bounds, runs, align, vAlign, lineLimit, overflow);
 
         if (innerHeight > HEIGHT_UNDEFINED) {
             return innerHeight + margin.vertical();
@@ -155,7 +202,11 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
         if (innerHeight > HEIGHT_UNDEFINED) {
             return innerHeight;
         }
-        return textWriter.calculateHeight(text, viewPort.apply(margin).apply(padding), lineLimit) + padding.vertical();
+        Bounds textBounds = viewPort.apply(margin).apply(padding);
+        float textHeight = runs.size() == 1
+                ? textWriter.calculateHeight(text, textBounds, lineLimit)
+                : new TextRunWriter(font).calculateHeight(runs, textBounds.width(), lineLimit);
+        return textHeight + padding.vertical();
     }
 
     @Override
@@ -165,7 +216,9 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
 
     @Override
     public String toString() {
-        return "Paragraph['" + text + "']";
+        StringBuilder all = new StringBuilder();
+        runs.forEach(run -> all.append(run.text()));
+        return "Paragraph['" + all + "']";
     }
 
     protected Bounds effectiveBounds(Bounds viewPort, float calculatedHeight) {
