@@ -109,6 +109,9 @@ its PDF resources. When the PDFBox document is not needed, `finishTo(OutputStrea
 `finishTo(Path)`, and `finishToBytes()` write the PDF and close the document in
 one call. Tables handle page breaks between rows and repeat headers by default.
 Arbitrary elements and table rows are not split automatically across pages.
+Table lines come from a row stroke and a column stroke. `with(Stroke)` sets both,
+`withRowStroke` and `withColumnStroke` set one axis, and `Stroke.none()` switches an
+axis off; an outer frame is a border decorator on the table.
 
 The default fonts are the PDFBox standard 14 fonts with `WinAnsiEncoding`. Text
 containing characters outside that encoding, such as `Ā`, CJK characters, or

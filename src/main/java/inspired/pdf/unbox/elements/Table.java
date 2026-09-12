@@ -50,11 +50,27 @@ public interface Table extends PdfElement {
     Table with(Margin margin);
 
     /**
-     * Set the stroke for the grid.
+     * Set the stroke for both the row lines and the column lines.
      * @param stroke The stroke.
      * @return The table object for chaining.
      */
     Table with(Stroke stroke);
+
+    /**
+     * Set the stroke for the horizontal lines above and below each row.
+     * Use {@link Stroke#none()} to draw no row lines.
+     * @param stroke The stroke.
+     * @return The table object for chaining.
+     */
+    Table withRowStroke(Stroke stroke);
+
+    /**
+     * Set the stroke for the vertical lines between neighboring columns.
+     * Use {@link Stroke#none()} to draw no column lines.
+     * @param stroke The stroke.
+     * @return The table object for chaining.
+     */
+    Table withColumnStroke(Stroke stroke);
 
     /**
      * Add a decorator to the table.

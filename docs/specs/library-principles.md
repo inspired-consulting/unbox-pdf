@@ -135,6 +135,12 @@ repeats header rows after page breaks by default and applies decorations to each
 page's table segment. The final returned advancement is the bottom margin; body
 row advancement has already happened internally. Rows are not split into pieces.
 
+Table lines are drawn from two strokes: the row stroke draws a horizontal line above
+and below each row, and the column stroke draws vertical dividers between neighboring
+columns. `with(Stroke)` sets both; `withRowStroke` and `withColumnStroke` set one
+axis, and `Stroke.none()` switches an axis off. An outer frame is a border decorator
+on the table, which is applied to each page segment.
+
 ## Fluent API and composition
 
 Configuration methods use names such as `with(...)`, `add(...)`, `align(...)`,

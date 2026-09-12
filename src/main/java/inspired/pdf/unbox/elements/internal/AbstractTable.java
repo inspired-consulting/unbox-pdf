@@ -29,7 +29,10 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
     private boolean repeatHeader = true;
     private float tableStartOnPage;
 
-    private Stroke stroke = new Stroke(GRAY_700,0.4f);
+    private static final Stroke DEFAULT_STROKE = new Stroke(GRAY_700, 0.4f);
+
+    private Stroke rowStroke = DEFAULT_STROKE;
+    private Stroke columnStroke = DEFAULT_STROKE;
 
     @Override
     public TableRow addRow() {
@@ -71,7 +74,20 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
 
     @Override
     public Table with(Stroke stroke) {
-        this.stroke = stroke;
+        this.rowStroke = stroke;
+        this.columnStroke = stroke;
+        return this;
+    }
+
+    @Override
+    public Table withRowStroke(Stroke stroke) {
+        this.rowStroke = stroke;
+        return this;
+    }
+
+    @Override
+    public Table withColumnStroke(Stroke stroke) {
+        this.columnStroke = stroke;
         return this;
     }
 
@@ -153,14 +169,14 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
     }
 
     private void drawRowLines(Document document, float rowHeight) {
-        if (stroke.isEmpty()) {
+        if (rowStroke.isEmpty()) {
             return;
         }
 
         try {
             var contentStream = document.getContentStream();
-            contentStream.setLineWidth(stroke.width());
-            contentStream.setStrokingColor(stroke.color());
+            contentStream.setLineWidth(rowStroke.width());
+            contentStream.setStrokingColor(rowStroke.color());
 
             var bounds = document.getCurrentViewPort()
                     .apply(horizontalMargin())
@@ -179,14 +195,14 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
     }
 
     protected void drawColumnLines(Document document, ColumnModel<?> columns, Bounds bounds) {
-        if (stroke.isEmpty()) {
+        if (columnStroke.isEmpty()) {
             return;
         }
 
         try {
             var contentStream = document.getContentStream();
-            contentStream.setLineWidth(stroke.width());
-            contentStream.setStrokingColor(stroke.color());
+            contentStream.setLineWidth(columnStroke.width());
+            contentStream.setStrokingColor(columnStroke.color());
             boolean first = true;
             for (Column col : columns) {
                 if (first) {

@@ -52,7 +52,8 @@ public class FlexTableReport {
 
             FlexTable table = new FlexTable();
             table.with(Margin.of(0, 40, 10));
-            table.with(new Stroke(GRAY_300, 0.5f));
+            table.withRowStroke(new Stroke(GRAY_300, 0.5f));
+            table.withColumnStroke(Stroke.none());
             table.withCellPadding(Padding.of(4, 5));
 
             // Section 1: engine tests, four columns with a numeric result column

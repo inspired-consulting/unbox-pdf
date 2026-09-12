@@ -48,6 +48,18 @@ public class FixedColumnsTable extends AbstractTable {
         return this;
     }
 
+    @Override
+    public FixedColumnsTable withRowStroke(Stroke stroke) {
+        super.withRowStroke(stroke);
+        return this;
+    }
+
+    @Override
+    public FixedColumnsTable withColumnStroke(Stroke stroke) {
+        super.withColumnStroke(stroke);
+        return this;
+    }
+
     public TableModel getModel() {
         return model;
     }
