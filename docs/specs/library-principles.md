@@ -103,7 +103,8 @@ For elements, margin is external spacing and padding is internal spacing.
 `innerHeight(viewPort)` excludes margin; `outerHeight(viewPort)` adds vertical
 margin. Measurements depend on available width because text wrapping changes
 height. New elements should measure using the same effective width and padding
-that they use when drawing.
+that they use when drawing. Containers and container cells measure their children
+inside the same margin and padding they render with.
 
 ## Element contract and pagination
 

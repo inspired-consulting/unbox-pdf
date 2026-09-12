@@ -36,22 +36,6 @@ Implementation approach:
 Completion: invalid header geometry fails clearly without unbounded page creation,
 and ordinary tables continue to repeat headers correctly.
 
-### 9. Measurement and rendering widths differ in containers and cells
-
-Priority: Medium. Same defect class as finding 1. Confirmed by code reading; no
-runtime reproduction has been recorded yet.
-
-- `HorizontalLayout.innerHeight()` applies only the container padding, while
-  `render()` applies margin and padding. A container with horizontal margin
-  measures its children too wide.
-- `VerticalLayout.innerHeight()` passes the unmodified viewport to the children,
-  ignoring container margin and padding.
-- `ContainerCell.innerHeight()` measures the inner container at the full cell
-  width, while `renderCell()` renders it with the cell padding applied.
-
-Implementation approach: fix together with finding 1 using one helper that
-derives the effective content bounds, and add tests for each combination.
-
 ## Follow-up tasks
 
 - `TableModel` default cells and column cell prototypes are shared mutable

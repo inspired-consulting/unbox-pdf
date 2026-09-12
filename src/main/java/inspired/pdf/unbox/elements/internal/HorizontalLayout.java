@@ -45,7 +45,8 @@ public class HorizontalLayout implements ContainerLayout {
 
     @Override
     public float innerHeight(Bounds viewPort, Container container, List<PdfElement> elements) {
-        var bounds = viewPort.apply(container.padding());
+        // Measure at the width the children are rendered with: inside margin and padding.
+        var bounds = viewPort.apply(container.margin()).apply(container.padding());
         var columns = columnModel(elements.size(), bounds);
         float maxHeight = 0f;
         for (int i = 0; i < elements.size(); i++) {

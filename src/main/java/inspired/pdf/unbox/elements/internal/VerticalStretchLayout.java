@@ -30,8 +30,10 @@ public class VerticalStretchLayout extends VerticalLayout {
 
     @Override
     public float innerHeight(Bounds viewPort, Container container, List<PdfElement> elements) {
+        // Measure at the width the children are rendered with: inside margin and padding.
+        Bounds bounds = viewPort.apply(container.margin()).apply(container.padding());
         float elementsHeight = elements.stream()
-                .map(e -> e.outerHeight(viewPort))
+                .map(e -> e.outerHeight(bounds))
                 .reduce(Float::sum).orElse(0f);
         return elementsHeight + container.padding().vertical() + container.renderingHints().getExtraPadding().vertical();
     }

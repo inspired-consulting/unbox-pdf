@@ -53,7 +53,8 @@ public class ContainerCell extends AbstractTableCell {
 
     @Override
     public float innerHeight(Bounds viewPort) {
-        return container.innerHeight(viewPort) + padding().vertical();
+        // Measure at the width the container is rendered with: inside the cell padding.
+        return container.innerHeight(viewPort.apply(padding())) + padding().vertical();
     }
 
     @Override
