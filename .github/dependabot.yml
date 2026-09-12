@@ -1,0 +1,24 @@
+# Dependabot opens pull requests for outdated dependencies and workflow actions.
+# The samples project under samples/ depends only on this library and is not covered.
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      # Plugins and test libraries move together; PDFBox stays separate because a
+      # major update changes the rendering output and needs the migration assessment.
+      build-and-test:
+        patterns:
+          - "org.apache.maven.plugins:*"
+          - "org.junit.jupiter:*"
+    ignore:
+      - dependency-name: "org.apache.pdfbox:pdfbox"
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5

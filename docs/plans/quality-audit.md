@@ -17,13 +17,6 @@ specifications.
 
 ## Dependency and build maintenance
 
-### Dependency update automation
-
-Priority: Low.
-
-Configure Dependabot for the `github-actions` and `maven` ecosystems so dependency
-and workflow updates arrive as pull requests.
-
 ### PDFBox migration planning
 
 Priority: Low.
