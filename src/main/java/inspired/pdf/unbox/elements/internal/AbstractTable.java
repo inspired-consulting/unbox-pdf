@@ -27,6 +27,8 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
 
     private Padding cellPadding = TableCell.DEFAULT_CELL_PADDING;
     private boolean repeatHeader = true;
+    private boolean repeatingHeaders;
+    private static final float FIT_TOLERANCE = 0.01f;
     private float tableStartOnPage;
 
     private static final Stroke DEFAULT_STROKE = new Stroke(GRAY_700, 0.4f);
@@ -123,7 +125,14 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
         try {
             document.forward(margin.top());
             tableStartOnPage = document.getPosition();
-            renderRows(document, headers);
+            if (repeatHeader) {
+                requireHeadersFitOnPage(document, document.getViewPort().height());
+            }
+            if (!startFitsOnPage(document)) {
+                breakPage(document);
+            } else {
+                renderRows(document, headers);
+            }
             renderRows(document, rows);
             applyDecorators(document);
             return margin.bottom();
@@ -242,24 +251,94 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
     }
 
     private void checkPageBreak(Document document, float minSpace) {
+        if (repeatingHeaders) {
+            // The header group was verified to fit the fresh page; never break again while repeating it.
+            return;
+        }
+        float spaceLeft = document.getSpaceLeftOnPage();
+        if (spaceLeft >= minSpace) {
+            return;
+        }
+        if (spaceLeft >= freshPageSpace(document) - FIT_TOLERANCE) {
+            // A new page would not give more room: the row is oversized and is rendered overflowing.
+            return;
+        }
+        breakPage(document);
+    }
+
+    /**
+     * Whether the table should start on the current page. It starts here when the header
+     * group and the first body row fit together, so a header is never left alone at the end
+     * of a page, and also when they would not fit a fresh page either.
+     */
+    private boolean startFitsOnPage(Document document) {
+        float firstRow = rows.isEmpty() ? 0f : rows.get(0).innerHeight(effectiveViewport(document));
+        float required = headersHeight(document) + firstRow;
+        return document.getSpaceLeftOnPage() >= required || required > document.getViewPort().height();
+    }
+
+    /** The space a body row gets on a fresh page, after the repeated headers. */
+    private float freshPageSpace(Document document) {
+        float body = document.getViewPort().height();
+        return repeatHeader ? body - headersHeight(document) : body;
+    }
+
+    /**
+     * Finish the current page segment, start a new page, and repeat the headers if enabled.
+     * The headers are rendered at most once per page; a header group that does not fit a
+     * fresh page fails with a {@link PdfUnboxException} instead of creating more pages.
+     */
+    private void breakPage(Document document) {
         try {
-            if (document.getSpaceLeftOnPage() < minSpace) {
-                applyDecorators(document);
-                onBeforeNewPage(document);
-                document.addPage();
-                tableStartOnPage = document.getPosition();
-                onAfterNewPage(document);
-                if (repeatHeader) {
-                    renderRows(document, headers);
-                }
+            applyDecorators(document);
+            onBeforeNewPage(document);
+            document.addPage();
+            tableStartOnPage = document.getPosition();
+            onAfterNewPage(document);
+            if (repeatHeader) {
+                repeatHeaders(document);
             }
         } catch (IOException e) {
             throw new PdfUnboxException(e);
         }
     }
 
+    private void repeatHeaders(Document document) throws IOException {
+        requireHeadersFitOnPage(document, document.getSpaceLeftOnPage());
+        repeatingHeaders = true;
+        try {
+            renderRows(document, headers);
+        } finally {
+            repeatingHeaders = false;
+        }
+    }
+
+    /**
+     * Repeated headers must fit a page, otherwise every page break would need another page.
+     * Fails before anything is drawn, so the caller gets a clear message instead of a broken document.
+     */
+    private void requireHeadersFitOnPage(Document document, float available) {
+        float required = headersHeight(document);
+        if (required > available) {
+            throw new PdfUnboxException(String.format(
+                    "Table header of %.1f points does not fit on a page with %.1f points of space", required, available));
+        }
+    }
+
+    private float headersHeight(Document document) {
+        float height = 0f;
+        for (TableRow header : headers) {
+            height += header.innerHeight(effectiveViewport(document));
+        }
+        return height;
+    }
+
     private void applyDecorators(Document document) throws IOException {
         float height = tableStartOnPage - document.getPosition();
+        if (height <= 0) {
+            // Nothing of the table was rendered on this page yet.
+            return;
+        }
         var bounds = document.getViewPort()
                 .apply(horizontalMargin())
                 .top(tableStartOnPage)

@@ -133,8 +133,13 @@ taller than a full page is not automatically made to fit.
 Tables deliberately use a different strategy. `AbstractTable.innerHeight()`
 returns zero, and table rendering measures and advances one row at a time. It
 repeats header rows after page breaks by default and applies decorations to each
-page's table segment. The final returned advancement is the bottom margin; body
-row advancement has already happened internally. Rows are not split into pieces.
+page's table segment. A table starts on a new page when its headers and first body
+row do not fit together, so a header is never left alone at a page end. Headers
+are repeated at most once per page; a header group that does not fit a fresh page
+fails with a `PdfUnboxException`. An oversized body row, or an oversized header
+without repetition, is rendered once and overflows. The final returned advancement
+is the bottom margin; body row advancement has already happened internally. Rows
+are not split into pieces.
 
 Table lines are drawn from two strokes: the row stroke draws a horizontal line above
 and below each row, and the column stroke draws vertical dividers between neighboring
