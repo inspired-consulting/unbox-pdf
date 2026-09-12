@@ -19,7 +19,7 @@ import inspired.pdf.unbox.elements.TextCell;
 public class TableModel implements ColumnModel<TableModel.TableColumn> {
 
     public static final float DEFAULT_WIDTH = 1f;
-    public static TableColumn DEFAULT_COLUMN = new TableColumn("", DEFAULT_WIDTH, Align.LEFT, null, null);
+    public static final TableColumn DEFAULT_COLUMN = new TableColumn("", DEFAULT_WIDTH, Align.LEFT, null, null);
 
     private final List<TableColumn> columns = new ArrayList<>();
     private final Map<Class<?>, TableCell> defaultCells = new LinkedHashMap<>();

@@ -5,6 +5,8 @@ import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.Margin;
 import inspired.pdf.unbox.Padding;
 import inspired.pdf.unbox.Unbox;
+import inspired.pdf.unbox.internal.PdfUnboxException;
+import inspired.pdf.unbox.internal.SimpleFont;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -109,5 +112,18 @@ class ParagraphMarginTest {
 
     private int countWords(String text) {
         return (int) text.lines().flatMap(l -> java.util.Arrays.stream(l.split(" "))).filter("word"::equals).count();
+    }
+
+    @Test
+    void marginsExceedingTheWidthFailClearly() {
+        try (Document document = new Document()) {
+            Paragraph paragraph = new Paragraph(LONG_TEXT).with(Margin.of(0, 400, 0, 400));
+            PdfUnboxException failure = assertThrows(PdfUnboxException.class,
+                    () -> paragraph.innerHeight(document.getCurrentViewPort()));
+            assertTrue(failure.getMessage().contains("width"), failure.getMessage());
+
+            Paragraph runs = new Paragraph("a", SimpleFont.helvetica(8)).add("b").with(Margin.of(0, 400, 0, 400));
+            assertThrows(PdfUnboxException.class, () -> runs.innerHeight(document.getCurrentViewPort()));
+        }
     }
 }

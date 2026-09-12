@@ -40,6 +40,14 @@ public class VerticalParagraph extends Paragraph  {
         return textWriter.calculateHeightVerticalText(text) + padding.vertical();
     }
 
+    /**
+     * Vertical text is drawn as one run; appending further runs is not supported.
+     */
+    @Override
+    public Paragraph add(String text, Font font) {
+        throw new UnsupportedOperationException("VerticalParagraph renders a single run of text");
+    }
+
     @Override
     public String toString() {
         return "VerticalParagraph['" + text + "']";

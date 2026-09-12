@@ -98,6 +98,10 @@ public class TextRunWriter {
      * line may contain pieces of several runs. Blank lines are dropped, as in {@link TextTokenizer}.
      */
     List<Line> layout(List<TextRun> runs, float maxWidth) {
+        if (runs.stream().allMatch(run -> run.text().isBlank())) {
+            return List.of();
+        }
+        TextTokenizer.requirePositiveWidth(maxWidth);
         Layout layout = new Layout(maxWidth);
         for (TextRun run : runs) {
             String text = run.text();

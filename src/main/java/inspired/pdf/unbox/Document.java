@@ -121,7 +121,12 @@ public class Document implements DocumentContext, AutoCloseable {
 
     // util
 
+    /**
+     * The body space below the current position. Creates the first page on demand, as
+     * {@link #getPage()} and {@link #forward(float)} do, so the value is defined before rendering starts.
+     */
     public float getSpaceLeftOnPage() {
+        getPage();
         return position.y() - margin.bottom() - padding.bottom();
     }
 

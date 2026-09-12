@@ -119,4 +119,12 @@ class DocumentPageFitTest {
         stripper.setEndPage(page);
         return stripper.getText(pdf).strip();
     }
+
+    @Test
+    void spaceLeftOnPageIsDefinedBeforeRenderingStarts() {
+        try (Document document = new Document()) {
+            assertEquals(document.getViewPort().height(), document.getSpaceLeftOnPage(), 0.01f);
+            assertEquals(1, document.getDocument().getNumberOfPages());
+        }
+    }
 }

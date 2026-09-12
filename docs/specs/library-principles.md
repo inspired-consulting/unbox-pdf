@@ -128,7 +128,8 @@ Ordinary elements are moved to a new page when their measured inner height plus
 their top margin does not fit. The bottom margin is spacing to the next element
 and may be absorbed by the page end, so it is not part of the fit check. There is
 no general mechanism for splitting arbitrary elements across pages. An element
-taller than a full page is not automatically made to fit.
+taller than a full page is not automatically made to fit. `Document.getSpaceLeftOnPage()`
+creates the first page on demand, like `getPage()` and `forward()`.
 
 Tables deliberately use a different strategy. `AbstractTable.innerHeight()`
 returns zero, and table rendering measures and advances one row at a time. It
@@ -219,7 +220,9 @@ and container-cell chains can continue with `add(...)`.
 `Font` combines PDFBox font access with size, color, and metrics. `TextTokenizer`
 handles line breaks, whitespace-based wrapping, and splitting long words.
 `TextWriter` measures and draws text with horizontal and vertical alignment,
-line limits, and overflow handling. Paragraphs own one overflow policy for both
+line limits, and overflow handling. Text needs a positive width: when margins and
+padding exceed the available width, measuring fails with a `PdfUnboxException`
+that names the width. Paragraphs own one overflow policy for both
 line limits and available height; see the [overflow contract](paragraph-truncation-ellipsis.md).
 `VerticalParagraph` supports rotated text.
 

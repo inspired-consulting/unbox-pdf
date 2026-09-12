@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -157,5 +158,12 @@ class TextRunTest {
                 return stripper.getText(pdf).strip();
             }
         }
+    }
+
+    @Test
+    void verticalParagraphRejectsRuns() {
+        VerticalParagraph vertical = new VerticalParagraph("only one run");
+        assertThrows(UnsupportedOperationException.class, () -> vertical.add("more", MUTED));
+        assertThrows(UnsupportedOperationException.class, () -> vertical.add("more"));
     }
 }

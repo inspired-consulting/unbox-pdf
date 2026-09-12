@@ -43,7 +43,9 @@ public class TextTokenizer {
     public List<String> chunk(String text, float maxWidth) {
         if (isBlank(text)) {
             return Collections.emptyList();
-        } else if (font.width(text) <= maxWidth) {
+        }
+        requirePositiveWidth(maxWidth);
+        if (font.width(text) <= maxWidth) {
             return List.of(text);
         } else {
             List<String> tokens = tokenize(text.split("\\s"), maxWidth);
@@ -84,6 +86,17 @@ public class TextTokenizer {
 
     private boolean match(String token, float maxWidth) {
         return font.width(token) <= maxWidth;
+    }
+
+    /**
+     * Text needs a positive width to wrap into; a non-positive width means that margins
+     * and padding exceed the available width, which is a layout error worth a clear message.
+     */
+    static void requirePositiveWidth(float maxWidth) {
+        if (!(maxWidth > 0)) {
+            throw new PdfUnboxException(String.format(
+                    "Text cannot be laid out in a width of %.1f points; margins and padding exceed the available width", maxWidth));
+        }
     }
 
     private boolean isBlank(String text) {
