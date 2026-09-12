@@ -105,9 +105,10 @@ public class Example {
 
 `Document` renders elements from top to bottom. `finish()` returns the PDFBox
 `PDDocument`; save it before the try-with-resources block closes `Document` and
-its PDF resources. Tables handle page breaks between
-rows and repeat headers by default. Arbitrary elements and table rows are not
-split automatically across pages.
+its PDF resources. When the PDFBox document is not needed, `finishTo(OutputStream)`,
+`finishTo(Path)`, and `finishToBytes()` write the PDF and close the document in
+one call. Tables handle page breaks between rows and repeat headers by default.
+Arbitrary elements and table rows are not split automatically across pages.
 
 The default fonts are the PDFBox standard 14 fonts with `WinAnsiEncoding`. Text
 containing characters outside that encoding, such as `Ā`, CJK characters, or

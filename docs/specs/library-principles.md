@@ -57,7 +57,9 @@ distance. Rendering writes content immediately; it does not build a document tre
 for a later global layout pass.
 
 `finish()` ensures at least one page exists, closes the active stream, invokes
-finish listeners, and returns the PDFBox document for saving. `Document` implements
+finish listeners, and returns the PDFBox document for saving. The conveniences
+`finishTo(OutputStream)`, `finishTo(Path)`, and `finishToBytes()` call `finish()`,
+write the PDF, and close the document, also when writing fails. `Document` implements
 `AutoCloseable`: prefer try-with-resources and save the returned PDF before leaving
 the block. `close()` releases the current content stream and underlying PDF without
 creating pages or invoking finish listeners, including after rendering failures.

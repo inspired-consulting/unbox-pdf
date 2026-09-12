@@ -8,7 +8,10 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -172,6 +175,43 @@ public class Document implements DocumentContext, AutoCloseable {
         closeContentStream();
         onFinish();
         return document;
+    }
+
+    /**
+     * Complete rendering, write the PDF to the given stream, and close this document.
+     * PDFBox closes the stream after writing.
+     * @param output The stream to write the PDF to.
+     */
+    public void finishTo(OutputStream output) {
+        try (this) {
+            finish();
+            document.save(output);
+        } catch (IOException e) {
+            throw new PdfUnboxException(e);
+        }
+    }
+
+    /**
+     * Complete rendering, write the PDF to the given file, and close this document.
+     * @param path The file to write the PDF to.
+     */
+    public void finishTo(Path path) {
+        try (this) {
+            finish();
+            document.save(path.toFile());
+        } catch (IOException e) {
+            throw new PdfUnboxException(e);
+        }
+    }
+
+    /**
+     * Complete rendering, return the PDF as bytes, and close this document.
+     * @return The PDF content.
+     */
+    public byte[] finishToBytes() {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        finishTo(output);
+        return output.toByteArray();
     }
 
     public PDPageContentStream getContentStream() {
