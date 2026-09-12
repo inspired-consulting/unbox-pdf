@@ -82,7 +82,7 @@ public class TextCell extends AbstractTableCell {
 
     @Override
     protected float renderCell(Document document, Bounds bounds) {
-        applyDecorators(document, bounds);
+        // Decorators are applied once by AbstractTableCell.render() before this method runs.
         try {
             float lineHeight = font.lineHeight();
             PDPageContentStream contentStream = document.getContentStream();

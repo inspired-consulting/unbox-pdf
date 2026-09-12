@@ -36,20 +36,6 @@ Implementation approach:
 Completion: invalid header geometry fails clearly without unbounded page creation,
 and ordinary tables continue to repeat headers correctly.
 
-### 8. Table cell decorators are drawn twice
-
-Priority: Low. Output bloat; visible for semi-transparent colors or borders.
-
-`AbstractTableCell.render()` applies the cell decorators and then calls
-`renderCell()`. `TextCell.renderCell()` applies them again.
-
-Reproduction: a `TextCell` with one `BackgroundDecorator` emits two filled
-rectangles in the page content stream.
-
-Implementation approach: remove the second call in `TextCell`. This changes the
-bytes of generated PDFs, so the reference PDFs of `DocumentTest` must be
-regenerated and inspected.
-
 ### 9. Measurement and rendering widths differ in containers and cells
 
 Priority: Medium. Same defect class as finding 1. Confirmed by code reading; no
