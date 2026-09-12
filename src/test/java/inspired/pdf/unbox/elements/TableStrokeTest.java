@@ -53,9 +53,27 @@ class TableStrokeTest {
 
         Lines both = render(new FixedColumnsTable(TableModel.of(1f, 1f, 1f))
                 .withRowStroke(Stroke.none())
+                .withColumnStroke(Stroke.none())
                 .with(STROKE));
         assertEquals(4, both.horizontal, "with(Stroke) overrides an earlier row stroke");
+        assertEquals(4, both.vertical, "with(Stroke) overrides an earlier column stroke");
+    }
+
+    @Test
+    void flexTableStrokeStillSetsBothAxesThroughTableInterface() throws IOException {
+        Table table = new FlexTable();
+        table.addRow("a", "b", "c");
+        table.addRow("d", "e", "f");
+        table.withRowStroke(Stroke.none()).withColumnStroke(Stroke.none());
+        table.with(STROKE);
+
+        Lines both = render(table);
+        assertEquals(4, both.horizontal);
         assertEquals(4, both.vertical);
+
+        table.with(Stroke.none());
+        Lines none = render(table);
+        assertEquals(0, none.horizontal + none.vertical);
     }
 
     @Test

@@ -1,9 +1,6 @@
 # Changelog
 
-Changes after **0.6.0 (2023-03-05)**, grouped by release, newest first.
-This history is based on repository commits and release tags through 2026-09-12.
-The 0.8.0 entry uses release commit `fce17ac`, because no 0.8.0 tag exists;
-0.9.1–0.9.3 follow their release tags on separate branches.
+Changes grouped by release, newest first.
 
 ## Unreleased — 0.10.0-SNAPSHOT
 
@@ -12,14 +9,17 @@ Changes after 0.9.3, primarily from 2026-09-10 through 2026-09-12.
 ### Added
 
 - Styled paragraph text runs: `Paragraph.add(String, Font)` mixes fonts, sizes,
-  and colors while wrapping runs together and sharing a baseline. Added `TextRun`.
+  and colors while wrapping runs together and sharing a baseline. Added `TextRun`,
+  `add(String)` for the paragraph's base font, and `font()` and `runs()` accessors.
 - `Overflow.ELLIPSIS` marks text omitted by a paragraph line limit or fixed height.
   Paragraphs now use one explicit policy: `CLIP` (default), `ELLIPSIS`, or `OVERFLOW`.
 - TrueType font loading through `Document.loadFont(Path)` and
   `Document.loadFont(InputStream)`, returning a document-owned `FontFace` with
   `at(size)` and `at(size, color)` methods.
-- Unsupported characters are replaced with `?` by default. Configure replacement
-  with `SimpleFont.withReplacement(...)`, or pass `null` to fail explicitly.
+- `SimpleFont` replaces unsupported characters with `?` by default. Configure
+  replacement with `withReplacement(...)`, or pass `null` to fail explicitly.
+  Added `Font.encodable(String)` so measurement and drawing use the same text;
+  custom `Font` implementations retain unchanged text by default.
 - `Document` implements `AutoCloseable` for try-with-resources. Added
   `finishTo(OutputStream)`, `finishTo(Path)`, and `finishToBytes()` to save and
   close in one call; PDFBox also closes caller-provided output streams.
@@ -28,7 +28,8 @@ Changes after 0.9.3, primarily from 2026-09-10 through 2026-09-12.
   remain available.
 - Independent table row and column strokes through `withRowStroke(...)` and
   `withColumnStroke(...)`. `with(Stroke)` continues to set both axes.
-- Fluent table-cell styling, including font, alignment, padding, and decorators.
+- Fluent table-cell styling preserves `TextCell` and `ContainerCell` return types
+  for alignment, padding, default padding, and decorators.
 - `Font.capHeight()`, `Paragraph.padding()`, and `TextWriter.baseline(...)` for
   aligning custom drawings with text.
 - Samples for flexible table reports and drawing shapes alongside text, plus
@@ -40,9 +41,12 @@ Changes after 0.9.3, primarily from 2026-09-10 through 2026-09-12.
   that fits a page out of the footer area. Querying space before rendering creates
   the first page on demand.
 - Table pagination keeps headers with the first body row when they fit together
-  on a fresh page. Oversized repeated headers raise a clear `PdfUnboxException`
-  instead of recursing into a stack overflow; oversized body rows do not trigger
-  repeated page breaks when a new page would provide no additional space.
+  on a fresh page. Initial headers are retained when the table moves to a new page
+  with `repeatHeader(false)`, including tables containing only headers.
+  Oversized repeated headers
+  raise a clear `PdfUnboxException` instead of recursing into a stack overflow;
+  oversized body rows do not trigger repeated page breaks when a new page would
+  provide no additional space.
 - Paragraph measurement accounts for horizontal margins, and rendering no longer
   counts vertical margins twice.
 - Containers and container cells measure children at the effective rendering
@@ -54,8 +58,8 @@ Changes after 0.9.3, primarily from 2026-09-10 through 2026-09-12.
   models when rows contain additional values.
 - Adding text cells beyond a table model's declared columns no longer indexes
   past the model.
-- Table-cell decorators render once instead of being applied by both the row and
-  the cell.
+- Text-cell decorators render once instead of being applied by both
+  `AbstractTableCell.render()` and `TextCell.renderCell()`.
 - Column widths reject negative, infinite, and NaN values. Scaling empty column
   models is safe; nonempty models must have a positive total width to scale.
 - Nonblank text with a nonpositive or NaN layout width fails with a descriptive
@@ -131,6 +135,10 @@ Changes after 0.9.3, primarily from 2026-09-10 through 2026-09-12.
   and a `TableRow.addCell(String, Font)` convenience overload.
 - Text-cell measurement and positioning account for configured padding.
 - Fixed padding in container cells and updated affected PDF regression references.
+- API migration: replace table-cell `withPadding(Padding)` with `with(Padding)`.
+  Custom subclasses should use `padding()` instead of the formerly protected
+  `padding` field. Direct `TableCell` implementations must provide
+  `withDefaultPadding(Padding)`.
 
 ## 0.7.0 — 2023-04-24
 

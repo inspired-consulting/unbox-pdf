@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Verifies bounded header pagination: oversized headers fail clearly instead of
  * creating pages without end, ordinary headers repeat once per page, and a table
- * never leaves its header alone at the end of a page.
+ * keeps initial headers with the first row when they fit together on a fresh page.
  */
 class TableHeaderPaginationTest {
 
@@ -114,6 +114,58 @@ class TableHeaderPaginationTest {
                 assertEquals(1, occurrences(textOfPage(pdf, 2), "Header"));
                 assertTrue(textOfPage(pdf, 2).contains("first"));
             }
+        }
+    }
+
+    @Test
+    void nonRepeatingHeadersMoveWithFirstRowAndAppearOnlyOnce() throws IOException {
+        try (Document document = new Document()) {
+            FixedColumnsTable table = new FixedColumnsTable(MODEL).withHeader();
+            TableRow secondHeader = table.addHeader(new TableRow(MODEL).withCells("Subheader", "Details"));
+            table.repeatHeader(false);
+            table.addRow("first", "row");
+            for (int i = 0; i < 120; i++) {
+                table.addRow("row " + i, "value");
+            }
+            float headerHeight = TableRow.header(MODEL).innerHeight(document.getCurrentViewPort())
+                    + secondHeader.innerHeight(document.getCurrentViewPort());
+            document.forward(document.getSpaceLeftOnPage() - headerHeight - 2);
+
+            document.render(table);
+
+            PDDocument pdf = document.finish();
+            assertTrue(pdf.getNumberOfPages() >= 3);
+            assertFalse(textOfPage(pdf, 1).contains("Header"));
+            assertFalse(textOfPage(pdf, 1).contains("Subheader"));
+            String firstTablePage = textOfPage(pdf, 2);
+            assertEquals(1, occurrences(firstTablePage, "Header"));
+            assertEquals(1, occurrences(firstTablePage, "Subheader"));
+            assertTrue(firstTablePage.contains("first"));
+            assertTrue(firstTablePage.indexOf("Header") < firstTablePage.indexOf("Subheader"));
+            assertTrue(firstTablePage.indexOf("Subheader") < firstTablePage.indexOf("first"));
+            for (int page = 3; page <= pdf.getNumberOfPages(); page++) {
+                String text = textOfPage(pdf, page);
+                assertFalse(text.contains("Header"), "no repeated header on page " + page);
+                assertFalse(text.contains("Subheader"), "no repeated subheader on page " + page);
+            }
+            assertTrue(textOfPage(pdf, pdf.getNumberOfPages()).contains("row 119"));
+        }
+    }
+
+    @Test
+    void nonRepeatingHeaderOnlyTableMovesToNextPage() throws IOException {
+        try (Document document = new Document()) {
+            FixedColumnsTable table = new FixedColumnsTable(MODEL).withHeader();
+            table.repeatHeader(false);
+            float headerHeight = TableRow.header(MODEL).innerHeight(document.getCurrentViewPort());
+            document.forward(document.getSpaceLeftOnPage() - headerHeight / 2);
+
+            document.render(table);
+
+            PDDocument pdf = document.finish();
+            assertEquals(2, pdf.getNumberOfPages());
+            assertFalse(textOfPage(pdf, 1).contains("Header"));
+            assertEquals(1, occurrences(textOfPage(pdf, 2), "Header"));
         }
     }
 

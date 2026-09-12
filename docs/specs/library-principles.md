@@ -59,7 +59,8 @@ for a later global layout pass.
 `finish()` ensures at least one page exists, closes the active stream, invokes
 finish listeners, and returns the PDFBox document for saving. The conveniences
 `finishTo(OutputStream)`, `finishTo(Path)`, and `finishToBytes()` call `finish()`,
-write the PDF, and close the document, also when writing fails. `Document` implements
+write the PDF, and close the document, also when writing fails. PDFBox also closes
+the supplied output stream in `finishTo(OutputStream)`. `Document` implements
 `AutoCloseable`: prefer try-with-resources and save the returned PDF before leaving
 the block. `close()` releases the current content stream and underlying PDF without
 creating pages or invoking finish listeners, including after rendering failures.
@@ -134,10 +135,14 @@ creates the first page on demand, like `getPage()` and `forward()`.
 Tables deliberately use a different strategy. `AbstractTable.innerHeight()`
 returns zero, and table rendering measures and advances one row at a time. It
 repeats header rows after page breaks by default and applies decorations to each
-page's table segment. A table starts on a new page when its headers and first body
-row do not fit together, so a header is never left alone at a page end. Headers
-are repeated at most once per page; a header group that does not fit a fresh page
-fails with a `PdfUnboxException`. An oversized body row, or an oversized header
+page's table segment. When its headers and first body row fit a fresh page but not
+the remaining space, a table starts on a new page and draws its initial headers
+with that row, including when `repeatHeader(false)` is set. That option suppresses
+headers only on subsequent page breaks. Header-only tables also retain their
+headers when moved to a new page. If the group exceeds a full page, this
+keep-together check does not move it. With repetition enabled, headers are
+drawn at most once per page; a header group that does not fit a fresh page fails
+with a `PdfUnboxException`. An oversized body row, or an oversized header
 without repetition, is rendered once and overflows. The final returned advancement
 is the bottom margin; body row advancement has already happened internally. Rows
 are not split into pieces.
@@ -147,6 +152,10 @@ and below each row, and the column stroke draws vertical dividers between neighb
 columns. `with(Stroke)` sets both; `withRowStroke` and `withColumnStroke` set one
 axis, and `Stroke.none()` switches an axis off. An outer frame is a border decorator
 on the table, which is applied to each page segment.
+
+`with(Stroke)` retains its original behavior: it sets both axes, overriding any
+previous axis-specific settings. `AbstractTable` implements all three setters,
+inherited by the built-in tables.
 
 ## Fluent API and composition
 
@@ -232,14 +241,16 @@ tallest font, and draws the pieces of a line on one baseline, so mixed sizes and
 colors align. Single-run paragraphs keep using `TextWriter`; see
 [styled text runs](../plans/styled-text-runs.md).
 
-`SimpleFont` wraps PDFBox fonts; the standard 14 fonts use `WinAnsiEncoding`.
+`SimpleFont` wraps PDFBox fonts; the default Helvetica fonts use `WinAnsiEncoding`.
 `Font.encodable(text)` prepares text for a font, and both measuring and drawing
 apply it, so they always agree. `SimpleFont` replaces characters the font cannot
-encode with a replacement character, a question mark by default, so caller data
-never aborts generation. `withReplacement(null)` opts out and fails with a
-`PdfUnboxException` that names the character and font. `Document.loadFont(...)`
+encode with a replacement character, a question mark by default. The replacement
+must itself be encodable by the selected font. Custom `Font` implementations keep
+text unchanged unless they override `encodable`. `withReplacement(null)` opts out
+and fails with a `PdfUnboxException` that names the character and font. `Document.loadFont(...)`
 embeds a TrueType font and returns a `FontFace` bound to that document, from which
-`at(size)` and `at(size, color)` derive fonts for text outside the standard encoding.
+`at(size)` and `at(size, color)` derive fonts. Rendering a character still requires
+the embedded font to contain its glyph.
 
 `Canvas` exposes a PDFBox content stream and viewport for custom graphics. This
 is the escape hatch for drawing that does not warrant a reusable element.

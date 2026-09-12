@@ -8,7 +8,7 @@ See the [changelog](CHANGELOG.md) for changes since version 0.6.0 and API migrat
 
 ## Build and test
 
-Use a JDK compatible with Java 17. CI uses JDK 21 while the published artifact
+Use a JDK compatible with Java 17. CI tests JDK 17 and 21 while the published artifact
 remains Java 17-compatible. Maven is provided by the checked-in wrapper.
 The current project version is `0.10.0-SNAPSHOT`; the build uses PDFBox 2.0.37.
 
@@ -109,17 +109,21 @@ public class Example {
 `PDDocument`; save it before the try-with-resources block closes `Document` and
 its PDF resources. When the PDFBox document is not needed, `finishTo(OutputStream)`,
 `finishTo(Path)`, and `finishToBytes()` write the PDF and close the document in
-one call. Tables handle page breaks between rows and repeat headers by default.
+one call. `finishTo(OutputStream)` also closes the supplied stream through PDFBox.
+Tables handle page breaks between rows and repeat headers by default.
 Arbitrary elements and table rows are not split automatically across pages.
 Table lines come from a row stroke and a column stroke. `with(Stroke)` sets both,
 `withRowStroke` and `withColumnStroke` set one axis, and `Stroke.none()` switches an
 axis off; an outer frame is a border decorator on the table.
+`with(Stroke)` retains its original behavior and sets both axes even after
+`withRowStroke(...)` or `withColumnStroke(...)` has been called.
 
-The default fonts are the PDFBox standard 14 fonts with `WinAnsiEncoding`. Characters
-outside that encoding, such as `Ā`, CJK characters, or emoji, are replaced by a question
-mark, so caller data never aborts generation. `SimpleFont.withReplacement(null)` makes
-such text fail with a `PdfUnboxException` instead. To render such characters, embed a
-TrueType font with `document.loadFont(path)` and use `face.at(size)` or
+The default Helvetica fonts use `WinAnsiEncoding`. `SimpleFont` replaces characters
+the selected font cannot encode, such as `Ā`, CJK characters, or emoji in Helvetica,
+with a question mark. The replacement character must itself be supported by the
+font. `SimpleFont.withReplacement(null)` makes unsupported text fail with a
+`PdfUnboxException` instead. To render it, embed a TrueType font containing the
+required glyphs with `document.loadFont(path)` and use `face.at(size)` or
 `face.at(size, color)` as the font; the face is valid for that document only.
 
 ### Styled text runs
@@ -128,6 +132,11 @@ A paragraph can mix fonts on one line. Appended runs flow and wrap as one text,
 and runs on the same line share the baseline:
 
 ```java
+import inspired.pdf.unbox.internal.SimpleFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+
+import static inspired.pdf.unbox.themes.UnboxTheme.GRAY_600;
+
 document.render(paragraph("82 %", helvetica_bold(10))
     .add(" of rated load", new SimpleFont(PDType1Font.HELVETICA, 8, GRAY_600)));
 ```
@@ -164,6 +173,10 @@ repository root as its working directory. Examples include `samples.SimplePdf`,
 model per row, and `samples.DrawnContentOnTextLine`, which aligns drawn bars and
 dots with text lines.
 They write to `samples/out/`.
+
+`MultiPagePdf` also includes a pagination regression case: a table with
+`repeatHeader(false)` starts near a page end. Its shaded header moves with the
+first row to the next page and is absent on continuation pages.
 
 An illustration from an earlier version of the sample:
 

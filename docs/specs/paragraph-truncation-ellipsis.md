@@ -41,8 +41,10 @@ height plus margins, including rendering-hint padding for automatic height.
 Overflowing text can overlap following content or extend outside a page; it does
 not trigger paragraph splitting or additional pagination.
 
-Existing padding and margin geometry is unchanged. In particular, this change
-does not fix the measurement-width issues recorded in the quality audit.
+Measurement and drawing use the effective text width after paragraph margins
+and padding. The current geometry is described in
+[library principles](library-principles.md); the earlier measurement-width
+defects were fixed after the initial ellipsis implementation.
 `VerticalParagraph` remains a single rotated line and does not implement these
 multiline policies. Font fallback and wrapping changes are outside this contract.
 

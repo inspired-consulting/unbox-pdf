@@ -17,7 +17,7 @@ import java.util.List;
 import static inspired.pdf.unbox.themes.UnboxTheme.GRAY_700;
 
 /**
- * Abstract base for tables.
+ * Shared row pagination, header handling, and decoration for tables.
  */
 public abstract class AbstractTable extends AbstractDecoratable implements Table {
 
@@ -130,6 +130,10 @@ public abstract class AbstractTable extends AbstractDecoratable implements Table
             }
             if (!startFitsOnPage(document)) {
                 breakPage(document);
+                if (!repeatHeader) {
+                    // The initial headers are required even when later pages do not repeat them.
+                    renderRows(document, headers);
+                }
             } else {
                 renderRows(document, headers);
             }

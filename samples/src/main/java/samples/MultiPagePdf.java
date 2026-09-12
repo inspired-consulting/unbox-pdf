@@ -3,6 +3,7 @@ package samples;
 import inspired.pdf.unbox.*;
 import inspired.pdf.unbox.base.TableModel;
 import inspired.pdf.unbox.elements.FixedColumnsTable;
+import inspired.pdf.unbox.elements.TableRow;
 import inspired.pdf.unbox.internal.TextWriter;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
@@ -14,6 +15,10 @@ import static inspired.pdf.unbox.decorators.BorderDecorator.border;
 import static inspired.pdf.unbox.internal.SimpleFont.helvetica_bold;
 import static inspired.pdf.unbox.themes.UnboxTheme.*;
 
+/**
+ * Demonstrates repeated page and table headers, page numbers, and a non-repeating
+ * table header that must move with its first row when starting near a page end.
+ */
 public class MultiPagePdf {
 
     public static void main(String[] args) throws IOException {
@@ -60,10 +65,39 @@ public class MultiPagePdf {
         }
         document.render(table);
 
+        nonRepeatingHeaderAtPageEnd(document);
+
         var pdf = document.finish();
         pdf.save("./samples/out/MultiPagePdf.pdf");
         pdf.close();
 
+    }
+
+    private static void nonRepeatingHeaderAtPageEnd(Document document) {
+        document.addPage();
+        document.render(paragraph("Pagination case: a table header shown only once", helvetica_bold(14))
+                .with(Margin.bottom(12)));
+        document.render(paragraph("The space below is intentional: the table starts near the page bottom. "
+                + "Its header fits here, but its first row does not. Both must move to the next page. "
+                + "The shaded 'One-time table header' must appear there once and be absent on continuation pages.")
+                .with(Margin.bottom(12)));
+
+        TableModel model = new TableModel()
+                .add("One-time table header", 2f)
+                .add("Value", 1f);
+        TableRow header = TableRow.header(model, helvetica_bold(10), background(GRAY_100));
+        FixedColumnsTable table = new FixedColumnsTable(model)
+                .with(border(0.5f, GRAY_700));
+        table.addHeader(header);
+        table.repeatHeader(false);
+        for (int i = 1; i <= 50; i++) {
+            table.addRow("Non-repeating row " + i, "Value " + i);
+        }
+
+        // Leave room for the header alone, forcing the initial keep-together page break.
+        float headerHeight = header.innerHeight(document.getCurrentViewPort());
+        document.forward(document.getSpaceLeftOnPage() - headerHeight - 2);
+        document.render(table);
     }
 
 }
