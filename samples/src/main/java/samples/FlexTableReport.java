@@ -1,6 +1,7 @@
 package samples;
 
 import inspired.pdf.unbox.Align;
+import inspired.pdf.unbox.Border;
 import inspired.pdf.unbox.Document;
 import inspired.pdf.unbox.Font;
 import inspired.pdf.unbox.Margin;
@@ -17,6 +18,7 @@ import java.io.IOException;
 
 import static inspired.pdf.unbox.Unbox.background;
 import static inspired.pdf.unbox.Unbox.paragraph;
+import static inspired.pdf.unbox.decorators.BorderDecorator.border;
 import static inspired.pdf.unbox.internal.SimpleFont.helvetica;
 import static inspired.pdf.unbox.internal.SimpleFont.helvetica_bold;
 import static inspired.pdf.unbox.themes.UnboxTheme.GRAY_100;
@@ -31,7 +33,8 @@ import static inspired.pdf.unbox.themes.UnboxTheme.RED_ORANGE;
  * The sample renders a fictional quality report of ACME Inc. for a rocket stage.
  * Section rows span the full width, each section uses its own column layout,
  * and a summary row closes the table. The table has a horizontal margin, so
- * the column dividers must follow the reduced width of each row.
+ * the column dividers must follow the reduced width of each row. A rounded
+ * callout banner below the table shows background and border with a radius.
  */
 public class FlexTableReport {
 
@@ -40,6 +43,7 @@ public class FlexTableReport {
     private static final Font PASS = helvetica_bold(8, GREEN);
     private static final Font FAIL = helvetica_bold(8, RED_ORANGE);
     private static final Font NOTE = helvetica_bold(8, GRAY_600);
+    private static final java.awt.Color BANNER_FILL = new java.awt.Color(255, 243, 235);
 
     public static void main(String[] args) throws IOException {
         try (Document document = new Document()) {
@@ -121,9 +125,13 @@ public class FlexTableReport {
 
             document.render(table);
 
+            // A callout banner: background and border share one rounded shape.
             document.render(paragraph("Reviewed by the quality board on 2026-09-10. "
                 + "Retest of turbopump TP-9 and replacement of the landing leg hinge are required before release.", NOTE)
-                .with(Padding.of(2, 40)));
+                .with(Padding.of(8, 12))
+                .with(Margin.of(4, 40, 0))
+                .with(background(BANNER_FILL, 6))
+                .with(border(Border.of(0.8f).withRadius(6), RED_ORANGE)));
 
             PDDocument pdf = document.finish();
             pdf.save("./samples/out/FlexTableReport.pdf");

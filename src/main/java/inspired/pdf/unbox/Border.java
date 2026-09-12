@@ -6,8 +6,23 @@ package inspired.pdf.unbox;
  * @param right Thickness of right border
  * @param bottom Thickness of bottom border
  * @param left Thickness of left border
+ * @param radius Corner radius; zero draws square corners. A positive radius requires uniform thickness.
  */
-public record Border(float top, float right, float bottom, float left) {
+public record Border(float top, float right, float bottom, float left, float radius) {
+
+    public Border {
+        if (radius < 0 || Float.isNaN(radius)) {
+            throw new IllegalArgumentException("Border radius must not be negative, but was " + radius);
+        }
+        if (radius > 0 && !(top == right && top == bottom && top == left)) {
+            throw new IllegalArgumentException("A border radius requires a uniform thickness, but was "
+                    + top + ", " + right + ", " + bottom + ", " + left);
+        }
+    }
+
+    public Border(float top, float right, float bottom, float left) {
+        this(top, right, bottom, left, 0);
+    }
 
     public static Border of(float m) {
         return new Border(m, m, m, m);
@@ -41,8 +56,19 @@ public record Border(float top, float right, float bottom, float left) {
         return new Border(0,right,0, 0);
     }
 
+    /**
+     * Create a copy with rounded corners of the given radius.
+     */
+    public Border withRadius(float radius) {
+        return new Border(top, right, bottom, left, radius);
+    }
+
     public boolean isUniform() {
         return top == right && top == bottom && top == left;
+    }
+
+    public boolean isRounded() {
+        return radius > 0;
     }
 
 }

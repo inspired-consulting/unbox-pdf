@@ -11,7 +11,7 @@ import java.awt.*;
 import java.io.IOException;
 
 /**
- * Draws a border around elements.
+ * Draws a border around elements. A border with a radius is drawn with rounded corners.
  * The border size will not change the elements size.
  */
 public class BorderDecorator extends Decorator {
@@ -44,7 +44,11 @@ public class BorderDecorator extends Decorator {
         try {
             PDPageContentStream contentStream = document.getContentStream();
             contentStream.setStrokingColor(color);
-            if (border.isUniform()) {
+            if (border.isRounded()) {
+                contentStream.setLineWidth(border.top());
+                RoundedRectangle.trace(contentStream, viewPort, border.radius());
+                contentStream.stroke();
+            } else if (border.isUniform()) {
                 contentStream.setLineWidth(border.top());
                 renderRect(viewPort, contentStream);
             } else {

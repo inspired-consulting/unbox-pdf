@@ -51,8 +51,8 @@ public class SimplePdf {
             .align(Align.RIGHT, VAlign.BOTTOM)
             .with(Margin.left(100))
             .with(Padding.of(15))
-            .with(border(2, UnboxTheme.GREEN))
-            .with(background(NEON_GREEN)));
+            .with(border(Border.of(2).withRadius(12), UnboxTheme.GREEN))
+            .with(background(NEON_GREEN, 12)));
 
         // Add a table with fixed column model
         var tableModel = new TableModel()

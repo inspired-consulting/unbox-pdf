@@ -183,6 +183,11 @@ the owning element; tables apply their segment decorations after rendering rows.
 Extensions should account for this ordering rather than assuming a universal
 background-first pass.
 
+`Border.withRadius(r)` and `background(color, r)` draw rounded corners; both trace
+the same path, clamped to half of the smaller side, so fill and outline match. A
+radius requires a uniform border thickness. With radius zero the decorators draw
+plain rectangles exactly as before.
+
 ## Tables and cell customization
 
 `FixedColumnsTable` uses one `TableModel` across rows. `FlexTable` allows each row

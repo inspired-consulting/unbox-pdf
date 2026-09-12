@@ -37,6 +37,10 @@ public class Unbox {
         return new BackgroundDecorator(color);
     }
 
+    public static BackgroundDecorator background(Color color, float radius) {
+        return new BackgroundDecorator(color, radius);
+    }
+
     public static Container row() {
         return Container.withColumnLayout();
     }
