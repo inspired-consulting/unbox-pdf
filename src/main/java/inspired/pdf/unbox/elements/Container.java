@@ -86,14 +86,6 @@ public class Container extends AbstractPdfElement {
         return layout.innerHeight(viewPort, this, elements);
     }
 
-    /**
-     * Hints on children are owned by this container's layout and set during render.
-     * Clearing them first keeps measurement and repeated rendering free of stale state.
-     */
-    private void resetChildHints() {
-        elements.forEach(element -> element.renderingHints().reset());
-    }
-
     @Override
     public Container with(Decorator decorator) {
         this.decorators.add(decorator);
@@ -119,4 +111,13 @@ public class Container extends AbstractPdfElement {
                 "elements=" + elements +
                 '}';
     }
+
+    /**
+     * Hints on children are owned by this container's layout and set during render.
+     * Clearing them first keeps measurement and repeated rendering free of stale state.
+     */
+    private void resetChildHints() {
+        elements.forEach(element -> element.renderingHints().reset());
+    }
+
 }

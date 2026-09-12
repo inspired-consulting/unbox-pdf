@@ -69,6 +69,14 @@ public class Paragraph extends AbstractDecoratable implements PdfElement {
     }
 
     /**
+     * The padding between the paragraph bounds and its text.
+     * Apply it to the paragraph bounds to get the bounds the text is written into.
+     */
+    public Padding padding() {
+        return padding;
+    }
+
+    /**
      * Specify what should happen to overflowing text.
      * @param overflow The overflow setting
      * @return The paragraph.

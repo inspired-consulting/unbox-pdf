@@ -29,4 +29,12 @@ public interface Font {
         return getFont().getFontDescriptor().getFontBoundingBox().getHeight() / 1000 * getSize();
     }
 
+    /**
+     * Height of capital letters above the baseline, scaled to the font size.
+     * Use it to center drawn shapes on the visible letters of a text line.
+     */
+    default float capHeight() {
+        return getFont().getFontDescriptor().getCapHeight() / 1000 * getSize();
+    }
+
 }

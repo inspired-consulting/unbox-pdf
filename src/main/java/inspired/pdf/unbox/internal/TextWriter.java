@@ -76,7 +76,7 @@ public class TextWriter {
             }
         }
         // Keep legacy CLIP alignment, which aligns the line-limited text before height clipping.
-        float y = offsetY(bounds, vAlign, overflowMode == Overflow.CLIP ? alignmentLines : chunks.size());
+        float y = baseline(bounds, vAlign, overflowMode == Overflow.CLIP ? alignmentLines : chunks.size());
         return write(chunks, bounds, align, stream, y);
     }
 
@@ -125,6 +125,28 @@ public class TextWriter {
         return textLength;
     }
 
+    /**
+     * The y coordinate of the first line's baseline when {@code numLines} lines of this font
+     * are placed in {@code bounds} with the given vertical alignment. This is where
+     * {@link #write} puts the text, so callers can align drawn content with it.
+     *
+     * @param bounds   The bounds the text is written into, after any padding is applied
+     * @param vAlign   The vertical alignment of the text block
+     * @param numLines The number of lines in the text block
+     * @return The baseline y coordinate in PDF page coordinates
+     */
+    public float baseline(Bounds bounds, VAlign vAlign, int numLines) {
+        float lineHeight = font.lineHeight();
+        float correction = lineHeight * CORRECTION_FACTOR;
+        return switch (vAlign) {
+            case TOP -> bounds.top() - lineHeight + correction;
+            case MIDDLE ->
+                bounds.top() - bounds.height() / 2f + numLines * lineHeight / 2f - lineHeight + correction;
+            case BOTTOM ->
+                bounds.top() - bounds.height() + numLines * lineHeight - lineHeight + correction;
+        };
+    }
+
     private float write(List<String> chunks, Bounds bounds, Align align, PDPageContentStream stream, float y) {
         if (chunks.isEmpty()) {
             return 0;
@@ -168,18 +190,6 @@ public class TextWriter {
             case LEFT -> bounds.left();
             case CENTER -> (int) (bounds.center() - textWidth / 2);
             case RIGHT -> (int) (bounds.left() + bounds.width() - textWidth);
-        };
-    }
-
-    private float offsetY(Bounds bounds, VAlign vAlign, int numLines) {
-        float lineHeight = font.lineHeight();
-        float correction = lineHeight * CORRECTION_FACTOR;
-        return switch (vAlign) {
-            case TOP -> bounds.top() - lineHeight + correction;
-            case MIDDLE ->
-                bounds.top() - bounds.height() / 2f + numLines * lineHeight / 2f - lineHeight + correction;
-            case BOTTOM ->
-                bounds.top() - bounds.height() + numLines * lineHeight - lineHeight + correction;
         };
     }
 

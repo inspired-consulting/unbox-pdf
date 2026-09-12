@@ -113,6 +113,12 @@ Every `PdfElement` provides:
 - `render(document, viewPort)` for drawing and reporting cursor advancement.
 - `renderingHints()` for layout information that an element may choose to honor.
 
+To align drawn content with a text line, apply the paragraph's `padding()` to its
+bounds, ask `TextWriter.baseline(bounds, vAlign, numLines)` for the baseline of the
+first line, and use `Font.capHeight()` to center a shape on the visible letters.
+These metrics describe where `TextWriter` writes text, so callers need not copy
+the internal offset arithmetic.
+
 `DONT_FORWARD` is zero: return it when no further cursor movement is required
 from the caller. Elements that manage cursor movement internally must avoid
 reporting the same movement again.
