@@ -10,7 +10,7 @@ See the [changelog](CHANGELOG.md) for changes since version 0.6.0 and API migrat
 
 Use a JDK compatible with Java 17. CI tests JDK 17 and 21 while the published artifact
 remains Java 17-compatible. Maven is provided by the checked-in wrapper.
-The current project version is `0.10.0-SNAPSHOT`; the build uses PDFBox 2.0.37.
+The current project version is `0.10.0`; the build uses PDFBox 2.0.37.
 
 Run from the repository root:
 
@@ -40,7 +40,7 @@ After installing locally, another Maven project can use this checkout's version:
 <dependency>
     <groupId>consulting.inspired</groupId>
     <artifactId>unbox-pdf</artifactId>
-    <version>0.10.0-SNAPSHOT</version>
+    <version>0.10.0</version>
 </dependency>
 ```
 

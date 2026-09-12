@@ -2,7 +2,7 @@
 
 Changes grouped by release, newest first.
 
-## Unreleased — 0.10.0-SNAPSHOT
+## 0.10.0 — 2026-09-12
 
 Changes after 0.9.3, primarily from 2026-09-10 through 2026-09-12.
 
