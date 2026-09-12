@@ -95,7 +95,7 @@ public class TextCell extends AbstractTableCell {
                 contentStream.setFont(font.getFont(), font.getSize());
                 contentStream.setNonStrokingColor(font.getColor());
                 contentStream.newLineAtOffset(startX, y);
-                contentStream.showText(line);
+                contentStream.showText(font.encodable(line));
                 contentStream.endText();
                 y -= lineHeight;
             }

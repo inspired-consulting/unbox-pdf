@@ -113,10 +113,12 @@ Table lines come from a row stroke and a column stroke. `with(Stroke)` sets both
 `withRowStroke` and `withColumnStroke` set one axis, and `Stroke.none()` switches an
 axis off; an outer frame is a border decorator on the table.
 
-The default fonts are the PDFBox standard 14 fonts with `WinAnsiEncoding`. Text
-containing characters outside that encoding, such as `Ā`, CJK characters, or
-emoji, currently fails with an `IllegalArgumentException` from PDFBox. Filter such
-text or supply an embedded Unicode font through the `Font` interface.
+The default fonts are the PDFBox standard 14 fonts with `WinAnsiEncoding`. Characters
+outside that encoding, such as `Ā`, CJK characters, or emoji, are replaced by a question
+mark, so caller data never aborts generation. `SimpleFont.withReplacement(null)` makes
+such text fail with a `PdfUnboxException` instead. To render such characters, embed a
+TrueType font with `document.loadFont(path)` and use `face.at(size)` or
+`face.at(size, color)` as the font; the face is valid for that document only.
 
 ### Paragraph overflow
 

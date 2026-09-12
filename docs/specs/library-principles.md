@@ -212,11 +212,14 @@ line limits, and overflow handling. Paragraphs own one overflow policy for both
 line limits and available height; see the [overflow contract](paragraph-truncation-ellipsis.md).
 `VerticalParagraph` supports rotated text.
 
-`SimpleFont` wraps the PDFBox standard 14 fonts, which use `WinAnsiEncoding`.
-Measuring or drawing a character outside that encoding throws a PDFBox
-`IllegalArgumentException`; the library does not substitute characters. Callers
-that render arbitrary text must filter it or provide an embedded Unicode font
-through the `Font` interface. See the quality audit for the planned handling.
+`SimpleFont` wraps PDFBox fonts; the standard 14 fonts use `WinAnsiEncoding`.
+`Font.encodable(text)` prepares text for a font, and both measuring and drawing
+apply it, so they always agree. `SimpleFont` replaces characters the font cannot
+encode with a replacement character, a question mark by default, so caller data
+never aborts generation. `withReplacement(null)` opts out and fails with a
+`PdfUnboxException` that names the character and font. `Document.loadFont(...)`
+embeds a TrueType font and returns a `FontFace` bound to that document, from which
+`at(size)` and `at(size, color)` derive fonts for text outside the standard encoding.
 
 `Canvas` exposes a PDFBox content stream and viewport for custom graphics. This
 is the escape hatch for drawing that does not warrant a reusable element.

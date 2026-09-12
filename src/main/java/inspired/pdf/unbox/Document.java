@@ -7,10 +7,13 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -212,6 +215,35 @@ public class Document implements DocumentContext, AutoCloseable {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         finishTo(output);
         return output.toByteArray();
+    }
+
+    /**
+     * Embed a TrueType font into this document. The returned face derives fonts of any
+     * size and color and is valid for this document only. Use it for text outside the
+     * encoding of the standard fonts.
+     * @param trueType The TrueType font data.
+     * @return The embedded font face.
+     */
+    public FontFace loadFont(InputStream trueType) {
+        ensureOpen();
+        try {
+            return new FontFace(PDType0Font.load(document, trueType));
+        } catch (IOException e) {
+            throw new PdfUnboxException(e);
+        }
+    }
+
+    /**
+     * Embed a TrueType font file into this document, see {@link #loadFont(InputStream)}.
+     * @param trueType The TrueType font file.
+     * @return The embedded font face.
+     */
+    public FontFace loadFont(Path trueType) {
+        try (InputStream input = Files.newInputStream(trueType)) {
+            return loadFont(input);
+        } catch (IOException e) {
+            throw new PdfUnboxException(e);
+        }
     }
 
     public PDPageContentStream getContentStream() {

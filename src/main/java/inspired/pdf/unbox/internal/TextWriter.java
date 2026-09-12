@@ -117,7 +117,7 @@ public class TextWriter {
 
             var matrix = Matrix.getRotateInstance(Math.toRadians(90), bounds.left() + offsetX, bounds.top() - offsetY);
             contentStream.setTextMatrix(matrix);
-            contentStream.showText(text);
+            contentStream.showText(font.encodable(text));
             contentStream.endText();
         } catch (IOException e) {
             throw new PdfUnboxException(e);
@@ -177,7 +177,7 @@ public class TextWriter {
             contentStream.setNonStrokingColor(font.getColor());
             contentStream.setFont(font.getFont(), font.getSize());
             contentStream.newLineAtOffset(x, y);
-            contentStream.showText(text);
+            contentStream.showText(font.encodable(text));
             contentStream.endText();
         } catch (IOException e) {
             throw new PdfUnboxException(e);

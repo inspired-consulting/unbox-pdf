@@ -17,9 +17,18 @@ public interface Font {
 
     Color getColor();
 
+    /**
+     * Prepare text for this font: characters the font cannot encode are replaced or
+     * rejected, depending on the implementation. Measurement and drawing both use it,
+     * so they always agree. The default keeps the text unchanged.
+     */
+    default String encodable(String text) {
+        return text;
+    }
+
     default float width(String text) {
         try {
-            return getFont().getStringWidth(text) / 1000 * getSize();
+            return getFont().getStringWidth(encodable(text)) / 1000 * getSize();
         } catch (IOException e) {
             throw new PdfUnboxException(e);
         }

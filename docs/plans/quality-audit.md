@@ -36,30 +36,6 @@ Implementation approach:
 Completion: invalid header geometry fails clearly without unbounded page creation,
 and ordinary tables continue to repeat headers correctly.
 
-### 6. Text outside WinAnsiEncoding aborts document generation
-
-Priority: Medium. Crash caused by ordinary caller data.
-
-All default fonts are PDFBox standard 14 fonts with `WinAnsiEncoding`.
-`Font.width()` and `showText()` throw `IllegalArgumentException` for any
-character that the encoding does not contain. The exception is a PDFBox
-exception, not a `PdfUnboxException`, and it surfaces from `innerHeight()`
-before anything is drawn.
-
-Reproduction: `document.render(Unbox.paragraph("Ā 中文 😀"))` throws
-`IllegalArgumentException: U+0100 ('Amacron') is not available in the font
-Helvetica, encoding: WinAnsiEncoding`. A `TextCell` with an emoji fails the same
-way.
-
-Implementation approach:
-
-- Consider a configurable replacement strategy in `TextTokenizer` or `Font`
-  (for example, replace unsupported characters with `?`) so that generation
-  does not abort on user-supplied text. Embedding a Unicode TrueType font is a
-  separate feature.
-- Add tests that cover a supported non-ASCII character such as `ä` and an
-  unsupported one.
-
 ### 8. Table cell decorators are drawn twice
 
 Priority: Low. Output bloat; visible for semi-transparent colors or borders.
