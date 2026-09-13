@@ -242,9 +242,11 @@ Run `./mvnw test` after Java changes. Document regression tests compare generate
 byte-for-byte with committed references; inspect intentional rendering changes
 visually before accepting updated references. Documentation-only changes need
 consistency and link checks. The CI workflow runs the tests on JDK 17 and 21 for
-pushes to `main` and for pull requests. The publish workflow runs on release
-creation and deploys to Maven Central through the Central Portal; the required
-secrets are listed in [release publishing](docs/specs/release-publishing.md).
+pushes to `main` and for pull requests. Follow the
+[release procedure](docs/specs/release-publishing.md) to update versions, validate,
+tag, and create the GitHub release with notes. GitHub release creation starts the
+Maven Central publishing workflow, which requires approval from another `devs`
+member. The procedure also lists the required publishing secrets.
 
 ## License
 

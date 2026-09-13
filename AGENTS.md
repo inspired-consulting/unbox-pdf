@@ -39,6 +39,9 @@ artifact of the matching version and is not a root reactor module. Run a sample'
 `main` method, such as `samples.SimplePdf`, to generate PDFs in `samples/out/`.
 Create that directory first and use the repository root as the working directory.
 
+For releases, follow [release publishing](docs/specs/release-publishing.md),
+including creating the GitHub release with notes and checking Maven publication.
+
 ## Change and validation workflow
 
 - Keep changes focused on the requested behavior and preserve unrelated work.
