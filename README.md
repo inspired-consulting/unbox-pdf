@@ -6,6 +6,15 @@ padding, borders, and backgrounds.
 
 See the [changelog](CHANGELOG.md) for changes since version 0.6.0 and API migration notes.
 
+Measurements are stored internally as PDF points. Use `Length` when expressing
+physical sizes at the call site; existing float-based methods continue to use points:
+
+```java
+Padding.of(Length.of(2, Unit.CM));
+Margin.of(Length.of(5, Unit.MM), Length.of(1, Unit.CM));
+Border.of(Length.of(1, Unit.PICA));
+```
+
 ## Build and test
 
 Use a JDK compatible with Java 17. CI tests JDK 17 and 21 while the published artifact

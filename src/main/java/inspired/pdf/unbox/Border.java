@@ -28,32 +28,64 @@ public record Border(float top, float right, float bottom, float left, float rad
         return new Border(m, m, m, m);
     }
 
+    public static Border of(Length length) {
+        return of(length.points());
+    }
+
     public static Border of(float vertical, float horizontal) {
         return new Border(vertical, horizontal, vertical, horizontal);
+    }
+
+    public static Border of(Length vertical, Length horizontal) {
+        return of(vertical.points(), horizontal.points());
     }
 
     public static Border of(float top, float right, float bottom, float left) {
         return new Border(top, right, bottom, left);
     }
 
+    public static Border of(Length top, Length right, Length bottom, Length left) {
+        return of(top.points(), right.points(), bottom.points(), left.points());
+    }
+
     public static Border of(float top, float vertical, float bottom) {
         return new Border(top, vertical, bottom, vertical);
+    }
+
+    public static Border of(Length top, Length vertical, Length bottom) {
+        return of(top.points(), vertical.points(), bottom.points());
     }
 
     public static Border top(float top) {
         return new Border(top, 0,0,0);
     }
 
+    public static Border top(Length top) {
+        return top(top.points());
+    }
+
     public static Border bottom(float bottom) {
         return new Border(0,0,bottom, 0);
+    }
+
+    public static Border bottom(Length bottom) {
+        return bottom(bottom.points());
     }
 
     public static Border left(float left) {
         return new Border(0,0,0, left);
     }
 
+    public static Border left(Length left) {
+        return left(left.points());
+    }
+
     public static Border right(float right) {
         return new Border(0,right,0, 0);
+    }
+
+    public static Border right(Length right) {
+        return right(right.points());
     }
 
     /**
@@ -61,6 +93,10 @@ public record Border(float top, float right, float bottom, float left, float rad
      */
     public Border withRadius(float radius) {
         return new Border(top, right, bottom, left, radius);
+    }
+
+    public Border withRadius(Length radius) {
+        return withRadius(radius.points());
     }
 
     public boolean isUniform() {

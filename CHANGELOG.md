@@ -4,7 +4,9 @@ Changes grouped by release, newest first.
 
 ## Unreleased — 0.11.0-SNAPSHOT
 
-No changes yet.
+- Added `Unit` and `Length` for finite absolute measurements in points, pica,
+  inches, centimetres, and millimetres. Added unit-aware factories for margins,
+  padding, borders, and border radii; existing float APIs remain unchanged.
 
 ## 0.10.0 — 2026-09-12
 
