@@ -21,6 +21,9 @@ public class SimplePdf {
 
     public static void main(String[] args) throws IOException {
         Document document = new Document();
+        // Developer aid: draw a millimetre grid with centimetre major lines first,
+        // so subsequent page content is painted over it.
+        document.add(Ruler.mm());
 
         // add a paragraph
         document.render(paragraph("Hello, World!", helvetica_bold(12)));

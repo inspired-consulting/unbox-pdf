@@ -15,6 +15,10 @@ Margin.of(Length.of(5, Unit.MM), Length.of(1, Unit.CM));
 Border.of(Length.of(1, Unit.PICA));
 ```
 
+For layout inspection, register `Ruler.mm()` before other page listeners. It draws
+thin millimetre lines and stronger centimetre lines across every page; it is
+disabled unless explicitly added.
+
 ## Build and test
 
 Use a JDK compatible with Java 17. CI tests JDK 17 and 21 while the published artifact

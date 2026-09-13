@@ -7,6 +7,8 @@ Changes grouped by release, newest first.
 - Added `Unit` and `Length` for finite absolute measurements in points, pica,
   inches, centimetres, and millimetres. Added unit-aware factories for margins,
   padding, borders, and border radii; existing float APIs remain unchanged.
+- Added the opt-in `Ruler.mm()` page listener for millimetre grids with stronger
+  centimetre lines, plus configurable colours and line widths.
 
 ## 0.10.0 — 2026-09-12
 
