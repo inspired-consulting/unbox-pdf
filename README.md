@@ -4,6 +4,9 @@ A Java library for creating PDFs with Apache PDFBox. Its fluent API provides
 paragraphs, rows, columns, tables, and custom drawing, with HTML-inspired margins,
 padding, borders, and backgrounds.
 
+The [wiki](https://github.com/inspired-consulting/unbox-pdf/wiki) contains user
+documentation, from getting started to tables, text layout, fonts, and page layout.
+
 See the [changelog](CHANGELOG.md) for changes since version 0.6.0 and API migration notes.
 
 Measurements are stored internally as PDF points. Use `Length` when expressing

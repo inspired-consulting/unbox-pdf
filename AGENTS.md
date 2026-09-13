@@ -15,6 +15,10 @@ creation. There is no CLI or application server.
   PDFs live in `src/test/java/` and `src/test/resources/`.
 - `samples/` contains executable Java examples in a separate Maven project.
 - Keep README examples aligned with current source signatures when changing the API.
+- User documentation lives in the
+  [GitHub wiki](https://github.com/inspired-consulting/unbox-pdf/wiki), a separate
+  repository (`unbox-pdf.wiki.git`). Point out wiki pages that need updates when
+  changing the public API or documented behavior.
 
 ## Build and test commands
 
