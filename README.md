@@ -23,7 +23,7 @@ disabled unless explicitly added.
 
 Use a JDK compatible with Java 17. CI tests JDK 17 and 21 while the published artifact
 remains Java 17-compatible. Maven is provided by the checked-in wrapper.
-The current project version is `0.11.0-SNAPSHOT`; the build uses PDFBox 2.0.37.
+The current project version is `0.10.1`; the build uses PDFBox 2.0.37.
 
 Run from the repository root:
 
@@ -53,7 +53,7 @@ After installing locally, another Maven project can use this checkout's version:
 <dependency>
     <groupId>consulting.inspired</groupId>
     <artifactId>unbox-pdf</artifactId>
-    <version>0.11.0-SNAPSHOT</version>
+    <version>0.10.1</version>
 </dependency>
 ```
 

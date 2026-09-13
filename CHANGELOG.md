@@ -2,7 +2,7 @@
 
 Changes grouped by release, newest first.
 
-## Unreleased — 0.11.0-SNAPSHOT
+## 0.10.1 — 2026-09-13
 
 - Added `Unit` and `Length` for finite absolute measurements in points, pica,
   inches, centimetres, and millimetres. Added unit-aware factories for margins,
@@ -13,6 +13,8 @@ Changes grouped by release, newest first.
   without using `SimpleFont` directly. The default replacement behavior is unchanged.
 - Documented point-width column models: widths are preserved when their sum equals
   the available table width and otherwise scale proportionally.
+- Updated JUnit and the Maven build plugins; the library still targets Java 17
+  and uses PDFBox 2.0.37.
 
 ## 0.10.0 — 2026-09-12
 
