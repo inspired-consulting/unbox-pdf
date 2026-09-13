@@ -9,6 +9,10 @@ Changes grouped by release, newest first.
   padding, borders, and border radii; existing float APIs remain unchanged.
 - Added the opt-in `Ruler.mm()` page listener for millimetre grids with stronger
   centimetre lines, plus configurable colours and line widths.
+- Added `FontFace.strict()` to derive fonts that reject unsupported characters
+  without using `SimpleFont` directly. The default replacement behavior is unchanged.
+- Documented point-width column models: widths are preserved when their sum equals
+  the available table width and otherwise scale proportionally.
 
 ## 0.10.0 — 2026-09-12
 

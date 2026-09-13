@@ -14,7 +14,9 @@ import java.util.Optional;
 
 import static inspired.pdf.unbox.Unbox.paragraph;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
@@ -55,6 +57,27 @@ class FontLoadingTest {
             Font large = face.at(16);
             assertEquals(small.width("Wide") * 2, large.width("Wide"), 0.01f);
             assertEquals(face.getFont(), large.getFont());
+        }
+    }
+
+    @Test
+    void loadedFaceSupportsStrictEncoding() throws IOException {
+        Path fontFile = systemFont();
+        try (Document document = new Document()) {
+            FontFace original = document.loadFont(fontFile);
+            FontFace strict = original.strict();
+            assertSame(original.getFont(), strict.getFont());
+            // A Unicode noncharacter outside the coverage of the candidate fonts.
+            String unsupported = new String(Character.toChars(0x10FFFF));
+            PdfUnboxException failure = assertThrows(PdfUnboxException.class,
+                    () -> strict.at(10).width(unsupported));
+            assertTrue(failure.getMessage().contains("U+10FFFF"), failure.getMessage());
+            assertEquals("?", original.at(10).encodable(unsupported));
+
+            document.render(paragraph("φ ≥ Ā ok", strict.at(10)));
+            try (PDDocument pdf = document.finish()) {
+                assertEquals("φ ≥ Ā ok", new PDFTextStripper().getText(pdf).strip());
+            }
         }
     }
 

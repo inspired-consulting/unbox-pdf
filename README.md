@@ -131,6 +131,14 @@ axis off; an outer frame is a border decorator on the table.
 `with(Stroke)` retains its original behavior and sets both axes even after
 `withRowStroke(...)` or `withColumnStroke(...)` has been called.
 
+Column widths can be supplied as proportions or points. For example,
+`TableModel.of(120f, 240f, 120f).scaleToSize(480f)` preserves those point widths
+exactly. Tables scale their model to the available table width after margins;
+when that width differs from the sum, the columns scale proportionally. Point
+widths do not disable scaling or make a table wider than its available space.
+
+### Font encoding
+
 The default Helvetica fonts use `WinAnsiEncoding`. `SimpleFont` replaces characters
 the selected font cannot encode, such as `Ā`, CJK characters, or emoji in Helvetica,
 with a question mark. The replacement character must itself be supported by the
@@ -138,6 +146,26 @@ font. `SimpleFont.withReplacement(null)` makes unsupported text fail with a
 `PdfUnboxException` instead. To render it, embed a TrueType font containing the
 required glyphs with `document.loadFont(path)` and use `face.at(size)` or
 `face.at(size, color)` as the font; the face is valid for that document only.
+
+To make missing glyphs fail report generation, configure the loaded face with
+`strict()` before deriving fonts:
+
+```java
+import inspired.pdf.unbox.FontFace;
+
+import java.nio.file.Path;
+
+import static inspired.pdf.unbox.Unbox.paragraph;
+
+FontFace face = document.loadFont(Path.of("fonts/report.ttf")).strict();
+document.render(paragraph("System name: Größe", face.at(10)));
+```
+
+Supply your own TrueType file at that path. Both `face.at(size)` and
+`face.at(size, color)` then reject unsupported characters during measurement or
+drawing with a `PdfUnboxException` identifying the code point and font. `strict()`
+returns a new face sharing the loaded font; it does not change the original face
+or previously derived fonts. Without `strict()`, replacement remains the default.
 
 ### Styled text runs
 

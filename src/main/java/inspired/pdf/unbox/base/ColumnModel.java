@@ -1,5 +1,10 @@
 package inspired.pdf.unbox.base;
 
+/**
+ * Ordered columns whose widths can be scaled proportionally to an available width.
+ *
+ * @param <C> The type of column in this model.
+ */
 public interface ColumnModel<C extends Column> extends Iterable<C> {
 
     int size();
@@ -20,6 +25,8 @@ public interface ColumnModel<C extends Column> extends Iterable<C> {
 
     /**
      * Create a copy whose column widths keep their proportions and sum to the given width.
+     * Column widths may be supplied in points: when their sum equals the finite, positive
+     * target width, scaling leaves them unchanged; otherwise, they are scaled proportionally.
      * Implementations narrow the return type to their own class.
      */
     ColumnModel<C> scaleToSize(float width);

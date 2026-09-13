@@ -226,6 +226,8 @@ public class Document implements DocumentContext, AutoCloseable {
      * Embed a TrueType font into this document. The returned face derives fonts of any
      * size and color and is valid for this document only. Use it for text outside the
      * encoding of the standard fonts.
+     * Unsupported characters are replaced with a question mark by default; call
+     * {@link FontFace#strict()} on the returned face to reject them instead.
      * @param trueType The TrueType font data.
      * @return The embedded font face.
      */

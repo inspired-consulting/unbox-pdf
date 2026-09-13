@@ -208,7 +208,10 @@ plain rectangles exactly as before.
 
 `FixedColumnsTable` uses one `TableModel` across rows. `FlexTable` allows each row
 to carry its own column model. Column widths are relative weights scaled to the
-available table width.
+available table width after margins. Callers may also supply widths in points:
+when their sum equals the finite, positive target width, `scaleToSize` leaves the
+widths unchanged. Otherwise, it scales them proportionally; supplying points does
+not disable scaling.
 
 Table models associate columns with titles, alignment, fonts, and optional cell
 prototypes. Rows can contain explicit cells or values converted into cells. Default
@@ -250,7 +253,12 @@ text unchanged unless they override `encodable`. `withReplacement(null)` opts ou
 and fails with a `PdfUnboxException` that names the character and font. `Document.loadFont(...)`
 embeds a TrueType font and returns a `FontFace` bound to that document, from which
 `at(size)` and `at(size, color)` derive fonts. Rendering a character still requires
-the embedded font to contain its glyph.
+the embedded font to contain its glyph. `FontFace.strict()` returns a new face
+sharing the embedded font and document ownership. Fonts derived from that face
+reject unsupported characters during measurement and drawing with a
+`PdfUnboxException` naming the code point and font. The original face and previously
+derived fonts are unchanged; faces returned by `loadFont` retain replacement with
+a question mark by default.
 
 `Canvas` exposes a PDFBox content stream and viewport for custom graphics. This
 is the escape hatch for drawing that does not warrant a reusable element.
