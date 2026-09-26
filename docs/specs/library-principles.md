@@ -216,7 +216,11 @@ not disable scaling.
 Table models associate columns with titles, alignment, fonts, and optional cell
 prototypes. Rows can contain explicit cells or values converted into cells. Default
 selection uses an empty cell for null, a right-aligned text cell for numbers, and
-a text cell for other objects, subject to column-specific configuration.
+a text cell for other objects, subject to column-specific configuration. Default
+cells and column cell prototypes are shared by all rows and tables using the model.
+A cell's explicit padding wins; otherwise, the row sets its default padding on the
+cell before each measurement and rendering, so the shared cell does not keep the
+padding of an earlier row or table.
 
 Custom cell implementations extend `AbstractTableCell` and supply measurement,
 value assignment, and cell drawing. Keep row pagination in the table and local

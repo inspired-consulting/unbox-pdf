@@ -20,6 +20,8 @@ public interface TableCell extends PdfElement {
 
     /**
      * Set the default cell padding to be applied if no custom padding is specified.
+     * A new default replaces the previous one. Rows set it before each measurement and
+     * rendering, because model cells are shared by all rows and tables using the model.
      * @param padding The default padding of the table or table row.
      * @return This.
      */

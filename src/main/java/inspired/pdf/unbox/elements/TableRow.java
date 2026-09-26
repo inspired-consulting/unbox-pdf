@@ -158,9 +158,6 @@ public class TableRow extends AbstractDecoratable implements PdfElement {
         float max = 0f;
         for (int i = 0; i < size(); i++) {
             TableCell cell = prepareCell(i);
-            if (cellPadding != null) {
-                cell.withDefaultPadding(cellPadding);
-            }
             float width = columns.width(i);
             max = Math.max(max, cell.innerHeight(viewPort.width(width)));
         }
@@ -170,6 +167,13 @@ public class TableRow extends AbstractDecoratable implements PdfElement {
     // -- internal
 
     private TableCell prepareCell(int i) {
+        TableCell cell = resolveCell(i);
+        // Model cells are shared across rows and tables, so apply this row's default on every use.
+        cell.withDefaultPadding(cellPadding != null ? cellPadding : TableCell.DEFAULT_CELL_PADDING);
+        return cell;
+    }
+
+    private TableCell resolveCell(int i) {
         if (i >= 0 && i < cells.size() && cells.get(i) != null) {
             // The row contains a cell for this index, use it directly
             return cells.get(i);

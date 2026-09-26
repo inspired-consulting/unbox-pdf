@@ -10,15 +10,19 @@ import inspired.pdf.unbox.decorators.Decorator;
 /**
  * Base for table cells with padding, alignment, and decorators.
  * Fluent configuration preserves the table-cell type for direct row insertion.
+ * Explicit padding wins over the default padding, which a row may replace before each use.
  */
 public abstract class AbstractTableCell extends AbstractDecoratable implements TableCell {
 
     protected Align align = Align.LEFT;
     private Padding padding;
+    private Padding defaultPadding;
 
     public Padding padding() {
         if (padding != null) {
             return padding;
+        } else if (defaultPadding != null) {
+            return defaultPadding;
         } else {
             return DEFAULT_CELL_PADDING;
         }
@@ -37,9 +41,7 @@ public abstract class AbstractTableCell extends AbstractDecoratable implements T
 
     @Override
     public AbstractTableCell withDefaultPadding(Padding padding) {
-        if (this.padding == null) {
-            this.padding = padding;
-        }
+        this.defaultPadding = padding;
         return this;
     }
 
