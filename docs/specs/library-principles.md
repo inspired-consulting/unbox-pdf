@@ -220,7 +220,9 @@ a text cell for other objects, subject to column-specific configuration. Default
 cells and column cell prototypes are shared by all rows and tables using the model.
 A cell's explicit padding wins; otherwise, the row sets its default padding on the
 cell before each measurement and rendering, so the shared cell does not keep the
-padding of an earlier row or table.
+padding of an earlier row or table. The table cell padding is the default
+for all its rows and headers, including rows added before it is set; padding set on
+a row wins.
 
 Custom cell implementations extend `AbstractTableCell` and supply measurement,
 value assignment, and cell drawing. Keep row pagination in the table and local

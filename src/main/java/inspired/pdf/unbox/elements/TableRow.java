@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 
 /**
  * Represents a row in a table consisting of cells.
+ * The row's own cell padding wins over the default padding, which the table may replace.
  */
 public class TableRow extends AbstractDecoratable implements PdfElement {
 
@@ -24,6 +25,7 @@ public class TableRow extends AbstractDecoratable implements PdfElement {
     private final TableModel model;
     private final Font font;
     private Padding cellPadding;
+    private Padding defaultCellPadding;
 
     public static TableRow header(TableModel model, Decorator... decorators) {
         TableRow row = new TableRow(model);
@@ -129,9 +131,7 @@ public class TableRow extends AbstractDecoratable implements PdfElement {
     }
 
     public TableRow withDefaultCellPadding(Padding cellPadding) {
-        if (this.cellPadding == null) {
-            this.cellPadding = cellPadding;
-        }
+        this.defaultCellPadding = cellPadding;
         return this;
     }
 
@@ -169,8 +169,18 @@ public class TableRow extends AbstractDecoratable implements PdfElement {
     private TableCell prepareCell(int i) {
         TableCell cell = resolveCell(i);
         // Model cells are shared across rows and tables, so apply this row's default on every use.
-        cell.withDefaultPadding(cellPadding != null ? cellPadding : TableCell.DEFAULT_CELL_PADDING);
+        cell.withDefaultPadding(effectiveCellPadding());
         return cell;
+    }
+
+    private Padding effectiveCellPadding() {
+        if (cellPadding != null) {
+            return cellPadding;
+        } else if (defaultCellPadding != null) {
+            return defaultCellPadding;
+        } else {
+            return TableCell.DEFAULT_CELL_PADDING;
+        }
     }
 
     private TableCell resolveCell(int i) {
