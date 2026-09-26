@@ -22,6 +22,8 @@ public class TextCell extends AbstractTableCell {
 
     private final static int HEIGHT_CORRECTION = 2;
 
+    private final static int BASELINE_RAISE = 1;
+
     private final Font font;
 
     private String text;
@@ -87,7 +89,7 @@ public class TextCell extends AbstractTableCell {
             float lineHeight = font.lineHeight();
             PDPageContentStream contentStream = document.getContentStream();
             List<String> lines = chunk( bounds.width() - padding().horizontal());
-            float y =  bounds.top() - lineHeight - padding().top() + 1;
+            float y =  bounds.top() - lineHeight - padding().top() + BASELINE_RAISE;
             Align align = coalesce(this.align, Align.LEFT);
             for (String line : lines) {
                 float startX = startX(bounds, align, line);
@@ -100,7 +102,7 @@ public class TextCell extends AbstractTableCell {
                 y -= lineHeight;
             }
             int count = Math.max(1, lines.size());
-            return count * lineHeight + padding().vertical();
+            return count * lineHeight + padding().vertical() + HEIGHT_CORRECTION;
         } catch (IOException e) {
             throw new PdfUnboxException(e);
         }

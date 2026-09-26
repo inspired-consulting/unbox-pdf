@@ -8,9 +8,6 @@ specifications.
 
 ## Follow-up tasks
 
-- `TextCell.innerHeight()` adds a two-point correction that `renderCell()` does
-  not return. Rows are therefore slightly taller than the reported cell height.
-
 ## Dependency and build maintenance
 
 ### PDFBox migration planning
