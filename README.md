@@ -43,7 +43,7 @@ To install the library locally, including for the separate samples project:
 
 Signing is bound to Maven's `verify` phase. `-Dgpg.skip` allows a local installation
 without a signing key; `test` and `package` do not reach that phase.
-The wrapper pins Maven 3.9.16 and verifies its distribution checksum. On first
+The wrapper pins Maven 3.10.0 and verifies its distribution checksum. On first
 use it downloads Maven into `~/.m2/wrapper/dists/`; subsequent runs reuse it.
 Network access is needed for this download and uncached dependencies. No separate
 Maven installation is required. On Windows use `mvnw.cmd` instead of `./mvnw`.
@@ -235,10 +235,8 @@ the same guidance. Maintain shared instructions in `AGENTS.md`.
 - [Library principles](docs/specs/library-principles.md): architecture, contracts,
   and extension conventions.
 - [Quality audit](docs/plans/quality-audit.md): open rendering, layout, and maintenance tasks.
-- [Maven Wrapper setup](docs/plans/maven-wrapper.md): consistent Maven setup for
-  contributors and CI.
 
-Put behavior specifications in `docs/specs/` and implementation plans in
+Put specifications of implemented behavior in `docs/specs/` and open plans in
 `docs/plans/`. Ask before introducing production or test dependencies.
 
 Run `./mvnw test` after Java changes. Document regression tests compare generated PDFs

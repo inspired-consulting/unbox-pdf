@@ -34,7 +34,7 @@ Run these from the repository root:
 
 The POM binds GPG signing to `verify`. Use `-Dgpg.skip` for local `verify` or
 `install` when no signing key is configured. `test` and `package` do not reach
-that phase. Use the checked-in Maven Wrapper, which pins Maven 3.9.16, and a JDK
+that phase. Use the checked-in Maven Wrapper, which pins Maven 3.10.0, and a JDK
 compatible with the Java 17 target. CI validates with JDK 21 while the published
 artifact remains Java 17-compatible. On Windows use `mvnw.cmd` in place of `./mvnw`.
 
@@ -103,8 +103,12 @@ rendering or PDFBox may fail these tests even when output looks equivalent.
 
 - Keep architecture and behavioral specifications in `docs/specs/` and update the
   relevant specification when changing a documented contract.
-- Use `docs/plans/` for implementation steps for substantial changes. Small,
-  localized fixes do not require a separate plan.
+- Specifications describe what is implemented, including the goal and the reasons
+  for design decisions. Write them in the present tense, not as change proposals.
+- Use `docs/plans/` for open work only: ideas and implementation steps for
+  substantial changes. Small, localized fixes do not require a separate plan.
+- When a plan is implemented, move its lasting contract into a specification and
+  delete the plan or its finished steps. Plans and test plans keep no history.
 - Check `docs/plans/quality-audit.md` for known open findings before fixing a bug.
   Also check the local, untracked `docs/plans/security-audit.md` if present. Remove
   resolved findings when the fix lands; audits contain only open tasks, not history.

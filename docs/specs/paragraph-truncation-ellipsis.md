@@ -1,6 +1,27 @@
 # Paragraph overflow and truncation
 
-Status: Implemented. Supersedes the original line-limit-only ellipsis design.
+Status: Implemented. Originates from
+[issue #16](https://github.com/inspired-consulting/unbox-pdf/issues/16).
+
+## Goal
+
+A reader can see that paragraph text was cut off. The caller chooses one explicit
+policy for text that does not fit: omit it silently, mark the omission with an
+ellipsis, or draw it anyway.
+
+## Why
+
+`limit(n)` cut text silently, sometimes in the middle of a word. In dense tables
+with single-line cells, a reader could not tell a complete value from a fragment,
+for example `Maschinenraum Deck` from `Maschinenraum Deck 3 achtern`.
+
+Text can be cut by two constraints: the line limit and the available height. One
+policy covers both, so a paragraph behaves the same whichever constraint applies.
+The earlier boolean `withOverflow(...)` setting applied to the height only, and
+the line limit had no setting at all.
+
+`CLIP` is the default because it keeps the output of existing documents and
+reference PDFs byte-identical.
 
 ## Configuration
 
@@ -42,26 +63,25 @@ Overflowing text can overlap following content or extend outside a page; it does
 not trigger paragraph splitting or additional pagination.
 
 Measurement and drawing use the effective text width after paragraph margins
-and padding. The current geometry is described in
-[library principles](library-principles.md); the earlier measurement-width
-defects were fixed after the initial ellipsis implementation.
+and padding. The geometry is described in
+[library principles](library-principles.md).
 `VerticalParagraph` remains a single rotated line and does not implement these
 multiline policies. Font fallback and wrapping changes are outside this contract.
 
-## Intentional API breaks and migration
+## API decisions
 
-The old signatures are removed so callers must review their selected behavior:
-
-- `withOverflow(false)` becomes `with(Overflow.CLIP)`.
-- `withOverflow(true)` becomes `with(Overflow.OVERFLOW)`.
-- `limit(n, mode)` becomes `limit(n).with(mode)`.
-- Mutable `TextWriter` overflow setters are removed; pass the mode to
-  `write(stream, bounds, text, align, vAlign, lineLimit, mode)` instead.
-
-Unlike the old bounds-only boolean, OVERFLOW now bypasses line truncation too.
-Its cursor advancement follows allocated rather than overflowed content height.
-Plain `limit(n)` and default CLIP preserve their existing behavior. Existing
-PDF regression references must remain byte-identical.
+- The line limit and the overflow mode are separate settings: `limit(n)` and
+  `with(mode)`. There is no combined `limit(n, mode)`, because the mode also
+  applies to height clipping without a line limit.
+- The boolean `withOverflow(...)` was removed instead of deprecated. `OVERFLOW`
+  also bypasses the line limit, which the boolean did not, so callers must
+  review which behavior they want. The
+  [changelog](../../CHANGELOG.md) lists the replacements.
+- `TextWriter` receives the mode with each `write(...)` call and has no overflow
+  setters. A writer therefore carries no configuration that could leak between
+  uses.
+- Plain `limit(n)` and the default `CLIP` produce the same output as before the
+  feature. PDF regression references stay byte-identical.
 
 ## Validation
 

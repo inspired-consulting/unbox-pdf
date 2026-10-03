@@ -249,7 +249,7 @@ A paragraph may contain several `TextRun`s appended with `add(text, font)`.
 `TextRunWriter` wraps all runs as one text, gives each line the height of its
 tallest font, and draws the pieces of a line on one baseline, so mixed sizes and
 colors align. Single-run paragraphs keep using `TextWriter`; see
-[styled text runs](../plans/styled-text-runs.md).
+[styled text runs](styled-text-runs.md).
 
 `SimpleFont` wraps PDFBox fonts; the default Helvetica fonts use `WinAnsiEncoding`.
 `Font.encodable(text)` prepares text for a font, and both measuring and drawing
@@ -306,8 +306,11 @@ HTML/CSS behavior, or thread safety. Those capabilities require separate designs
 and validation if introduced. Repeated rendering is supported only as described
 for containers and stretch hints above.
 
-Place feature and behavior specifications in `docs/specs/`. Place implementation
-plans and execution steps in `docs/plans/`. Known defects and limitations are
+Place feature and behavior specifications in `docs/specs/`. A specification
+describes what is implemented, its goal, and the reasons for its design decisions.
+Place open work in `docs/plans/`: ideas, implementation plans, and execution
+steps. When work is implemented, move its lasting contract into a specification
+and delete the plan or the finished steps. Known defects and limitations are
 tracked in the [quality audit](../plans/quality-audit.md).
 
 ## Source references

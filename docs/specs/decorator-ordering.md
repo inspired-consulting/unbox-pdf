@@ -1,20 +1,30 @@
 # Decorator ordering and level override
 
-Status: Implemented. Extends the existing level-based sort in `AbstractDecoratable`
-(added for backgrounds/borders) with a per-instance override API and settles the
-"level" vs. "z-index" naming raised in issue #11.
+Status: Implemented. Originates from issue #11.
 
-`Decorator` already carries an `int level` used to order decorators before they
-paint (backgrounds under borders, by default). What's missing is a way for a
-caller to override that order for one specific decorator instance without
-mutating shared state. This spec defines that override and the ordering
-guarantees callers can rely on.
+## Goal
+
+Decorators have a natural paint order: a background is painted before a border,
+whatever order the caller attaches them in. A caller can override that order for
+one decorator instance.
+
+## Why
+
+Without an order, the result depends on the sequence of `with(...)` calls. A
+background attached after a border paints over the inner half of the border
+stroke. Callers had to know and repeat the correct sequence everywhere.
+
+A per-type default alone is not enough. Some layouts need an exception, for
+example a border below a background, and changing the default of a type would
+affect every element that uses that type.
 
 ## Terminology
 
-The codebase and [library principles](library-principles.md) already call this
-value "level," not "z-index." This spec keeps that name: `Decorator.level`,
-`Decorator(int level)`, `atLevel(int level)`. No renaming is introduced.
+The value is called "level", not "z-index": `Decorator.level`,
+`Decorator(int level)`, `atLevel(int level)`. Issue #11 used "z-index" as a
+working name. "Level" was already used in the code and in
+[library principles](library-principles.md), and it avoids suggesting CSS
+stacking-context behavior that the library does not have.
 
 ## Configuration
 
@@ -26,83 +36,52 @@ paragraph.with(Unbox.background(Color.WHITE).atLevel(0))
          .with(BorderDecorator.border(1f, Color.BLACK));      // background still first: 0 < 1000
 ```
 
-`Decorator` gains a fluent `atLevel(int level)` method that mutates the
-receiver's level and returns it (`Decorator`), matching the existing
-`with(...)`/`align(...)`/`limit(...)` convention of mutate-and-return. The
-`level` field, currently `private final`, becomes mutable so `atLevel` can set
-it after construction. The existing constructors (`Decorator()`,
-`Decorator(int level)`) are unchanged and continue to set the initial level;
-`atLevel` is purely an override applied afterward, including after the
-decorator has been attached with `with(...)`.
-
-`BackgroundDecorator.LEVEL` (100) and `BorderDecorator.LEVEL` (1000) remain as
-the default level each type's constructors pass to `super(level)`. They are
-unchanged in meaning: the "default z-index" the issue asks for. `atLevel(...)`
-is the per-instance "that can be overridden" half of the same sentence. No new
-constructor overloads or `Unbox` factory overloads are needed for this, since
-`atLevel(...)` composes with every existing construction path, including the
-`BorderDecorator.border(...)` static factories.
+- Each decorator type passes its default level to the `Decorator(int level)`
+  constructor. `BackgroundDecorator.LEVEL` is 100 and `BorderDecorator.LEVEL` is
+  1000. Lower levels paint first.
+- `atLevel(int level)` overrides the level of one instance. It mutates the
+  receiver and returns it, like the other fluent methods of the library.
+- `atLevel(...)` works with every construction path, including the `Unbox`
+  factories and the `BorderDecorator.border(...)` static factories. No extra
+  constructor or factory overloads exist for levels.
 
 ## Behavior
 
-- `AbstractDecoratable.decorators()` sorts by `level` ascending immediately
-  before each render pass, so a level changed by `atLevel(...)` after
-  `with(...)` is honored on the next render.
-- The stored decorator list always keeps insertion order. `decorators()` sorts
-  a copy of that list and never sorts the stored list in place. Today's
-  implementation sorts in place, so it changes: an in-place sort would leave
-  the previous render's order in the list, and a later tie would keep that
-  order instead of insertion order.
-- The sort is stable (`List.sort`/`Collections.sort` on the copy). Two
-  decorators with equal levels paint in the order they were added via
-  `with(...)`, on every render, including after an earlier render and a later
-  `atLevel(...)` change. This tie-break is a documented guarantee, not an
-  incidental property of the sort implementation.
-- Every `int` is a valid level. `Decorator.compareTo` compares levels without
-  overflow, using `Integer.compare(level, other.level)` instead of today's
-  `level - other.level`. The subtraction overflows for widely separated
-  levels, for example `Integer.MIN_VALUE` against any positive level, and
-  would sort them in the wrong order.
-- `atLevel(...)` may be called at any time, including after `wrap(...)` or
-  `with(...)` has already attached the decorator, and including mid-composition.
-  There is no "sealed" state that rejects a later override; sorting happens at
-  render time, not at attach time, so a level set at any point before rendering
-  starts takes effect. Mutating `level` on a `Decorator` that is currently being
-  rendered, or rendering the same `AbstractDecoratable` concurrently from
-  multiple threads, is not supported, consistent with this library's existing
-  single-threaded, render-is-not-pure posture (see
-  [library principles](library-principles.md)).
-- `Container` is unaffected by this spec: it continues to apply decorators in
-  insertion order regardless of `level`, as already documented in library
-  principles. This is a deliberate decision (not just an artifact of the
-  current implementation): unifying `Container` onto level-based sorting would
-  change existing rendering behavior for any caller that currently attaches a
-  border before a background to a `Container`, including byte-for-byte
-  `DocumentTest` references. Keeping `Container`'s behavior stable takes
-  priority over consistency between the two decoration mechanisms for now.
-  The same built-in `Decorator` classes therefore continue to order
-  differently depending on whether they're attached via `Container` or via
-  `AbstractDecoratable`; a future spec can revisit unifying them if that
-  inconsistency becomes a real problem.
+- `AbstractDecoratable.decorators()` returns the decorators sorted by level in
+  ascending order. It sorts immediately before each render pass, so a level
+  changed after `with(...)` takes effect on the next render. There is no sealed
+  state that rejects a later override.
+- The stored decorator list keeps insertion order. `decorators()` sorts a copy.
+  An in-place sort would keep the order of an earlier render in the list, and a
+  later tie would then follow that order instead of insertion order.
+- The sort is stable. Two decorators with equal levels paint in the order they
+  were added with `with(...)`, on every render. This tie-break is a guarantee,
+  not a side effect of the sort implementation.
+- Every `int` is a valid level. `Decorator.compareTo` uses `Integer.compare`,
+  because subtracting levels overflows for widely separated values such as
+  `Integer.MIN_VALUE` and a positive level.
+- Changing the level of a decorator while it renders, or rendering the same
+  element from several threads, is not supported. This matches the
+  single-threaded rendering model in [library principles](library-principles.md).
+
+## Container keeps insertion order
+
+`Container` applies its decorators in insertion order and ignores levels. This is
+a deliberate decision. Sorting by level in `Container` would change the output of
+existing documents that attach a border before a background, including the
+byte-for-byte `DocumentTest` references. Stable output has priority over
+consistency between the two decoration mechanisms.
+
+As a result, the same decorator classes order differently on a `Container` and on
+an `AbstractDecoratable`. A later specification can unify them if this becomes a
+real problem.
+
+A decorator attached through the default `PdfElement.with(...)` wraps the element.
+There is no list to order, so the level has no effect there.
 
 ## Validation
 
-Add a `DecoratorTest` (new, under `src/test/java/inspired/pdf/unbox/decorators/`)
-covering:
-
-- Default ordering: a `BackgroundDecorator` and `BorderDecorator` added to the
-  same `AbstractDecoratable`-based element in either `with(...)` order both
-  paint background before border (background level 100 < border level 1000).
-- `atLevel(...)` override: a `BorderDecorator.atLevel(0)` added alongside a
-  default `BackgroundDecorator` paints the border first, reversing the default.
-- Equal-level tie-break: two decorators given the same explicit level paint in
-  the order they were added.
-- `atLevel(...)` called after `with(...)` still affects the next render, since
-  sorting happens at render time, not at attach time.
-- Tie-break after a re-sort: add `A` (level 10), then `B` (level 5), render,
-  then call `B.atLevel(10)`. The next render paints `A` before `B`.
-- Extreme levels: a decorator at `Integer.MIN_VALUE` paints before one at
-  `Integer.MAX_VALUE`, whichever is added first.
-
-Existing `DocumentTest` byte-for-byte references are unaffected unless a test
-deliberately reorders a decorator on an existing reference document.
+`DecoratorTest` covers the default order for both attachment sequences, the
+`atLevel(...)` override before and between renders, the insertion-order tie-break
+including after an earlier re-sort, extreme levels, and the insertion order of
+`Container`. Existing `DocumentTest` references are unchanged by this feature.
