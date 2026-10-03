@@ -77,8 +77,24 @@ GitHub CLI (`gh`).
    not mean the package is already on Maven Central. If approval is pending,
    provide the workflow URL and identify that remaining step. After approval,
    check that publication succeeds before reporting Maven Central availability.
+8. Start the next development iteration directly after the release, so `main`
+   never stays on a release version. Ask the user for the next snapshot version;
+   suggest the next minor version, such as `0.11.0-SNAPSHOT` after `0.10.1`. Set
+   it in the root `pom.xml` and `samples/pom.xml`. README version references keep
+   the released version, because consumers copy them. Commit and push the change
+   separately from the release commit:
 
-Keep published release tags unchanged. Any subsequent snapshot version bump is a
+   ```bash
+   next_version=0.11.0-SNAPSHOT
+   git add pom.xml samples/pom.xml
+   git commit -m "Start $next_version"
+   git push origin main
+   ```
+
+   This step does not depend on the publishing approval in step 7. The workflow
+   builds the tagged release commit, not `main`.
+
+Keep published release tags unchanged. The snapshot version bump is always a
 separate commit after the release tag.
 
 ## Local publishing and snapshots
