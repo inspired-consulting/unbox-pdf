@@ -11,7 +11,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Base class for elements that can be decorated.
+ * Base class for elements that can be decorated. Decorators are applied in ascending level order,
+ * with ties kept in insertion order.
  */
 public abstract class AbstractDecoratable implements PdfElement, Decoratable {
 
@@ -34,9 +35,14 @@ public abstract class AbstractDecoratable implements PdfElement, Decoratable {
         }
     }
 
+    /**
+     * Returns a copy of the attached decorators, stably sorted by level. The stored list keeps insertion
+     * order, so equal levels always paint in the order they were added.
+     */
     protected List<Decorator> decorators() {
-        Collections.sort(decorators);
-        return decorators;
+        List<Decorator> sorted = new ArrayList<>(decorators);
+        Collections.sort(sorted);
+        return sorted;
     }
 
 }

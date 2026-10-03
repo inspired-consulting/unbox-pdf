@@ -197,7 +197,8 @@ There are two existing composition mechanisms:
 uses insertion order. Placement of decoration within rendering is controlled by
 the owning element; tables apply their segment decorations after rendering rows.
 Extensions should account for this ordering rather than assuming a universal
-background-first pass.
+background-first pass. See [decorator ordering](decorator-ordering.md) for the
+per-instance level override and tie-break guarantees.
 
 `Border.withRadius(r)` and `background(color, r)` draw rounded corners; both trace
 the same path, clamped to half of the smaller side, so fill and outline match. A
