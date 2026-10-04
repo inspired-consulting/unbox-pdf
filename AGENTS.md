@@ -34,7 +34,7 @@ Run these from the repository root:
 
 The POM binds GPG signing to `verify`. Use `-Dgpg.skip` for local `verify` or
 `install` when no signing key is configured. `test` and `package` do not reach
-that phase. Use the checked-in Maven Wrapper, which pins Maven 3.10.0, and a JDK
+that phase. Use the checked-in Maven Wrapper, which pins Maven 3.9.16, and a JDK
 compatible with the Java 17 target. CI validates with JDK 21 while the published
 artifact remains Java 17-compatible. On Windows use `mvnw.cmd` in place of `./mvnw`.
 

@@ -17,6 +17,11 @@ updates:
     ignore:
       - dependency-name: "org.apache.pdfbox:pdfbox"
         update-types: ["version-update:semver-major"]
+      # Maven 3.10 names the staged metadata file differently, and
+      # central-publishing-maven-plugin 0.11.0 then uploads it in the bundle,
+      # which Maven Central rejects. Remove this entry once the plugin handles it.
+      - dependency-name: "org.apache.maven:apache-maven"
+        versions: [">=3.10.0"]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

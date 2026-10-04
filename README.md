@@ -43,7 +43,7 @@ To install the library locally, including for the separate samples project:
 
 Signing is bound to Maven's `verify` phase. `-Dgpg.skip` allows a local installation
 without a signing key; `test` and `package` do not reach that phase.
-The wrapper pins Maven 3.10.0 and verifies its distribution checksum. On first
+The wrapper pins Maven 3.9.16 and verifies its distribution checksum. On first
 use it downloads Maven into `~/.m2/wrapper/dists/`; subsequent runs reuse it.
 Network access is needed for this download and uncached dependencies. No separate
 Maven installation is required. On Windows use `mvnw.cmd` instead of `./mvnw`.

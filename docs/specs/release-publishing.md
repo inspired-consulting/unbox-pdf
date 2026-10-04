@@ -94,6 +94,13 @@ GitHub CLI (`gh`).
    This step does not depend on the publishing approval in step 7. The workflow
    builds the tagged release commit, not `main`.
 
+The Maven Wrapper stays on Maven 3.9.x. With Maven 3.10.0 the staged bundle
+contains `maven-metadata-local.xml`, which `central-publishing-maven-plugin` 0.11.0
+does not remove, and Maven Central rejects the deployment with "Bundle has content
+that does NOT have a .pom file". Release 0.10.2 failed for this reason and exists
+only as a GitHub release. Dependabot ignores Maven 3.10 and later until the plugin
+handles the new file name.
+
 Keep published release tags unchanged. The snapshot version bump is always a
 separate commit after the release tag.
 
