@@ -2,7 +2,16 @@
 
 Changes grouped by release, newest first.
 
+## 0.10.3 — 2026-10-04
+
+- Republished the changes of 0.10.2 on Maven Central. The library code is
+  identical to 0.10.2.
+- Set the Maven Wrapper back to Maven 3.9.16, because the bundle built with
+  Maven 3.10.0 is rejected by Maven Central.
+
 ## 0.10.2 — 2026-10-03
+
+Not published to Maven Central; use 0.10.3 instead.
 
 - Added `Decorator.atLevel(int)` to override the paint level of a single decorator
   instance. It takes effect on the next render, even after the decorator is attached.
@@ -14,7 +23,6 @@ Changes grouped by release, newest first.
   padding of the first table that used them when the model is reused.
 - Fixed `TextCell` rendering returning 2 pt less than its measured height, which
   affected rows rendered directly outside a table. PDF output does not change.
-- Updated the Maven Wrapper to Maven 3.10.0.
 
 ## 0.10.1 — 2026-09-13
 
