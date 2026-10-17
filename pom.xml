@@ -63,7 +63,7 @@
                      Credentials come from the server "central" in settings.xml. -->
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.11.0</version>
+                <version>0.12.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <publishingServerId>central</publishingServerId>
